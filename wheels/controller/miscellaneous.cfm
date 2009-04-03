@@ -23,7 +23,7 @@
 <cffunction name="isAjax" returntype="boolean" access="public" output="false" hint="Returns whether the page was called from JavaScript or not.">
 	<cfscript>
 		var returnValue = "";
-		if (cgi.http_x_requested_with == "XMLHTTPRequest")
+		if (cgi.http_x_requested_with IS "XMLHTTPRequest")
 			returnValue = true;
 		else
 			returnValue = false;
@@ -32,53 +32,42 @@
 </cffunction>
 
 <cffunction name="sendEmail" returntype="void" access="public" output="false" hint="Sends an email using a template and an optional layout to wrap it in.">
-	<cfargument name="template" type="string" required="true" hint="The path to the email template or two paths if you want to send a multipart email (the template for the text version has to be the first one in the list in that case)">
-	<cfargument name="from" type="string" required="true" hint="Email address to send from">
-	<cfargument name="to" type="string" required="true" hint="Email address to send to">
-	<cfargument name="subject" type="string" required="true" hint="The subject line of the email">
-	<cfargument name="layout" type="any" required="false" default="#application.wheels.sendEmail.layout#" hint="Layout to wrap body in">
+	<cfargument name="template" type="string" required="true" hint="Path to email body">
+	<cfargument name="layout" type="any" required="false" default="#application.settings.sendEmail.layout#" hint="Layout to wrap body in">
 	<cfscript>
 		var loc = {};
-		
-		arguments = $insertDefaults(name="sendEmail", input=arguments);
-
-		// set the variables that should be available to the email view template
-		for (loc.key in arguments)
+		loc.defaults = StructCopy(application.settings.sendEmail);
+		StructDelete(loc.defaults, "layout");
+		for (loc.key in loc.defaults)
 		{
-			if (!ListFindNoCase("template,layout", loc.key) && !ListFindNoCase("from,to,bcc,cc,charset,debug,failto,group,groupcasesensitive,mailerid,maxrows,mimeattach,password,port,priority,query,replyto,server,spoolenable,startrow,subject,timeout,type,username,useSSL,useTLS,wraptext", loc.key))
+			if (!StructKeyExists(arguments, loc.key))
+				arguments[loc.key] = loc.defaults[loc.key];
+		}
+		if (arguments.template Contains "/")
+		{
+			loc.controller = ListFirst(arguments.template, "/");
+			loc.action = ListLast(arguments.template, "/");
+		}
+		else
+		{
+			loc.controller = variables.params.controller;
+			loc.action = arguments.template;
+		}
+		loc.attributes = structCopy(arguments);
+		for (loc.key in loc.attributes)
+		{
+			if (!ListFindNoCase("from,to,bcc,cc,charset,debug,failto,group,groupcasesensitive,mailerid,maxrows,mimeattach,password,port,priority,query,replyto,server,spoolenable,startrow,subject,timeout,type,username,useSSL,useTLS,wraptext", loc.key))
 			{
-				variables[loc.key] = arguments[loc.key];
-				StructDelete(arguments, loc.key);
+				if (!ListFindNoCase("template,layout", loc.key))
+					variables[loc.key] = arguments[loc.key];
+				StructDelete(loc.attributes, loc.key);
 			}
 		}
-
-		arguments.body = [];
-		loc.iEnd = ListLen(arguments.template);
-		for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
-		{
-			loc.template = ListGetAt(arguments.template, loc.i);
-			loc.template = ReplaceNoCase(loc.template, ".cfm", "");
-
-			// set controller / action so we can render the email template according to the same rules as renderPage
-			if (loc.template Contains "/")
-			{
-				loc.controller = ListFirst(loc.template, "/");
-				loc.action = ListLast(loc.template, "/");
-			}
-			else
-			{
-				loc.controller = variables.params.controller;
-				loc.action = loc.template;
-			}
-
-			// include the email template and return it
-			ArrayAppend(arguments.body, $renderPage(controller=loc.controller, action=loc.action, layout=arguments.layout));
-		}
-
-		// delete arguments that we don't need to pass on to cfmail and send the email
-		StructDelete(arguments, "template");
-		StructDelete(arguments, "layout");
-		$mail(argumentCollection=arguments);
+		$renderPage(controller=loc.controller, action=loc.action, layout=arguments.layout);
+		loc.attributes.body = request.wheels.response;
+		$mail(loc.attributes);
+		// delete the response so that Wheels does not think we have rendered an actual response to the browser
+		StructDelete(request.wheels, "response");
 	</cfscript>
 </cffunction>
 
@@ -86,7 +75,7 @@
 	<cfargument name="file" type="string" required="true" hint="The file to send to the user">
 	<cfargument name="name" type="string" required="false" default="" hint="The file name to show in the browser download dialog box">
 	<cfargument name="type" type="string" required="false" default="" hint="The HTTP content type to deliver the file as">
-	<cfargument name="disposition" type="string" required="false" default="#application.wheels.sendFile.disposition#" hint="Set to 'inline' to have the browser handle the opening of the file or set to 'attachment' to force a download dialog box">
+	<cfargument name="disposition" type="string" required="false" default="attachment" hint="Set to 'inline' to have the browser handle the opening of the file or set to 'attachment' to force a download dialog box">
 	<cfscript>
 		var loc = {};
 		arguments.file = Replace(arguments.file, "\", "/", "all");

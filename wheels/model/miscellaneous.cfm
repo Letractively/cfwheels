@@ -18,16 +18,16 @@
 	<cfargument name="missingMethodArguments" type="struct" required="true">
 	<cfscript>
 		var loc = {};
-		if (Right(arguments.missingMethodName, 10) == "hasChanged")
+		if (Right(arguments.missingMethodName, 10) IS "hasChanged")
 			loc.returnValue = hasChanged(property=ReplaceNoCase(arguments.missingMethodName, "hasChanged", ""));
-		else if (Right(arguments.missingMethodName, 11) == "changedFrom")
+		else if (Right(arguments.missingMethodName, 11) IS "changedFrom")
 			loc.returnValue = changedFrom(property=ReplaceNoCase(arguments.missingMethodName, "changedFrom", ""));
-		else if (Left(arguments.missingMethodName, 9) == "findOneBy" || Left(arguments.missingMethodName, 9) == "findAllBy")
+		else if (Left(arguments.missingMethodName, 9) IS "findOneBy" || Left(arguments.missingMethodName, 9) IS "findAllBy")
 		{
 			loc.finderProperties = ListToArray(ReplaceNoCase(ReplaceNoCase(Replace(arguments.missingMethodName, "And", "|"), "findAllBy", ""), "findOneBy", ""), "|");
 			loc.firstProperty = loc.finderProperties[1];
-			loc.secondProperty = IIf(ArrayLen(loc.finderProperties) == 2, "loc.finderProperties[2]", "");
-			if (StructCount(arguments.missingMethodArguments) == 1)
+			loc.secondProperty = IIf(ArrayLen(loc.finderProperties) IS 2, "loc.finderProperties[2]", "");
+			if (StructCount(arguments.missingMethodArguments) IS 1)
 				loc.firstValue = Trim(ListFirst(arguments.missingMethodArguments[1]));
 			else if (StructKeyExists(arguments.missingMethodArguments, "value"))
 				loc.firstValue = arguments.missingMethodArguments.value;
@@ -36,7 +36,7 @@
 			loc.addToWhere = "#loc.firstProperty# = '#loc.firstValue#'";
 			if (Len(loc.secondProperty))
 			{
-				if (StructCount(arguments.missingMethodArguments) == 1)
+				if (StructCount(arguments.missingMethodArguments) IS 1)
 					loc.secondValue = Trim(ListLast(arguments.missingMethodArguments[1]));
 				else if (StructKeyExists(arguments.missingMethodArguments, "values"))
 					loc.secondValue = Trim(ListLast(arguments.missingMethodArguments.values));
@@ -46,7 +46,7 @@
 			StructDelete(arguments.missingMethodArguments, "1");
 			StructDelete(arguments.missingMethodArguments, "value");
 			StructDelete(arguments.missingMethodArguments, "values");
-			loc.returnValue = IIf(Left(arguments.missingMethodName, 9) == "findOneBy", "findOne(argumentCollection=arguments.missingMethodArguments)", "findAll(argumentCollection=arguments.missingMethodArguments)");
+			loc.returnValue = IIf(Left(arguments.missingMethodName, 9) IS "findOneBy", "findOne(argumentCollection=arguments.missingMethodArguments)", "findAll(argumentCollection=arguments.missingMethodArguments)");
 		}
 		else
 		{
@@ -55,7 +55,7 @@
 				if (ListFindNoCase(variables.wheels.class.associations[loc.key].methods, arguments.missingMethodName))
 				{
 					// set name from "posts" to "objects", for example, so we can use it in the switch below --->
-					loc.name = ReplaceNoCase(ReplaceNoCase(arguments.missingMethodName, $pluralize(loc.key), "objects"), $singularize(loc.key), "object");
+					loc.name = ReplaceNoCase(ReplaceNoCase(arguments.missingMethodName, pluralize(loc.key), "objects"), singularize(loc.key), "object");
 					loc.info = $expandedAssociations(include=loc.key);
 					loc.info = loc.info[1];
 					loc.where = $keyWhereString(properties=loc.info.foreignKey, keys=variables.wheels.class.keys);
@@ -101,7 +101,7 @@
 							arguments.missingMethodArguments = $objectOrNumberToKey(arguments.missingMethodArguments);
 						}
 					}
-					else if (loc.info.type == "hasMany")
+					else if (loc.info.type IS "hasMany")
 					{
 						if (loc.name == "objects")
 						{
@@ -162,7 +162,7 @@
 							arguments.missingMethodArguments.where = loc.where;
 						}
 					}
-					else if (loc.info.type == "belongsTo")
+					else if (loc.info.type IS "belongsTo")
 					{
 						if (loc.name == "object")
 						{
@@ -183,14 +183,6 @@
 			$throw(type="Wheels.MethodNotFound", message="The method #arguments.missingMethodName# was not found in this model.", extendedInfo="Check your spelling or add the method to the model CFC file.");
 	</cfscript>
 	<cfreturn loc.returnValue>
-</cffunction>
-
-<cffunction name="columnNames" returntype="string" access="public" output="false" hint="Returns a list of column names (ordered by their position in the database table).">
-	<cfreturn variables.wheels.class.columnList>
-</cffunction>
-
-<cffunction name="propertyNames" returntype="string" access="public" output="false" hint="Returns a list of property names (ordered by their respective column's position in the database table).">
-	<cfreturn variables.wheels.class.propertyList>
 </cffunction>
 
 <cffunction name="$objectOrNumberToKey" returntype="struct" access="public" output="false">
@@ -237,13 +229,4 @@
 		}
 	</cfscript>
 	<cfreturn loc.returnValue>
-</cffunction>
-
-<cffunction name="connection" returntype="void" access="public" output="false" hint="Use this method to override the datasource connection information for a particular model">
-	<cfargument name="datasource" required="true" type="string" hint="the datasource to connect to">
-	<cfargument name="username" required="true" type="string" hint="the username for the connection">
-	<cfargument name="password" required="true" type="string" hint="the password for the connection">
-	<cfscript>
-	structappend(variables.wheels.class.connection, arguments, true);
-	</cfscript>
 </cffunction>

@@ -1,13 +1,7 @@
 <cffunction name="onApplicationStart" returntype="void" access="public" output="false">
 	<cfscript>
 		var loc = {};
-		
-		// set or reset all settings but make sure to pass along the reload password between forced reloads with "reload=x"
-		if (StructKeyExists(application, "wheels") && StructKeyExists(application.wheels, "reloadPassword"))
-			loc.oldReloadPassword = application.wheels.reloadPassword;
 		application.wheels = {};
-		if (StructKeyExists(loc, "oldReloadPassword"))
-			application.wheels.reloadPassword = loc.oldReloadPassword;
 		
 		if (StructKeyExists(server, "railo"))
 		{
@@ -22,7 +16,7 @@
 		loc.majorVersion = Left(application.wheels.serverVersion, 1);
 		if ((application.wheels.serverName == "Railo" && loc.majorVersion < 3) || (application.wheels.serverName == "Adobe ColdFusion" && loc.majorVersion < 8))
 			$throw(type="Wheels.NoSupport", message="#application.wheels.serverName# #application.wheels.serverVersion# is not supported by Wheels.", extendedInfo="Upgrade to Adobe ColdFusion 8 or Railo 3.");
-		application.wheels.version = "0.9.1";
+		application.wheels.version = "0.9";
 		application.wheels.controllers = {};
 		application.wheels.models = {};
 		application.wheels.existingModelFiles = "";
@@ -30,8 +24,6 @@
 		application.wheels.nonExistingControllerFiles = "";
 		application.wheels.existingLayoutFiles = "";
 		application.wheels.nonExistingLayoutFiles = "";
-		application.wheels.existingHelperFiles = "";
-		application.wheels.nonExistingHelperFiles = "";
 		application.wheels.routes = [];
 		application.wheels.namedRoutePositions = {};
 		
@@ -68,29 +60,35 @@
 		
 		// set up struct for caches
 		application.wheels.cache = {};
-		application.wheels.cache.sql = {};
-		application.wheels.cache.image = {};
-		application.wheels.cache.main = {};
-		application.wheels.cache.action = {};
-		application.wheels.cache.page = {};
-		application.wheels.cache.partial = {};
-		application.wheels.cache.query = {};
+		application.wheels.cache.internal = {};
+		application.wheels.cache.internal.sql = {};
+		application.wheels.cache.internal.image = {};
+		application.wheels.cache.external = {};
+		application.wheels.cache.external.main = {};
+		application.wheels.cache.external.action = {};
+		application.wheels.cache.external.page = {};
+		application.wheels.cache.external.partial = {};
+		application.wheels.cache.external.query = {};
 		application.wheels.cacheLastCulledAt = Now();
 		
-		// set environment
-		if (StructKeyExists(URL, "reload") && !IsBoolean(URL.reload) && Len(url.reload) && (!Len(application.wheels.reloadPassword) || (StructKeyExists(URL, "password") && URL.password == application.wheels.reloadPassword)))
-			application.wheels.environment = URL.reload;
+		// load environment settings
+		if (StructKeyExists(URL, "reload") && !IsBoolean(URL.reload) && Len(url.reload) && (!Len(application.settings.reloadPassword) || (StructKeyExists(URL, "password") && URL.password == application.settings.reloadPassword)))
+			application.settings.environment = URL.reload;
 		else
 			$include(template="#application.wheels.configPath#/environment.cfm");
-		
-		// load wheels settings
-		$include(template="wheels/events/onapplicationstart/settings.cfm");
-		
-		// load developer settings
 		$include(template="#application.wheels.configPath#/settings.cfm");
-
-		//override settings with environment specific ones
-		$include(template="#application.wheels.configPath#/#application.wheels.environment#/settings.cfm");
+		$include(template="#application.wheels.configPath#/environments/#application.settings.environment#.cfm");
+		
+		// try to determine url rewrite capabilites unless set manually by the developer
+		if (!Len(application.settings.URLRewriting))
+		{
+			if (Right(cgi.script_name, 12) == "/rewrite.cfm")
+				application.settings.URLRewriting = "On";
+			else if (Len(cgi.path_info))
+				application.settings.URLRewriting = "Partial";
+			else
+				application.settings.URLRewriting = "Off";
+		}
 		
 		// load developer routes and add wheels default ones
 		$include(template="#application.wheels.configPath#/routes.cfm");
@@ -100,14 +98,13 @@
 		
 		// load plugins
 		application.wheels.plugins = {};
-		application.wheels.incompatiblePlugins = "";
 		loc.pluginFolder = this.rootDir & "plugins";
 		// get a list of plugin files and folders
 		loc.pluginFolders = $directory(directory=loc.pluginFolder, type="dir");
 		loc.pluginFiles = $directory(directory=loc.pluginFolder, filter="*.zip", type="file", sort="name DESC");
 		// delete plugin folders if no corresponding plugin file exist
 		loc.iEnd = loc.pluginFolders.recordCount;
-		for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
+		for (loc.i=1; loc.i LTE loc.iEnd; loc.i=loc.i+1)
 		{
 			loc.name = loc.pluginFolders["name"][loc.i];
 			loc.directory = loc.pluginFolders["directory"][loc.i];
@@ -121,7 +118,7 @@
 		if (loc.pluginFiles.recordCount)
 		{
 			loc.iEnd = loc.pluginFiles.recordCount;
-			for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
+			for (loc.i=1; loc.i LTE loc.iEnd; loc.i=loc.i+1)
 			{
 				loc.name = loc.pluginFiles["name"][loc.i];
 				loc.pluginName = ListFirst(loc.name, "-");
@@ -131,14 +128,14 @@
 					loc.thisPluginFile = loc.pluginFolder & "/" & loc.name;
 					loc.thisPluginFolder = loc.pluginFolder & "/" & LCase(loc.pluginName);
 					if (!DirectoryExists(loc.thisPluginFolder))
+					{
 						$directory(action="create", directory=loc.thisPluginFolder);
-					$zip(action="unzip", destination=loc.thisPluginFolder, file=loc.thisPluginFile, overwrite=application.wheels.overwritePlugins);
+						$zip(action="unzip", destination=loc.thisPluginFolder, file=loc.thisPluginFile);
+					}
 					loc.fileName = LCase(loc.pluginName) & "." & loc.pluginName;
-					loc.plugin = $createObjectFromRoot(path=application.wheels.pluginComponentPath, fileName=loc.fileName, method="init");
-					if (!StructKeyExists(loc.plugin, "version") || loc.plugin.version == application.wheels.version)
-						application.wheels.plugins[loc.pluginName] = loc.plugin;
-					else
-						application.wheels.incompatiblePlugins = ListAppend(application.wheels.incompatiblePlugins, loc.pluginName);
+					application.wheels.plugins[loc.pluginName] = $createObjectFromRoot(objectType="pluginObject", fileName=loc.fileName);
+					if (application.wheels.plugins[loc.pluginName].version != application.wheels.version)
+						$throw(type="Wheels.IncompatiblePlugin", message="#loc.pluginName# is incompatible with this version of Wheels.", extendedInfo="You're running version #application.wheels.version# of Wheels and the #loc.pluginName# plugin you have installed only supports version #application.wheels.plugins[loc.pluginName].version#. Download a new version of #loc.pluginName#, drop it in the 'plugins' folder and restart Wheels by issuing a 'reload=true' request.");
 				}
 			}
 			// look for plugins that are incompatible with each other
@@ -155,6 +152,34 @@
 							loc.addedFunctions = ListAppend(loc.addedFunctions, loc.keyTwo);
 					}
 				}
+			}
+		}
+
+		// determine and set database brand unless we're running in maintenance mode
+		if (application.settings.environment != "maintenance")
+		{
+			$include(template="#application.wheels.configPath#/database.cfm");
+			if (!Len(application.settings.database.datasource))
+				application.settings.database.datasource = LCase(ListLast(this.rootDir, Right(this.rootDir, 1)));
+			try
+			{
+				loc.info = $dbinfo(datasource=application.settings.database.datasource, username=application.settings.database.username, password=application.settings.database.password, type="version");
+			}
+			catch(Any e) {}
+			if (StructKeyExists(loc, "info"))
+			{
+				if (loc.info.driver_name Contains "MySQL")
+					loc.adapterName = "MySQL";
+				else if (loc.info.driver_name Contains "Oracle")
+					loc.adapterName = "Oracle";
+				else if (loc.info.driver_name Contains "SQLServer" || loc.info.driver_name Contains "Microsoft SQL Server")
+					loc.adapterName = "MicrosoftSQLServer";
+				else
+					$throw(type="Wheels.NoSupport", message="#loc.info.database_productname# is not supported by Wheels.", extendedInfo="Use Microsoft SQL Server, Oracle or MySQL.");			
+				application.wheels.adapter = CreateObject("component", "wheels.#loc.adapterName#");
+				application.wheels.databaseName = loc.info.database_version;
+				if (application.wheels.databaseName Does Not Contain loc.info.database_productname)
+					application.wheels.databaseName = loc.info.database_productname & " " & application.wheels.databaseName;		
 			}
 		}
 		application.wheels.dispatch = CreateObject("component", "wheels.Dispatch");

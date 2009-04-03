@@ -9,7 +9,7 @@
 		else
 			loc.filters = arguments.controller.$getAfterFilters();
 		loc.iEnd = ArrayLen(loc.filters);
-		for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
+		for (loc.i=1; loc.i LTE loc.iEnd; loc.i=loc.i+1)
 		{
 			if ((!Len(loc.filters[loc.i].only) && !Len(loc.filters[loc.i].except)) || (Len(loc.filters[loc.i].only) && ListFindNoCase(loc.filters[loc.i].only, arguments.actionName)) || (Len(loc.filters[loc.i].except) && !ListFindNoCase(loc.filters[loc.i].except, arguments.actionName)))
 				$invoke(component=arguments.controller, method=loc.filters[loc.i].through);
@@ -26,7 +26,7 @@
 		loc.verifications = arguments.controller.$getVerifications();
 		loc.abort = false;
 		loc.iEnd = ArrayLen(loc.verifications);
-		for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
+		for (loc.i=1; loc.i LTE loc.iEnd; loc.i=loc.i+1)
 		{
 			loc.verification = loc.verifications[loc.i];
 			if ((!Len(loc.verification.only) && !Len(loc.verification.except)) || (Len(loc.verification.only) && ListFindNoCase(loc.verification.only, arguments.actionName)) || (Len(loc.verification.except) && !ListFindNoCase(loc.verification.except, arguments.actionName)))
@@ -38,19 +38,19 @@
 				if (IsBoolean(loc.verification.ajax) && ((loc.verification.ajax && cgi.http_x_requested_with != "XMLHTTPRequest") || (!loc.verification.ajax && cgi.http_x_requested_with == "XMLHTTPRequest")))
 					loc.abort = true;
 				loc.jEnd = ListLen(loc.verification.params);
-				for (loc.j=1; loc.j <= loc.jEnd; loc.j++)
+				for (loc.j=1; loc.j LTE loc.jEnd; loc.j=loc.j+1)
 				{
 					if (!StructKeyExists(loc.params, ListGetAt(loc.verification.params, loc.j)))
 						loc.abort = true;
 				}
 				loc.jEnd = ListLen(loc.verification.session);
-				for (loc.j=1; loc.j <= loc.jEnd; loc.j++)
+				for (loc.j=1; loc.j LTE loc.jEnd; loc.j=loc.j+1)
 				{
 					if (!StructKeyExists(session, ListGetAt(loc.verification.session, loc.j)))
 						loc.abort = true;
 				}
 				loc.jEnd = ListLen(loc.verification.cookie);
-				for (loc.j=1; loc.j <= loc.jEnd; loc.j++)
+				for (loc.j=1; loc.j LTE loc.jEnd; loc.j=loc.j+1)
 				{
 					if (!StructKeyExists(cookie, ListGetAt(loc.verification.cookie, loc.j)))
 						loc.abort = true;
@@ -91,7 +91,7 @@
 	<cfscript>
 		var loc = {};
 		loc.iEnd = ArrayLen(arguments.routes);
-		for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
+		for (loc.i=1; loc.i LTE loc.iEnd; loc.i=loc.i+1)
 		{
 			loc.currentRoute = arguments.routes[loc.i].pattern;
 			if (arguments.route == "" && loc.currentRoute == "")
@@ -101,11 +101,11 @@
 			}
 			else
 			{
-				if (ListLen(arguments.route, "/") >= ListLen(loc.currentRoute, "/") && loc.currentRoute != "")
+				if (ListLen(arguments.route, "/") GTE ListLen(loc.currentRoute, "/") && loc.currentRoute != "")
 				{
 					loc.match = true;
 					loc.jEnd = ListLen(loc.currentRoute, "/");
-					for (loc.j=1; loc.j <= loc.jEnd; loc.j++)
+					for (loc.j=1; loc.j LTE loc.jEnd; loc.j=loc.j+1)
 					{
 						loc.item = ListGetAt(loc.currentRoute, loc.j, "/");
 						loc.thisRoute = ReplaceList(loc.item, "[,]", ",");
@@ -140,7 +140,7 @@
 		
 		// go through the matching route pattern and add URL variables from the route to the struct
 		loc.iEnd = ListLen(arguments.foundRoute.pattern, "/");
-		for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
+		for (loc.i=1; loc.i LTE loc.iEnd; loc.i=loc.i+1)
 		{
 			loc.item = ListGetAt(arguments.foundRoute.pattern, loc.i, "/");
 			if (Left(loc.item, 1) == "[")
@@ -158,7 +158,7 @@
 		loc.returnValue.action = REReplace(loc.returnValue.action, "-([a-z])", "\u\1", "all");
 	
 		// decrypt all values except controller and action
-		if (application.wheels.obfuscateUrls)
+		if (application.settings.obfuscateURLs)
 		{
 			for (loc.key in loc.returnValue)
 			{
@@ -237,7 +237,7 @@
 			for (loc.key in arguments.formScope)
 			{
 				loc.match = REFindNoCase("(.*?)\[(.*?)\]", loc.key, 1, true);
-				if (ArrayLen(loc.match.pos) == 3)
+				if (ArrayLen(loc.match.pos) IS 3)
 				{
 					// model object form field, build a struct to hold the data, named after the model object
 					loc.objectName = LCase(Mid(loc.key, loc.match.pos[2], loc.match.len[2]));
@@ -260,7 +260,7 @@
 <cffunction name="$request" returntype="string" access="public" output="false">
 	<cfscript>
 		var loc = {};
-		if (application.wheels.showDebugInformation)
+		if (application.settings.showDebugInformation)
 			$debugPoint("setup");
 		
 		// set route from incoming url, find a matching one and create the params struct
@@ -278,23 +278,23 @@
 		// create the requested controller
 		loc.controller = $controller(loc.params.controller).$createControllerObject(loc.params);
 		
-		if (application.wheels.showDebugInformation)
+		if (application.settings.showDebugInformation)
 			$debugPoint("setup,beforeFilters");
 		
 		// run verifications and before filters if they exist on the controller
 		$runVerifications(controller=loc.controller, actionName=loc.params.action);
 		$runFilters(controller=loc.controller, type="before", actionName=loc.params.action);
 		
-		if (application.wheels.showDebugInformation)
+		if (application.settings.showDebugInformation)
 			$debugPoint("beforeFilters,action");
 			
 		// call action on controller if it exists
 		loc.actionIsCachable = false;
-		if (application.wheels.cacheActions && StructIsEmpty(session.flash) && StructIsEmpty(form))
+		if (application.settings.cacheActions && StructIsEmpty(session.flash) && StructIsEmpty(form))
 		{
 			loc.cachableActions = loc.controller.$getCachableActions();
 			loc.iEnd = ArrayLen(loc.cachableActions);
-			for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
+			for (loc.i=1; loc.i LTE loc.iEnd; loc.i=loc.i+1)
 			{
 				if (loc.cachableActions[loc.i].action == loc.params.action)
 				{
@@ -318,16 +318,16 @@
 			loc.executeArgs.key = loc.key;
 			loc.executeArgs.time = loc.timeToCache;
 			loc.executeArgs.category = loc.category;
-			$doubleCheckedLock(name=loc.lockName, condition="$getFromCache", execute="$callActionAndAddToCache", conditionArgs=loc.conditionArgs, executeArgs=loc.executeArgs);
+			$doubleCheckLock(name=loc.lockName, condition="$getFromCache", execute="$callActionAndAddToCache", conditionArgs=loc.conditionArgs, executeArgs=loc.executeArgs);
 		}
 		else
 		{
 			$callAction(controller=loc.controller, controllerName=loc.params.controller, actionName=loc.params.action);
 		}
-		if (application.wheels.showDebugInformation)
+		if (application.settings.showDebugInformation)
 			$debugPoint("action,afterFilters");
 		$runFilters(controller=loc.controller, type="after", actionName=loc.params.action);
-		if (application.wheels.showDebugInformation)
+		if (application.settings.showDebugInformation)
 			$debugPoint("afterFilters");
 		
 		// clear the flash (note that this is not done for redirectTo since the processing does not get here)
@@ -367,7 +367,7 @@
 				}
 				else
 				{
-					if (application.wheels.showErrorInformation)
+					if (application.settings.showErrorInformation)
 					{
 						$throw(type="Wheels.ViewNotFound", message="Could not find the view page for the '#arguments.actionName#' action in the '#arguments.controllerName#' controller.", extendedInfo="Create a file named '#LCase(arguments.actionName)#.cfm' in the 'views/#LCase(arguments.controllerName)#' directory (create the directory as well if it doesn't already exist).");
 					}

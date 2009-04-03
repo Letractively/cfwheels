@@ -1,35 +1,33 @@
 <cfoutput>
 <div style="clear:both;margin-top:100px;text-align:left;background:##ececec;padding:10px;border-top:2px solid ##808080;border-bottom:2px solid ##808080;">
 <table cellspacing="0">
-<cfif Len(application.wheels.incompatiblePlugins)>
-	<tr>
-		<td valign="top"><strong><span style="color:red;">Warnings:</span></strong></td>
-		<td><span style="color:red;"><cfloop list="#application.wheels.incompatiblePlugins#" index="loc.i">The #loc.i# plugin is incompatible with this version of Wheels<br /></cfloop></span></td>
-	</tr>
-</cfif>
 <tr>
 	<td valign="top"><strong>Application Name:</strong></td>
 	<td>#application.applicationName#</td>
 </tr>
 <tr>
 	<td valign="top"><strong>Framework:</strong></td>
-	<td>Wheels #application.wheels.version# (#application.wheels.environment# mode)</td>
+	<td>Wheels #application.wheels.version# (#application.settings.environment# mode)</td>
 </tr>
 <tr>
 	<td valign="top"><strong>CFML Engine:</strong></td>
 	<td>#application.wheels.serverName# #application.wheels.serverVersion#</td>
 </tr>
 <tr>
+	<td valign="top"><strong>Database:</strong></td>
+	<td><cfif StructKeyExists(application.wheels, "databaseName")>#application.wheels.databaseName#<cfelse>None</cfif></td>
+</tr>
+<tr>
 	<td valign="top"><strong>URL Rewriting:</strong></td>
-	<td>#application.wheels.URLRewriting#</td>
+	<td>#application.settings.URLRewriting#</td>
 </tr>
 <tr>
 	<td valign="top"><strong>URL Obfuscation:</strong></td>
-	<td><cfif application.wheels.obfuscateUrls>On<cfelse>Off</cfif></td>
+	<td><cfif application.settings.obfuscateURLs>On<cfelse>Off</cfif></td>
 </tr>
 <tr>
 	<td valign="top"><strong>Plugins:</strong></td>
-	<td><cfif StructCount(application.wheels.plugins) IS NOT 0><cfset loc.count = 0><cfloop collection="#application.wheels.plugins#" item="loc.i"><cfset loc.count = loc.count + 1><a href="#application.wheels.webPath##ListLast(cgi.script_name, "/")#?controller=wheels&action=plugins&name=#LCase(loc.i)#">#loc.i#</a><cfif StructCount(application.wheels.plugins) GT loc.count><br /></cfif></cfloop><cfelse>None</cfif></td>
+	<td><cfif StructCount(application.wheels.plugins) IS NOT 0><cfset loc.count = 0><cfloop collection="#application.wheels.plugins#" item="loc.i"><cfset loc.count = loc.count + 1><a href="<cfif application.settings.URLRewriting IS 'On'>/wheels/plugins?<cfelseif application.settings.URLRewriting IS 'Partial'>/index.cfm/wheels/plugins?<cfelse>/index.cfm?controller=wheels&action=plugins&</cfif>name=#LCase(loc.i)#">#loc.i#</a><cfif StructCount(application.wheels.plugins) GT loc.count><br /></cfif></cfloop><cfelse>None</cfif></td>
 </tr>
 <tr>
 	<td valign="top"><strong>Controller:</strong></td>

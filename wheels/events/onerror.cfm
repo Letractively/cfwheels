@@ -14,25 +14,19 @@
 	<cfscript>
 		var loc = {};
 		
-		if (application.wheels.sendEmailOnError)
+		// make railo cfml and adobe cfml behave the same way
+		if (!StructKeyExists(arguments.exception, "cause"))
+			arguments.exception.cause = arguments.exception; 
+		
+		if (application.settings.sendEmailOnError)
+			$mail(to=application.settings.errorEmailAddress, from=application.settings.errorEmailAddress, subject="Error", type="html", body=$includeAndReturnOutput(template="wheels/events/onerror/cfmlerror.cfm", exception=arguments.exception));
+		
+		if (application.settings.showErrorInformation)
 		{
-			loc.mailArgs = {};
-			loc.mailArgs.from = application.wheels.errorEmailAddress;
-			loc.mailArgs.to = application.wheels.errorEmailAddress;
-			loc.mailArgs.subject = "Error";
-			loc.mailArgs.type = "html";
-			loc.mailArgs.body = [$includeAndReturnOutput(template="wheels/events/onerror/cfmlerror.cfm", exception=arguments.exception)];
-			if (StructKeyExists(application.wheels, "errorEmailServer"))
-				loc.mailArgs.server = application.wheels.errorEmailServer;
-			$mail(argumentCollection=loc.mailArgs);
-		}
-
-		if (application.wheels.showErrorInformation)
-		{
-			if (StructKeyExists(arguments.exception, "rootCause") && Left(arguments.exception.rootCause.type, 6) == "Wheels")
-				loc.wheelsError = arguments.exception.rootCause;
-			else if (StructKeyExists(arguments.exception, "cause") && StructKeyExists(arguments.exception.cause, "rootCause") && Left(arguments.exception.cause.rootCause.type, 6) == "Wheels") 
+			if (StructKeyExists(arguments.exception.cause, "rootCause") && Left(arguments.exception.cause.rootCause.type, 6) == "Wheels")
 				loc.wheelsError = arguments.exception.cause.rootCause;
+			else if (StructKeyExists(arguments.exception, "rootCause") && Left(arguments.exception.rootCause.type, 6) == "Wheels")
+				loc.wheelsError = arguments.exception.rootCause;
 			if (StructKeyExists(loc, "wheelsError"))
 			{
 				loc.returnValue = $includeAndReturnOutput(template="wheels/styles/header.cfm");
