@@ -37,11 +37,7 @@
 		if (!StructKeyExists(arguments, "enctype") && arguments.multipart)
 			arguments.enctype = "multipart/form-data";
 		
-		loc.skip = "multipart,spamProtection,route,controller,key,params,anchor,onlyPath,host,protocol,port";
-		if (Len(arguments.route))
-			loc.skip = ListAppend(loc.skip, $routeVariables(argumentCollection=arguments)); // variables passed in as route arguments should not be added to the html element
-
-		loc.returnValue = $tag(name="form", skip=loc.skip, attributes=arguments);
+		loc.returnValue = $tag(name="form", skip="multipart,spamProtection,route,controller,key,params,anchor,onlyPath,host,protocol,port", attributes=arguments);
 	</cfscript>
 	<cfreturn loc.returnValue>
 </cffunction>
@@ -922,26 +918,19 @@
 		loc.returnValue = "";
 		if (IsQuery(arguments.options))
 		{
+			loc.iEnd = arguments.options.RecordCount;
+			// if no value or text field has been passed in we take the first numeric field in the query as the value field and the first non numeric as the text field
 			if (!Len(arguments.valueField) || !Len(arguments.textField))
 			{
-				// order the columns according to their ordinal position in the database table
-				loc.info = GetMetaData(arguments.options);
-				loc.iEnd = ArrayLen(loc.info);
-				loc.columns = "";
-				for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
-					loc.columns = ListAppend(loc.columns, loc.info[loc.i].name);
-
-				// take the first numeric field in the query as the value field and the first non numeric as the text field
-				loc.iEnd = arguments.options.RecordCount;
 				for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
 				{
-					loc.jEnd = ListLen(loc.columns);
+					loc.jEnd = ListLen(arguments.options.columnList);
 					for (loc.j=1; loc.j <= loc.jEnd; loc.j++)
 					{
-						if (!Len(arguments.valueField) && IsNumeric(arguments.options[ListGetAt(loc.columns, loc.j)][loc.i]))
-							arguments.valueField = ListGetAt(loc.columns, loc.j);
-						if (!Len(arguments.textField) && !IsNumeric(arguments.options[ListGetAt(loc.columns, loc.j)][loc.i]))
-							arguments.textField = ListGetAt(loc.columns, loc.j);
+						if (!Len(arguments.valueField) && IsNumeric(arguments.options[ListGetAt(arguments.options.columnList, loc.j)][loc.i]))
+							arguments.valueField = ListGetAt(arguments.options.columnList, loc.j);
+						if (!Len(arguments.textField) && !IsNumeric(arguments.options[ListGetAt(arguments.options.columnList, loc.j)][loc.i]))
+							arguments.textField = ListGetAt(arguments.options.columnList, loc.j);
 					}
 				}
 			}

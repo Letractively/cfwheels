@@ -23,10 +23,7 @@
 		arguments.href = Replace(arguments.href, "&", "&amp;", "all"); // make sure we return XHMTL compliant code
 		if (!Len(arguments.text))
 			arguments.text = arguments.href;
-		loc.skip = "text,confirm,route,controller,action,key,params,anchor,onlyPath,host,protocol,port";
-		if (Len(arguments.route))
-			loc.skip = ListAppend(loc.skip, $routeVariables(argumentCollection=arguments)); // variables passed in as route arguments should not be added to the html element
-		loc.returnValue = $element(name="a", skip=loc.skip, content=arguments.text, attributes=arguments);
+		loc.returnValue = $element(name="a", skip="text,confirm,route,controller,action,key,params,anchor,onlyPath,host,protocol,port", content=arguments.text, attributes=arguments);
 	</cfscript>
 	<cfreturn loc.returnValue>
 </cffunction>
@@ -58,10 +55,7 @@
 			arguments.onsubmit = $addToJavaScriptAttribute(name="onsubmit", content=loc.onsubmit, attributes=arguments);
 		}
 		loc.content = submitTag(value=arguments.text, image=arguments.image, disable=arguments.disable);
-		loc.skip = "disable,image,text,confirm,route,controller,key,params,anchor,onlyPath,host,protocol,port";
-		if (Len(arguments.route))
-			loc.skip = ListAppend(loc.skip, $routeVariables(argumentCollection=arguments)); // variables passed in as route arguments should not be added to the html element
-		loc.returnValue = $element(name="form", skip=loc.skip, content=loc.content, attributes=arguments);
+		loc.returnValue = $element(name="form", skip="disable,image,text,confirm,route,controller,key,params,anchor,onlyPath,host,protocol,port", content=loc.content, attributes=arguments);
 	</cfscript>
 	<cfreturn loc.returnValue>
 </cffunction>
@@ -126,7 +120,7 @@
 		arguments = $insertDefaults(name="paginationLinks", input=arguments);
 		loc.returnValue = ""; 
 		loc.skipArgs = "windowSize,alwaysShowAnchors,anchorDivider,linkToCurrentPage,prependToLink,appendToLink,classForCurrent,handle,name";
-		loc.linkToArguments = Duplicate(arguments);
+		loc.linkToArguments = StructCopy(arguments);
 		loc.iEnd = ListLen(loc.skipArgs);
 		for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
 		{
@@ -145,9 +139,11 @@
 				}
 				else
 				{
-					loc.linkToArguments.params = arguments.name & "=" & loc.pageNumber;
+					loc.toAdd = arguments.name & "=" & loc.pageNumber;
 					if (StructKeyExists(arguments, "params"))
-						loc.linkToArguments.params = loc.linkToArguments.params & "&" & arguments.params;
+						loc.linkToArguments.params = loc.linkToArguments.params & "&" & loc.toAdd;
+					else
+						loc.linkToArguments.params = loc.toAdd;
 				}
 				loc.linkToArguments.text = loc.pageNumber;
 				loc.returnValue = loc.returnValue & linkTo(argumentCollection=loc.linkToArguments) & arguments.anchorDivider;
@@ -163,9 +159,11 @@
 				}
 				else
 				{
-					loc.linkToArguments.params = arguments.name & "=" & loc.i;
+					loc.toAdd = arguments.name & "=" & loc.i;
 					if (StructKeyExists(arguments, "params"))
-						loc.linkToArguments.params = loc.linkToArguments.params & "&" & arguments.params;
+						loc.linkToArguments.params = loc.linkToArguments.params & "&" & loc.toAdd;
+					else
+						loc.linkToArguments.params = loc.toAdd;
 				}
 				loc.linkToArguments.text = loc.i;
 				if (Len(arguments.classForCurrent) && loc.currentPage == loc.i)
@@ -199,9 +197,11 @@
 				}
 				else
 				{
-					loc.linkToArguments.params = arguments.name & "=" & loc.totalPages;
+					loc.toAdd = arguments.name & "=" & loc.totalPages;
 					if (StructKeyExists(arguments, "params"))
-						loc.linkToArguments.params = loc.linkToArguments.params & "&" & arguments.params;
+						loc.linkToArguments.params = loc.linkToArguments.params & "&" & loc.toAdd;
+					else
+						loc.linkToArguments.params = loc.toAdd;
 				}
 				loc.linkToArguments.text = loc.totalPages;
 				loc.returnValue = loc.returnValue & arguments.anchorDivider & linkTo(argumentCollection=loc.linkToArguments);

@@ -1,52 +1,3 @@
-<cffunction name="$URLEncode" returntype="string" access="public" output="false">
-	<cfargument name="param" type="string" required="true">
-	<cfscript>
-		var returnValue = "";
-		returnValue = URLEncodedFormat(arguments.param);
-		returnValue = ReplaceList(returnValue, "%24,%2D,%5F,%2E,%2B,%21,%2A,%27,%28,%29", "$,-,_,.,+,!,*,',(,)"); // these characters are safe so set them back to their original values.
-	</cfscript>
-	<cfreturn returnValue>
-</cffunction>
-
-<cffunction name="$routeVariables" returntype="string" access="public" output="false">
-	<cfscript>
-		var loc = {};
-		loc.route = $findRoute(argumentCollection=arguments);
-		loc.returnValue = loc.route.variables;
-	</cfscript>
-	<cfreturn loc.returnValue>
-</cffunction>
-
-<cffunction name="$findRoute" returntype="struct" access="public" output="false">
-	<cfscript>
-		var loc = {};
-		loc.routePos = application.wheels.namedRoutePositions[arguments.route];
-		if (loc.routePos Contains ",")
-		{
-			// there are several routes with this name so we need to figure out which one to use by checking the passed in arguments
-			loc.iEnd = ListLen(loc.routePos);
-			for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
-			{
-				loc.returnValue = application.wheels.routes[ListGetAt(loc.routePos, loc.i)];
-				loc.foundRoute = true;
-				loc.jEnd = ListLen(loc.returnValue.variables);
-				for (loc.j=1; loc.j <= loc.jEnd; loc.j++)
-				{
-					if (!StructKeyExists(arguments, ListGetAt(loc.returnValue.variables, loc.j)))
-						loc.foundRoute = false;
-				}
-				if (loc.foundRoute)
-					break;
-			}
-		}
-		else
-		{
-			loc.returnValue = application.wheels.routes[loc.routePos];
-		}
-	</cfscript>
-	<cfreturn loc.returnValue>
-</cffunction>
-
 <cffunction name="$cachedModelClassExists" returntype="any" access="public" output="false">
 	<cfargument name="name" type="string" required="true">
 	<cfscript>
@@ -76,10 +27,10 @@
 			loc.delim = "&";
 			if (ArrayLen(loc.temp) == 2)
 			{
-				loc.param = $URLEncode(loc.temp[2]);
 				if (application.wheels.obfuscateUrls)
-					loc.param = obfuscateParam(loc.param);
-				loc.returnValue = loc.returnValue & loc.param;
+					loc.returnValue = loc.returnValue & obfuscateParam(URLEncodedFormat(loc.temp[2]));
+				else
+					loc.returnValue = loc.returnValue & URLEncodedFormat(loc.temp[2]);
 			}
 		}
 	</cfscript>

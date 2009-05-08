@@ -60,7 +60,29 @@
 		if (Len(arguments.route))
 		{
 			// link for a named route
-			loc.route = $findRoute(argumentCollection=arguments);
+			loc.routePos = application.wheels.namedRoutePositions[arguments.route];
+			if (loc.routePos Contains ",")
+			{
+				// there are several routes with this name so we need to figure out which one to use by checking the passed in arguments
+				loc.iEnd = ListLen(loc.routePos);
+				for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
+				{
+					loc.route = application.wheels.routes[ListGetAt(loc.routePos, loc.i)];
+					loc.foundRoute = true;
+					loc.jEnd = ListLen(loc.route.variables);
+					for (loc.j=1; loc.j <= loc.jEnd; loc.j++)
+					{
+						if (!StructKeyExists(arguments, ListGetAt(loc.route.variables, loc.j)))
+							loc.foundRoute = false;
+					}
+					if (loc.foundRoute)
+						break;
+				}
+			}
+			else
+			{
+				loc.route = application.wheels.routes[loc.routePos];
+			}
 			if (application.wheels.URLRewriting == "Off")
 			{
 				loc.returnValue = loc.returnValue & "?controller=" & REReplace(REReplace(loc.route.controller, "([A-Z])", "-\l\1", "all"), "^-", "", "one");
@@ -69,7 +91,7 @@
 				for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
 				{
 					loc.property = ListGetAt(loc.route.variables, loc.i);
-					loc.returnValue = loc.returnValue & "&" & loc.property & "=" & $URLEncode(arguments[loc.property]);
+					loc.returnValue = loc.returnValue & "&" & loc.property & "=" & URLEncodedFormat(arguments[loc.property]);
 				}		
 			}
 			else
@@ -79,7 +101,7 @@
 				{
 					loc.property = ListGetAt(loc.route.pattern, loc.i, "/");
 					if (loc.property Contains "[")
-						loc.returnValue = loc.returnValue & "/" & $URLEncode(arguments[Mid(loc.property, 2, Len(loc.property)-2)]); // get param from arguments
+						loc.returnValue = loc.returnValue & "/" & URLEncodedFormat(arguments[Mid(loc.property, 2, Len(loc.property)-2)]); // get param from arguments
 					else
 						loc.returnValue = loc.returnValue & "/" & loc.property; // add hard coded param from route
 				}		
@@ -96,10 +118,10 @@
 				loc.returnValue = loc.returnValue & "&action=" & REReplace(REReplace(arguments.action, "([A-Z])", "-\l\1", "all"), "^-", "", "one");
 			if (Len(arguments.key))
 			{
-				loc.param = $URLEncode(arguments.key);
 				if (application.wheels.obfuscateUrls)
-					loc.param = obfuscateParam(loc.param);
-				loc.returnValue = loc.returnValue & "&key=" & loc.param;
+					loc.returnValue = loc.returnValue & "&key=" & obfuscateParam(URLEncodedFormat(arguments.key));
+				else
+					loc.returnValue = loc.returnValue & "&key=" & URLEncodedFormat(arguments.key);
 			}
 		}
 
@@ -123,9 +145,9 @@
 		if (!arguments.onlyPath)
 		{
 			if (arguments.port != 0)
-				loc.returnValue = ":" & arguments.port & loc.returnValue; // use the port that was passed in by the developer
-			else if (cgi.server_port != 80 && cgi.server_port != 443)
-				loc.returnValue = ":" & cgi.server_port & loc.returnValue; // if the port currently in use is not 80 or 443 we set it explicitly in the URL
+				loc.returnValue = ":" & arguments.port & loc.returnValue;
+			else if (cgi.server_port != 80)
+				loc.returnValue = ":" & cgi.server_port & loc.returnValue;
 			if (Len(arguments.host))
 				loc.returnValue = arguments.host & loc.returnValue;
 			else
@@ -210,7 +232,7 @@
 		if (!Len(arguments.action) && arguments.pattern Does Not Contain "[action]")
 			$throw(type="Wheels.IncorrectArguments", message="The 'action' argument is not passed in or included in the pattern.", extendedInfo="Either pass in the 'action' argument to specifically tell Wheels which action to call or include it in the pattern to tell Wheels to determine it dynamically on each request based on the incoming URL.");
 		
-		loc.thisRoute = Duplicate(arguments);
+		loc.thisRoute = StructCopy(arguments);
 		loc.thisRoute.variables = "";
 		loc.iEnd = ListLen(arguments.pattern, "/");
 		for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
