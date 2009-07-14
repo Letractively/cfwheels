@@ -4,6 +4,10 @@
 --->
 <cfcomponent extends="Controller">
 
+	<cffunction name="congratulations">
+		<cfset version = application.wheels.version>
+	</cffunction>
+
 	<cffunction name="plugins">
 		<cfif get("environment") IS "production">
 			<cfset renderNothing()>
