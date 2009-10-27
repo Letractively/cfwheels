@@ -76,6 +76,7 @@
 
  * [Administration Administration]
  * [Authorization Authorization]
+ * [SocialNetworking Social Networking]<font color="red">`*`</font>
 
 ===The Wheels API===
 
