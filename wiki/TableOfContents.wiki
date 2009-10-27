@@ -70,7 +70,7 @@
 
  * [CodingGuidelines Coding Guidelines]
  * [DocumentationGuidelines Documentation Guidelines]
- * [RunningFrameworkUnitTests Testing Wheels Itself (not scheduled for 1.0)]
+ * [RunningFrameworkUnitTests Testing Wheels Itself`*`]
 
 ===Sample Applications===
 
@@ -87,3 +87,5 @@
  * [ModelClassFunctions Model Class Functions]
  * [ModelObjectFunctions Model Object Functions]
  * [ViewHelperFunctions View Helper Functions]
+
+`*` This chapter is not scheduled for the 1.0 release.
