@@ -63,14 +63,14 @@
  * [DirectoryStructure Directory Structure]
  * [SwitchingEnvironments Switching Environments]
  * [UsingandCreatingPlugins Using and Creating Plugins]
- * [CFMLandMVCBestPractices CFML and MVC Best Practices (not scheduled for 1.0)]
- * [TestingFramework Creating and Running Tests (not scheduled for 1.0)]
+ * [CFMLandMVCBestPractices CFML and MVC Best Practices]<font color="red">`*`</font>
+ * [TestingFramework Creating and Running Tests]<font color="red">`*`</font>
 
 ===Contributing to Wheels===
 
  * [CodingGuidelines Coding Guidelines]
  * [DocumentationGuidelines Documentation Guidelines]
- * [RunningFrameworkUnitTests Testing Wheels Itself`*`]
+ * [RunningFrameworkUnitTests Testing Wheels Itself]<font color="red">`*`</font>
 
 ===Sample Applications===
 
@@ -88,4 +88,4 @@
  * [ModelObjectFunctions Model Object Functions]
  * [ViewHelperFunctions View Helper Functions]
 
-`*` This chapter is not scheduled for the 1.0 release.
+<font color="red">`*`</font> Not scheduled for the 1.0 release.
