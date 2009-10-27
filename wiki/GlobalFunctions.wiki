@@ -1,5 +1,5 @@
 #summary Listing of all global functions.
-#labels chapter,0.9
+#labels chapter,1.0
 
 These functions are general purpose functions and can be called from anywhere.
 
@@ -11,8 +11,8 @@ These functions are general purpose functions and can be called from anywhere.
 
 ==Functions==
 
- * [addRoute addRoute()]
  * [deObfuscateParam deObfuscateParam()]
+ * [get get()]
  * [model model()]
  * [obfuscateParam obfuscateParam()]
  * [URLFor URLFor()]
