@@ -1,5 +1,5 @@
 #summary Listing of all configuration functions.
-#labels chapter,0.9.1
+#labels chapter,1.0
 
 These functions should be called from files in the `config` folder.
 
@@ -12,5 +12,4 @@ These functions should be called from files in the `config` folder.
 ==Functions==
 
  * [addRoute addRoute()]
- * [get get()]
  * [set set()]
