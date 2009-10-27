@@ -1,4 +1,4 @@
-#summary Complete documentation for Wheels 0.9.
+#summary Complete documentation for Wheels 1.0.
 #labels chapter,1.0
 
 <font size="1" color="red"><b>NOTE: This wiki contains "bleeding edge" documentation, which may reflect a future version of Wheels. Entries in the wiki may also be incomplete and unedited. Please visit <a href="http://cfwheels.org/docs">cfwheels.org/docs</a> for the "official" documentation.</b></font>
@@ -44,6 +44,7 @@
  * [DirtyRecords Dirty Records]
  * [SoftDelete Soft Delete]
  * [AutomaticTimeStamps Automatic Time Stamps]
+ * [UsingMultipleDataSources Using Multiple Data Sources]
 
 ===Displaying Views to Users===
 
