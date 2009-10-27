@@ -70,12 +70,6 @@
  * [CFMLandMVCBestPractices CFML and MVC Best Practices]
  * [TestingFramework Creating and Running Tests]
 
-===Advanced Topics===
-
- * [SkinnyControllerFatModel Skinny Controller, Fat Model]
- * [MultiObjectForms Multi Object Forms]
- * [OneFrameworkMultipleApps One Framework, Multiple Apps]
-
 ===Contributing to Wheels===
 
  * [CodingGuidelines Coding Guidelines]
