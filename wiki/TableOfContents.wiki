@@ -56,11 +56,6 @@
  * [MiscellaneousHelpers Miscellaneous Helpers]
  * [CreatingYourOwnViewHelpers Creating Your Own View Helpers]
 
-===Sample Applications===
-
- * [Administration Administration]
- * [Authorization Authorization]
-
 ===Working With Wheels===
 
  * [ConfigurationandDefaults Configuration and Defaults]
@@ -75,6 +70,11 @@
  * [CodingGuidelines Coding Guidelines]
  * [DocumentationGuidelines Documentation Guidelines]
  * [RunningFrameworkUnitTests Testing Wheels Itself]
+
+===Sample Applications===
+
+ * [Administration Administration]
+ * [Authorization Authorization]
 
 ===The Wheels API===
 
