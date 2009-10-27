@@ -63,14 +63,14 @@
  * [DirectoryStructure Directory Structure]
  * [SwitchingEnvironments Switching Environments]
  * [UsingandCreatingPlugins Using and Creating Plugins]
- * [CFMLandMVCBestPractices CFML and MVC Best Practices]
- * [TestingFramework Creating and Running Tests]
+ * [CFMLandMVCBestPractices CFML and MVC Best Practices (not scheduled for 1.0)]
+ * [TestingFramework Creating and Running Tests (not scheduled for 1.0)]
 
 ===Contributing to Wheels===
 
  * [CodingGuidelines Coding Guidelines]
  * [DocumentationGuidelines Documentation Guidelines]
- * [RunningFrameworkUnitTests Testing Wheels Itself]
+ * [RunningFrameworkUnitTests Testing Wheels Itself (not scheduled for 1.0)]
 
 ===Sample Applications===
 
