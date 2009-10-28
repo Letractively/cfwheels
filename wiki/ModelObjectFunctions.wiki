@@ -15,18 +15,29 @@ These methods operate on individual objects which means you first have to fetch 
 ==Functions==
 
 *Associations:*
- * [addXXX addXXX()]
- * [createXXX createXXX()]
- * [deleteAllXXX deleteAllXXX()]
- * [deleteXXX deleteXXX()]
- * [findOneXXX findOneXXX()]
- * [hasXXX hasXXX()]
- * [newXXX newXXX()]
- * [removeAllXXX removeAllXXX()]
- * [removeXXX removeXXX()]
- * [setXXX setXXX()]
- * [XXX XXX()]
- * [XXXCount XXXCount()]
+
+ * [updateByKey addXXX()] (`hasMany`)
+ * [create createXXX()] (`hasMany`)
+ * [deleteByKey deleteXXX()] (`hasMany`)
+ * [deleteAll deleteAllXXX()] (`hasMany`)
+ * [findOne findOneXXX()] (`hasMany`)
+ * [exists hasXXX()] (`hasMany`)
+ * [new newXXX()] (`hasMany`)
+ * [updateByKey removeXXX()] (`hasMany`)
+ * [updateAll removeAllXXX()] (`hasMany`)
+ * [findAll XXX()] (`hasMany`)
+ * [count XXXCount()] (`hasMany`)
+
+ * [create createXXX()] (`hasOne`)
+ * [deleteOne deleteXXX()] (`hasOne`)
+ * [exists hasXXX()] (`hasOne`)
+ * [new newXXX()] (`hasOne`)
+ * [updateOne removeXXX()] (`hasOne`)
+ * [updateByKey setXXX()] (`hasOne`)
+ * [findOne XXX()] (`hasOne`)
+
+ * [exists hasXXX()] (`belongsTo `)
+ * [findByKey XXX()] (`belongsTo`)
 
 *Changes:*
  * [allChanges allChanges()]
