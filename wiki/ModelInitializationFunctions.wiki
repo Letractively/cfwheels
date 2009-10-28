@@ -1,5 +1,5 @@
 #summary Listing of all model initialization methods.
-#labels chapter,0.9
+#labels chapter,1.0
 
 These methods are called from the `init` function of your model files.
 
@@ -39,16 +39,3 @@ These methods are called from the `init` function of your model files.
 *General:*
  * [property property()]
  * [table table()]
-
-*Validation:*
- * [validate validate()]
- * [validateOnCreate validateOnCreate()]
- * [validateOnUpdate validateOnUpdate()]
- * [validatesConfirmationOf validatesConfirmationOf()]
- * [validatesExclusionOf validatesExclusionOf()]
- * [validatesFormatOf validatesFormatOf()]
- * [validatesInclusionOf validatesInclusionOf()]
- * [validatesLengthOf validatesLengthOf()]
- * [validatesNumericalityOf validatesNumericalityOf()]
- * [validatesPresenceOf validatesPresenceOf()]
- * [validatesUniquenessOf validatesUniquenessOf()]
