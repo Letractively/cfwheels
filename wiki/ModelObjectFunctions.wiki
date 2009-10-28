@@ -14,30 +14,34 @@ These methods operate on individual objects which means you first have to fetch 
 
 ==Functions==
 
-*Associations:*
+*`hasMany` Association:*
 
- * [updateByKey addXXX()] (`hasMany`)
- * [create createXXX()] (`hasMany`)
- * [deleteByKey deleteXXX()] (`hasMany`)
- * [deleteAll deleteAllXXX()] (`hasMany`)
- * [findOne findOneXXX()] (`hasMany`)
- * [exists hasXXX()] (`hasMany`)
- * [new newXXX()] (`hasMany`)
- * [updateByKey removeXXX()] (`hasMany`)
- * [updateAll removeAllXXX()] (`hasMany`)
- * [findAll XXX()] (`hasMany`)
- * [count XXXCount()] (`hasMany`)
+ * [updateByKey addXXX()]
+ * [create createXXX()]
+ * [deleteByKey deleteXXX()]
+ * [deleteAll deleteAllXXX()]
+ * [findOne findOneXXX()]
+ * [exists hasXXX()]
+ * [new newXXX()]
+ * [updateByKey removeXXX()]
+ * [updateAll removeAllXXX()]
+ * [findAll XXX()]
+ * [count XXXCount()]
 
- * [create createXXX()] (`hasOne`)
- * [deleteOne deleteXXX()] (`hasOne`)
- * [exists hasXXX()] (`hasOne`)
- * [new newXXX()] (`hasOne`)
- * [updateOne removeXXX()] (`hasOne`)
- * [updateByKey setXXX()] (`hasOne`)
- * [findOne XXX()] (`hasOne`)
+*`hasOne` Association:*
 
- * [exists hasXXX()] (`belongsTo `)
- * [findByKey XXX()] (`belongsTo`)
+ * [create createXXX()]
+ * [deleteOne deleteXXX()]
+ * [exists hasXXX()]
+ * [new newXXX()]
+ * [updateOne removeXXX()]
+ * [updateByKey setXXX()]
+ * [findOne XXX()]
+
+*`belongsTo` Association:*
+
+ * [exists hasXXX()]
+ * [findByKey XXX()]
 
 *Changes:*
  * [allChanges allChanges()]
