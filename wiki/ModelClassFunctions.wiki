@@ -36,8 +36,12 @@ These methods operate on the class as a whole and not on individual objects and 
 
 *Read:*
  * [findAll findAll()]
+ * [findAll findAllByXXX()]
+ * [findAll findAllByXXXAndXXX()]
  * [findByKey findByKey()]
  * [findOne findOne()]
+ * [findOne findOneByXXX()]
+ * [findOne findOneByXXXAndXXX()]
 
 *Statistics:*
  * [average average()]
