@@ -14,7 +14,7 @@ These methods operate on individual objects which means you first have to fetch 
 
 ==Functions==
 
-*`hasMany` Association:*
+*Associations (`hasMany`):*
 
  * [updateByKey addXXX()]
  * [create createXXX()]
@@ -28,7 +28,7 @@ These methods operate on individual objects which means you first have to fetch 
  * [findAll XXX()]
  * [count XXXCount()]
 
-*`hasOne` Association:*
+*Associations (`hasOne`):*
 
  * [create createXXX()]
  * [deleteOne deleteXXX()]
@@ -38,7 +38,7 @@ These methods operate on individual objects which means you first have to fetch 
  * [updateByKey setXXX()]
  * [findOne XXX()]
 
-*`belongsTo` Association:*
+*Associations (`belongsTo`):*
 
  * [exists hasXXX()]
  * [findByKey XXX()]
