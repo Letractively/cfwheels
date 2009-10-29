@@ -1,5 +1,5 @@
 #summary Instructions for installing Wheels on your system.
-#labels chapter,0.9.4,published_prod
+#labels chapter,1.0,published_prod
 
 Installing Wheels is so simple that there is barely a need for a chapter devoted to it. But we figured we'd better make one anyway in case anyone is specifically looking for a chapter about installation.
 
@@ -24,11 +24,11 @@ In case you're not sure, here are the instructions for setting up an empty Wheel
  * Create a new folder under your web root (usually `C:\Inetpub\wwwroot`) named `mysite` and unzip the Wheels `.zip` file into the root of it.
  * Create a new website using IIS called `My Site` with `localhost` as the host header name and `C:\Inetpub\wwwroot\mysite` as the path to your home directory.
 
-If you want to run a Wheels powered application from a subfolder in an existing website, this is entirely possible, but you'll have to be a little creative with your URL rewrite rules if you want to get pretty URLs - it won't work out of the box. (Read more about this in the [URLRewriting URL Rewriting chapter].)
+If you want to run a Wheels powered application from a subfolder in an existing website, this is entirely possible, but you may have to get a little creative with your URL rewrite rules if you want to get pretty URLs - it will only work out of the box on recent versions of Apache. (Read more about this in the [URLRewriting URL Rewriting chapter].)
 
 ==3. Setup the Database (optional)==
 
-Create a new database in SQL Server, Oracle, or MySQL and add a new data source for it in the !ColdFusion/Railo Administrator, just as you'd normally do. Now open up `config/settings.cfm` and call `set(dataSourceName="")` with the name you chose for the data source. 
+Create a new database in MySQL, Oracle, PostgreSQL or Microsoft SQL Server and add a new data source for it in the !ColdFusion/Railo Administrator, just as you'd normally do. Now open up `config/settings.cfm` and call `set(dataSourceName="")` with the name you chose for the data source. 
 
 If you don't want to be bothered by opening up a Wheels configuration file at all, there is a nice convention you can follow for the naming. Just name your data source with the same name as the folder you are running your website from (`mysite` in the example above), and Wheels will use that when you haven't set the `dataSourceName` variable using the [set set()] function.
 
