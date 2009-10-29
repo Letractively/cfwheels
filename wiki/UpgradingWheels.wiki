@@ -19,7 +19,7 @@ The easiest way to upgrade is to setup an empty website, deploy a fresh copy of 
  * *1.0:* There is now a `web.config` file in the root.
  * *1.0:* There is now a `Wheels.cfc` file in the `models` folder.
  * *1.0:* The `Wheels.cfc` file in the `controllers` folder has been updated.
- * *1.0:* The `IsapiRewrite4.ini` and `.htaccess` files have both been updated.
+ * *1.0:* The `IsapiRewrite4.ini` and `.htaccess` files in the root have both been updated.
  * The `controller` folder has been changed to `controllers`.
  * The `model` folder has been changed to `models`.
  * The `view` folder has been changed to `views`.
