@@ -1,5 +1,5 @@
 #summary Simplify your views by breaking them down into partial page templates.
-#labels chapter,0.9.4,published_prod
+#labels chapter,1.0,published_prod
 
 Partials in Wheels act as a wrapper around the good old `<cfinclude>` tag. By calling [includePartial includePartial()] or [renderPartial renderPartial()], you can include other view files in a page, just like `<cfinclude>` would. But at the same time, partials make use of common Wheels features like layouts, caching, model objects, and so on.
 
