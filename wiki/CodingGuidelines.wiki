@@ -1,5 +1,5 @@
 #summary Here are the rules of the road for contributing code to the project. Let's follow this process so that we don't duplicate effort and so the code base is easy to maintain over the long haul.
-#labels chapter,0.9.4,published_prod
+#labels chapter,1.0,published_prod
 
 ==Subversion Repository==
 
@@ -51,7 +51,7 @@ Additionally, we recommend that any applications written using the Wheels framew
 
 ===Supported CFML Engines===
 
-All code for Wheels should be written for use with Adobe ColdFusion 8 and Railo 3.0.
+All code for Wheels should be written for use with Adobe ColdFusion 8 and Railo 3.1.
 
 ===Naming Conventions===
 
@@ -61,7 +61,7 @@ To stay true to our ColdFusion and Java roots, all names must be camelCase. In s
 || CFC Names || `MyCfc.cfc`, `BlogEntry.cfc` || CapitalizedCamelCase || 
 || Variable Names || `myVariable`, `storyId` || camelCase || 
 || UDF Names || `myFunction()` || camelCase ||
-|| Built-in CF Variables || `result.RecordCount`, `cfhttp.FileContent` || CapitalizedCamelCase ||
+|| Built-in CF Variables || `result.recordCount`, `cfhttp.fileContent` || camelCase ||
 || Built-in CF Functions || `IsNumeric()`, `Trim()` || CapitalizedCamelCase ||
 || Scopes || `application.myVariable`, `session.userId` || lowercase.camelCase ||
 || CGI Variables || `cgi.remote_addr`, `cgi.server_name` || cgi.lowercase_underscored_name ||
