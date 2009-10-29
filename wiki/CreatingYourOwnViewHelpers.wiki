@@ -1,5 +1,5 @@
 #summary Clean up your views by moving common functionality into helper functions.
-#labels chapter,0.9.4,published_prod
+#labels chapter,1.0,published_prod
 
 As you probably know already, Wheels gives you a lot of helper functions that you can use in your view pages.
 
