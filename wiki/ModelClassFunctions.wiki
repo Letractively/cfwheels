@@ -43,13 +43,6 @@ These methods operate on the class as a whole and not on individual objects and 
  * [findOne findOneByXXX()]
  * [findOne findOneByXXXAndXXX()]
 
-*Statistics:*
- * [average average()]
- * [count count()]
- * [maximum maximum()]
- * [minimum minimum()]
- * [sum sum()]
-
 *Update:*
  * [updateAll updateAll()]
  * [updateByKey updateByKey()]
