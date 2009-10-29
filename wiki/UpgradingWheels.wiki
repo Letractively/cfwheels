@@ -9,7 +9,7 @@ The easiest way to upgrade is to setup an empty website, deploy a fresh copy of 
 
  * *1.0:* URL rewriting with IIS 7 is now supported.
  * *1.0:* URL rewriting in a sub folder on Apache is now supported.
- * *0.9.4:* !ColdFusion 9 is now supported.
+ * !ColdFusion 9 is now supported.
  * Oracle 10g or later is now supported.
  * PostgreSQL is now supported.
  * Railo 3.1 is now supported.
