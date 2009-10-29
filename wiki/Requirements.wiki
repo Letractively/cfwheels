@@ -1,5 +1,5 @@
 #summary What you need to know and have installed before you start programming in Wheels.
-#labels chapter,0.9.4,published_prod
+#labels chapter,1.0,published_prod
 
 We can identify 3 different types of requirements that you should be aware of:
 
@@ -57,8 +57,7 @@ MVC is how Wheels structures your code for you. As you start working with Wheels
 
 Wheels requires that you use one of these CFML engines:
 
- * [http://www.adobe.com/products/coldfusion/ Adobe ColdFusion 8]
- * [http://labs.adobe.com/technologies/coldfusion9 Adobe ColdFusion 9]
+ * [http://www.adobe.com/products/coldfusion/ Adobe ColdFusion 8 or 9]
  * [http://www.getrailo.org/ Railo 3.1]
 
 Wheels makes heavy use of CFML's `onMissingMethod` event, which wasn't available until the release of CF 8.
@@ -69,7 +68,7 @@ Your setup with Wheels can then can be installed on *Windows*, *Mac OS X*, *UNIX
 
 ===Web Servers===
 
-You also need a web server. Wheels runs on all popular web servers including Apache, Microsoft IIS, Jetty, and the JRun web server that ships with [http://www.adobe.com/products/coldfusion/ Adobe ColdFusion]. Some web servers support URL rewriting out of the box, some support the `cgi.path_info` variable which is used to achieve partial rewriting, and some don't have support for either.
+You also need a web server. Wheels runs on all popular web servers including Apache, Microsoft IIS, Jetty, and the JRun web server that ships with Adobe ColdFusion. Some web servers support URL rewriting out of the box, some support the `cgi.path_info` variable which is used to achieve partial rewriting, and some don't have support for either.
 
 Don't worry though. Wheels will adapt to your setup and run just fine regardless, but the URLs that it creates might differ a bit. You can read more about this in the [URLRewriting URL Rewriting] chapter.
 
