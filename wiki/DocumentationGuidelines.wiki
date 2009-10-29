@@ -97,19 +97,20 @@ Note that you should use the `hint` attribute to clear up any ambiguities caused
 Here is an example of what the source code would look like for the [addRoute addRoute()] function declaration. Notice that clear indentation and proper choice of single quotes for the `examples` attribute.
 
 {{{
-<cffunction name="addRoute" returntype="void" access="public" output="false"
-    hint="Adds a new route to your application."
-    examples='
-        <cfset addRoute(name="userProfile", pattern="user/[username]", controller="user", action="profile")>'
+<cffunction name="addRoute" returntype="void" access="public" output="false" hint="Adds a new route to your application."
+    examples=
+    '
+        <cfset addRoute(name="userProfile", pattern="user/[username]", controller="user", action="profile")>
+    '
     categories="global" chapters="using-routes">
 }}}
 
 Here is another example for the `new()` function:
 
 {{{
-<cffunction name="new" returntype="any" access="public" output="false"
-    hint="Creates a new object based on supplied properties and returns it. The object is not saved to the database, it only exists in memory. Property names and values can be passed in either using named arguments or as a struct to the `properties` argument."
-    examples='
+<cffunction name="new" returntype="any" access="public" output="false" hint="Creates a new object based on supplied properties and returns it. The object is not saved to the database, it only exists in memory. Property names and values can be passed in either using named arguments or as a struct to the `properties` argument."
+    examples=
+    '
         <--- Blank model object --->
         <cfset newAuthor = model("author").new()>
         
@@ -117,7 +118,8 @@ Here is another example for the `new()` function:
         <cfset newAuthor = model("author").new(params.author)>
         
         <!--- Built with default values for firstName and lastName --->
-        <cfset newAuthor = model("author").new(firstName="John", lastName="Doe")>'
+        <cfset newAuthor = model("author").new(firstName="John", lastName="Doe")>
+    '
     categories="model-class" chapters="creating-records" functions="create">
 }}}
 
@@ -128,7 +130,7 @@ Use all standard CFML attributes to document what is expected of function argume
 One extra rule applies to argument documentation though. In some places of the source code, there are `hint`s that refer to other functions' versions of that argument. Take a look at the `defaults` argument of the `save()` function, for example:
 
 {{{
-<cfargument name="defaults" type="boolean" required="false" default="#application.wheels.functions.new.defaults#" hint="See documentation for @save">
+<cfargument name="defaults" type="boolean" required="false" default="#application.wheels.functions.new.defaults#" hint="See documentation for @save.">
 }}}
 
 In this case, the documentation in the website database will be copied from the `hint` attribute of the `save()` function's `defaults` argument. Prefix the associated function with the `@` character like in the example above.
