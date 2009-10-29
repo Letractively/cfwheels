@@ -1,5 +1,5 @@
 #summary Wheels utilizes validation setup within the model to enforce appropriate data constraints and persistence. Validation may be performed for saves, creates, and updates.
-#labels chapter,0.9.4,draft
+#labels chapter,1.0,draft
 
 ==Basic Setup==
 
