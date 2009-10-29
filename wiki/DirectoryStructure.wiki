@@ -1,5 +1,5 @@
 #summary Finding your way around a Wheels application.
-#labels chapter,0.9.4,published_prod
+#labels chapter,1.0,published_prod
 
 After downloading and unzipping Wheels, here's the directory structure that you will see (plus signs indicate folders):
 
@@ -21,6 +21,7 @@ After downloading and unzipping Wheels, here's the directory structure that you 
  * !IsapiRewrite4.ini
  * rewrite.cfm
  * root.cfm
+ * web.config
 
 ==Quick Summary==
 
@@ -42,7 +43,7 @@ Let's go through all of the files and directories now starting with the ones you
 
 ===`controllers`===
 
-This is where you create your controllers. You'll see one file in here already: `Controller.cfc`. You can place functions inside `Controller.cfc` to have that function shared between all the controllers you create. (This works because all your controllers will extend `Controller`.)
+This is where you create your controllers. You'll see two files in here already: `Controller.cfc` and `Wheels.cfc`. You can place functions inside `Controller.cfc` to have that function shared between all the controllers you create. (This works because all your controllers will extend `Controller`.) `Wheels.cfc` is an internal file used by Wheels.
 
 ===`models`===
 
@@ -98,7 +99,11 @@ This file is used by Apache, and you specifically need it for URL rewriting to w
 
 ===`IsapiRewrite4.ini`===
 
-If you use IIS and want to use URL rewriting, you'll need this file. Otherwise, you can safely delete it.
+If you use IIS 6 and want to use URL rewriting, you'll need this file. Otherwise, you can safely delete it.
+
+===`web.config`===
+
+Same as above but used for version 7 of IIS.
 
 ===`Application.cfc`, `index.cfm`, `rewrite.cfm` and `root.cfm`===
 
