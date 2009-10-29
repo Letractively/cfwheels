@@ -1,5 +1,5 @@
 #summary Where to place your view files and what to put in them.
-#labels chapter,0.9.4,published_prod
+#labels chapter,1.0,published_prod
 
 We've talked previously about how the controller is responsible for deciding which view files to render to the user. Read the [RenderingContent Rendering Content] chapter if you need to refresh your memory about that topic.
 
