@@ -1,5 +1,5 @@
 #summary Making URLs prettier using URL rewriting.
-#labels chapter,0.9.5,draft
+#labels chapter,1.0,draft
 
 URL rewriting is a completely optional feature of Wheels, and all it does is get rid of the `index.cfm` part of the URL.
 
@@ -17,11 +17,11 @@ http://localhost/blog/new
 
 Combine this with the routing functionality of Wheels, and you get the capablility of creating some really human-friendly (easier to remember, say over the phone, etc.) and search engine friendly (easier to crawl, higher !PageRank, etc.) URLs.
 
-Wheels will try and determine if your web server is capable of rewriting URLs and turn it on for you automatically. Depending on what web server you have and what folder you run Wheels from you sometimes need to tweak things a little though. Follow the instructions below for details on how to set up your web server and customize the rewrite rules when necessary.
+Once you have uncommented the rewrite rules (found in either `.htaccess`, `web.config` or `IsapiRewrite4.ini`) Wheels will try and determine if your web server is capable of rewriting URLs and turn it on for you automatically. Depending on what web server you have and what folder you run Wheels from you sometimes need to tweak things a little though. Follow the instructions below for details on how to set up your web server and customize the rewrite rules when necessary.
 
 ==Instructions for Apache==
 
-On most Apache setups you don't have to do anything at all to get URL rewriting to work. Apache will pick up and use the rewrite rules specified in the `.htaccess` file automatically on server start-up.
+On most Apache setups you don't have to do anything at all to get URL rewriting to work. Just uncomment the rewrite rules in the `.htaccess` file and Apache will pick up and use them automatically on server start-up.
 
 There are some exceptions though...
 
@@ -36,7 +36,7 @@ If you have an older version of Apache and you're trying to run your Wheels site
 
 ==Instructions for IIS 7==
 
-Similar to Apache, IIS 7 will pick up the rewrite rules from a file located in the Wheels installation. In the case of IIS 7 the rules are picked up from the `web.config` file. This requires that the "URL Rewrite Module" is installed though. It's a free IIS extension from Microsoft that you can download for free from [http://www.iis.net/extensions/URLRewrite].
+Similar to Apache, IIS 7 will pick up the rewrite rules from a file located in the Wheels installation. In the case of IIS 7 the rules are picked up from the `web.config` file (don't forget to uncomment the XML block containing the rewrite rules in that file first). This requires that the "URL Rewrite Module" is installed though. It's a free IIS extension from Microsoft that you can download for free from [http://www.iis.net/extensions/URLRewrite].
 
 ==Instructions for IIS 6==
 
@@ -46,6 +46,7 @@ Unfortunately, there is no built-in URL rewriting mechanism in IIS 6, so getting
  # Unzip the file, get the `IsapiRewrite4.dll` file from the `lib` folder and put it in the root of your website. (It needs to be in the same folder as the `IsapiRewrite4.ini` file.)
  # To enable the rewrite filter in IIS 6, click on `Properties` for your website, then go to the `ISAPI Filters` tab and click the `Add...` button.
  # Type in anything you want as the `Filter Name` and point the `Executable` to the `IsapiRewrite4.dll` file.
+ # Uncomment the rewrite rules in the `IsapiRewrite4.ini` file.
 
 ==Deleting unnecessary files==
 
