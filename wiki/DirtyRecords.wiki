@@ -1,5 +1,5 @@
 #summary How to track changes to objects in your application.
-#labels chapter,0.9.4,published_prod
+#labels chapter,1.0,published_prod
 
 Wheels provides some very useful methods for tracking changes to objects. You might think, _Why do I need that?  Won't I just know that I changed the object myself?_
 
@@ -41,9 +41,9 @@ Well, let's make a change then. If we didn't, this chapter wouldn't be all that 
 
 Now `result` will be `true` because what is stored in `post.title` differs from what is stored in the `title` column for this record in the `posts` table (well, unless the title was "A New Post Title" even before the change, in which case the result would still be `false`).
 
-When calling [hasChanged hasChanged()] with no arguments, Wheels will check *all* properties on the object and return `true` if any of them have changed. If you want to see if a specific property has changed, you can pass in `property="title"` to it or use the dynamic method [XXXHasChanged XXXHasChanged()]. Replace `XXX` with the name of the property. In our case, the method would then be named `titleHasChanged()`.
+When calling [hasChanged hasChanged()] with no arguments, Wheels will check *all* properties on the object and return `true` if any of them have changed. If you want to see if a specific property has changed, you can pass in `property="title"` to it or use the dynamic method [hasChanged XXXHasChanged()]. Replace `XXX` with the name of the property. In our case, the method would then be named `titleHasChanged()`.
 
-If you want to see what a value was before a change was made, you can do so by calling [changedFrom changedFrom()] and passing in the name of a property. This can also be done with the dynamic [XXXChangedFrom XXXChangedFrom()] method.
+If you want to see what a value was before a change was made, you can do so by calling [changedFrom changedFrom()] and passing in the name of a property. This can also be done with the dynamic [changedFrom XXXChangedFrom()] method.
 
 When an object is in a changed state, there are a couple of methods you can use to report back on these changes. [changedProperties changedProperties()] will give you a list of the property names that have been changed. [allChanges allChanges()] returns a struct containing all the changes (both the property names and the changed values themselves).
 
