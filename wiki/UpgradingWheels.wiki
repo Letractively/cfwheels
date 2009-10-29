@@ -38,7 +38,7 @@ The easiest way to upgrade is to setup an empty website, deploy a fresh copy of 
 
 ===Model Code===
 
- * *1.0:* The extends attribute in `models/Model.cfc` should now be `wheels`.
+ * *1.0:* The extends attribute in `models/Model.cfc` should now be `Wheels`.
  * `findById()` is now called `findByKey()`. Additionally, its `id` argument is now named `key` instead. For composite keys, this argument will accept a comma-delimited list.
  * When using a model's `findByKey()` or `findOne()` functions, the `found` property is no longer available. Instead, the functions return `false` if the record was not found.
  * A model's `errorsOn()` function now always returns an array, even if there are no errors on the field. When there are errors for the field, the array elements will contain a `struct` with `name`, `fieldName`, and `message` elements.
@@ -58,7 +58,7 @@ The easiest way to upgrade is to setup an empty website, deploy a fresh copy of 
 
 ===Controller Code===
 
- * *1.0:* The extends attribute in `controllers/Controller.cfc` should now be `wheels`.
+ * *1.0:* The extends attribute in `controllers/Controller.cfc` should now be `Wheels`.
  * Multiple-word controllers and actions are now word-delimited by hyphens in the URL. For example, if your controller is called `SiteAdmin` and the action is called `editLayout`, the URL to access that action would be `http://www.domain.com/site-admin/edit-layout`.
 
 ===URL/Routing===
