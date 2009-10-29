@@ -15,7 +15,7 @@ These methods are called from the `init` function of your model files.
 
 ==Functions==
 
-<font color="red">THE REST OF THE CONTENT ON THIS PAGE WILL BE GENERATED FROM THE SOURCE CODE</font>
+<font color="red">*THE REST OF THE CONTENT ON THIS PAGE WILL BE GENERATED FROM THE SOURCE CODE*</font>
 
 *Callbacks:*
  * [afterCreate afterCreate()]
