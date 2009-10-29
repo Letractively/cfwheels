@@ -1,5 +1,5 @@
 #summary Wheels does some magic to help you link to other actions within your app. Read on to learn why you'll rarely use an `<a>` tag for linking to application actions ever again.
-#labels chapter,0.9.4,published_prod
+#labels chapter,1.0,published_prod
 
 ==`linkTo`, the Function for Linking to Other Pages==
 
@@ -70,7 +70,7 @@ But Wheels will still correctly build the link markup:
 
 ===Linking in a Subfolder Deployment of Wheels===
 
-The same would be true if you had Wheels installed in a subfolder, thus eliminating your ability to use URL rewriting (well, without doing some rewrite rule trickery anyway). The same [linkTo linkTo()] code above would generate this HTML if you had Wheels installed in a subfolder called `foo`:
+The same would be true if you had Wheels installed in a subfolder, thus perhaps eliminating your ability to use URL rewriting (depending on what web server you have). The same [linkTo linkTo()] code above would generate this HTML if you had Wheels installed in a subfolder called `foo`:
 
 {{{
 <a href="/foo/index.cfm?controller=company&amp;action=contact&amp;key=3">This link still works</a>
