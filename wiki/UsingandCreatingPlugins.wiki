@@ -1,5 +1,5 @@
 #summary Extend Wheels functionality by using plugins or creating your own.
-#labels chapter,0.9.4,published_prod
+#labels chapter,1.0,published_prod
 
 Wheels is a fairly lightweight framework, and we like to keep it that way. We won't be adding thousands of various features to Wheels just because a couple of developers find them "cool." ;)
 
@@ -27,13 +27,13 @@ If you install a plugin that depends on another plugin you will get a warning me
 
 ==Available Plugins==
 
-To view all official plugins that are available for Wheels you can use the `PluginManager`. It is a plugin itself and can be downloaded from the [http://code.google.com/p/cfwheels/ Google Code site].
+To view all official plugins that are available for Wheels you can go to the "Plugins Directory" on our website. You'll find it at this URL: http://cfwheels.org/plugins. While there you can also download the `PluginManager` and use that instead. It lets you browse and install plugins directly from inside Wheels itself. It's quite handy!
 
 ==Creating Your Own Plugins==
 
 To create a plugin named `MyPlugin`, you will need to create a `MyPlugin.cfc` and an `index.cfm` file. Then zip these together as `MyPlugin.cfc-x.x.zip`, where `x.x` is the version number of your plugin.
 
-The only other requirement to make a plugin work is that `MyPlugin.cfc` must contain a method named `init`. This method must set a variable called `this.version`, specifying the Wheels version the plugin is meant to be used on, and then return itself.
+The only other requirement to make a plugin work is that `MyPlugin.cfc` must contain a method named `init`. This method must set a variable called `this.version`, specifying the Wheels version (or several Wheels version numbers in a list) the plugin is meant to be used on, and then return itself.
 
 Here's an example:
 
@@ -41,7 +41,7 @@ Here's an example:
 <cfcomponent output="false">
 
     <cffunction name="init">
-        <cfset this.version = "0.9">
+        <cfset this.version = "1.0,1.1">
         <cfreturn this>
     </cffunction>
 
@@ -82,7 +82,7 @@ By default, the functions in your plugins will be injected into all Wheels objec
 
 The `mixin` attribute can be set either on the `cfcomponent` tag or on the individual `cffunction` tags.
 
-The following values can be used for the `mixin` attribute: `global`, `none`, `controller`, `model`, `dispatch`, `microsoftsqlserver`, `mysql`, `oracle`, `postgresql`.
+The following values can be used for the `mixin` attribute: `application`, `global`, `none`, `controller`, `model`, `dispatch`, `microsoftsqlserver`, `mysql`, `oracle`, `postgresql`.
 
 Another useful attribute is the `environment` attribute. Using this, you can tell Wheels that a plugin should only inject its functions in certain environment modes. Here's an example of that, taken from the `Scaffold` plugin, which doesn't need to inject any functions to Wheels at all.
 
