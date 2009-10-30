@@ -1,5 +1,5 @@
 #summary A quick tutorial that demonstrates how quickly you can get database connectivity up and running with Wheels.
-#labels chapter,published_prod,0.9.4
+#labels chapter,1.0,published_prod
 
 Wheels's built in model provides your application with some simple and powerful functionality for interacting with databases. To get started, you make some simple configurations, call some functions within your controllers, and that's it. Best yet, you will rarely ever need to write SQL code to get those redundant CRUD tasks out of the way.
 
@@ -321,15 +321,3 @@ We simply load the user using the model's [findByKey findByKey()] method and the
 ==Database Says Hello==
 
 We've shown you quite a few of the basics in getting a simple user database up and running. We hope that this has whet your appetite to see some of the power packed into the !ColdFusion on Wheels framework. There's plenty more.
-
-Be sure to read on to some of the related chapters listed below to learn more about working with Wheels's ORM.
-
-==Related Chapters==
- * [HelloWorld Hello World!]
- * [ObjectRelationalMapping Object Relational Mapping]
- * [CreatingRecords Creating Records]
- * [ReadingRecords Reading Records]
- * [UpdatingRecords Updating Records]
- * [DeletingRecords Deleting Records]
- * [RedirectingUsers Redirecting Users]
- * [UsingtheFlash Using the Flash]
