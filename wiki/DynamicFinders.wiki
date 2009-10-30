@@ -45,7 +45,7 @@ The below code, for example, is perfectly valid:
 <cfset users = model("user").findAllByState(value="NY", order="name", page=3)>
 }}}
 
-When passing in multiple arguments like above, it is a good idea to start naming them instead of relying on the order of the arguments. When doing so, you need to name the argument `value` or `values` (preferably using `values` when calling an "And" type dynamic finder).
+When passing in multiple arguments like above, it is a good idea to start naming them instead of relying on the order of the arguments. When doing so, you need to name the argument `value` or `values` (use `values` when calling an "And" type dynamic finder).
 
 ==Avoid the Word "And" in Database Column Names==
 
