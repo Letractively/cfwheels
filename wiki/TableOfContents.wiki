@@ -75,7 +75,7 @@
 ===Sample Applications===
 
  * [Administration Administration]
- * [Authorization Authorization]
+ * [Authorization Authorization]<font color="red">`*`</font>
  * [SocialNetworking Social Networking]<font color="red">`*`</font>
 
 ===The Wheels API===
