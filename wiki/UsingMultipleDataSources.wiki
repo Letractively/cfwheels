@@ -5,24 +5,48 @@ _*Note:* This wiki contains "bleeding edge" documentation, which may reflect a f
 
 Sometimes you need to pull data from more than one database, whether it's by choice (for performance or security reasons, perhaps) or it's just because that's the way your infrastructure is set up.
 
-Wheels has built-in functionality for this so that you don't have to revert back to writing the queries and setting the data source manually whenever you need to use a data source other than the default one.
+Wheels has built-in functionality for this so that you don't have to revert back to writing the queries and setting the data source manually whenever you need to use a data source other than the default one. In order accomplish this, you will use the `datasource()` method.
 
-==Configuring the Data Sources==
+By calling the `datasource()` method from within your model's `init()` method it instructs wheels to use that datasource whenever it interacts with that model.
 
-If you need to use more than one database, there are 2 ways to accomplish this in Wheels. You can either set it globally by using the `config/database.cfm` file, or you can specify it on a per model basis by using the following functions in the `init` function in your model file:
+{{{
+<cfcomponent extends="Model">
 
- * [setDataSource setDataSource()]
- * [setCreateDataSource setCreateDataSource()]
- * [setReadDataSource setReadDataSource()]
- * [setUpdateDataSource setUpdateDataSource()]
- * [setDeleteDataSource setDeleteDataSource()]
+    <cffunction name="init">
+        <cfset datasource("mySecondDatabase")>
+    </cffunction>
 
-As you have probably figured out by reading the functions' names, you can have Wheels use one data source for all SQL operations by using the [setDataSource setDataSource()] function.
+</cfcomponent>
+}}}
 
-Or you can have it read from one database and write to another, for example by using the [setDataSource setDataSource()] function to specify what data source to use when reading and by using the remaining 3--[setCreateDataSource setCreateDataSource()], [setUpdateDataSource setUpdateDataSource()], [setDeleteDataSource setDeleteDataSource()]--to specify what data source to use when writing.
+It's important to note that in order for Wheels to use the datasource, it must *FIRST* be configured in your respected CFML engine.
 
-==Minor Caveat: Create Data Source Also Reads After `INSERT`==
+The only caveat to use multiple datasources with Wheels is that its currently unable to work with associations. If including another model within a query, Wheels will use the calling models datasource for the context of the query.
 
-What data source Wheels will use internally for each operation is not solely decided by whether it's a `SELECT`, `INSERT`, `UPDATE` or `DELETE` statement though. Instead, it's decided by the current context of the operation.
+PhotoGallery.cfc
+{{{
+<cfcomponent extends="Model">
 
-For example, if you insert a new record to a table using one data source, Wheels will use that same data source when getting back the primary key of the record you just inserted. Keep this in mind when setting access permissions on your tables.
+    <cffunction name="init">
+        <cfset datasource("myFirstDatabase")>
+    </cffunction>
+
+</cfcomponent>
+}}}
+
+Photo.cfc
+{{{
+<cfcomponent extends="Model">
+
+    <cffunction name="init">
+        <cfset datasource("mySecondDatabase")>
+    </cffunction>
+
+</cfcomponent>
+}}}
+
+In the following example since the Photo model is the main model being used, its datasource will become the context of the built query.
+
+{{{
+<cfset myphotos = model("photos").findAll(include="photogalleries")>
+}}}
