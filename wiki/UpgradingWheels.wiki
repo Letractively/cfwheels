@@ -34,6 +34,7 @@ The easiest way to upgrade is to setup an empty website, deploy a fresh copy of 
 
 ===Config Code===
 
+ * *1.0:* The `action` of the default route (`home`) has changed to `wheels`.
  * The way configuration settings are done has changed quite a bit. To change a Wheels application setting, use the new `set()` function with the name of the Wheels property to change. (For example, `<cfset set(dataSourceName="mydatasource")>`.) To see a list of available Wheels settings, refer to the [ConfigurationandDefaults Configuration and Defaults] chapter.
 
 ===Model Code===
