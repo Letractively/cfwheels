@@ -23,4 +23,4 @@ Once that's all done just download, unzip and run the app (it comes
 with !ColdFusion on Wheels 1.0 included).
 
 ==Download==
-[http://cfwheels.googlecode.com/files/administration.0.9.4.zip Click here to download.]
+[http://cfwheels.googlecode.com/files/administration.1.0.zip Click here to download.]
