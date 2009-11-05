@@ -50,8 +50,4 @@ These functions can be called from the views to create output for use in a HTML 
  * [timeSelectTags timeSelectTags()]
  * [yearSelectTag yearSelectTag()]
 
-*Miscellaneous:*
- * [cycle cycle()]
- * [resetCycle resetCycle()]
-
 <font color="red">*THE REST OF THE CONTENT ON THIS PAGE WILL BE GENERATED FROM THE SOURCE CODE*</font>
