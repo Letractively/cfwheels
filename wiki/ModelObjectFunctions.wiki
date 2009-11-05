@@ -44,10 +44,6 @@ These methods operate on individual objects which means you first have to fetch 
  * [findByKey XXX()]
 
 *Changes:*
- * [allChanges allChanges()]
- * [changedFrom changedFrom()]
- * [changedProperties changedProperties()]
- * [hasChanged hasChanged()]
  * [hasChanged XXXHasChanged()]
  * [changedFrom XXXChangedFrom()]
 
