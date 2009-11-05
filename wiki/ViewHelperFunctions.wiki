@@ -1,5 +1,5 @@
 #summary Listing of all view helper functions.
-#labels chapter,0.9.1
+#labels chapter,1.0
 
 These functions can be called from the views to create output for use in a HTML page.
 
@@ -14,19 +14,6 @@ These functions can be called from the views to create output for use in a HTML 
 }}}
 
 ==Functions==
-
-*Content:*
- * [contentForLayout contentForLayout()]
- * [includePartial includePartial()]
-
-*Dates:*
- * [distanceOfTimeInWords distanceOfTimeInWords()]
- * [timeAgoInWords timeAgoInWords()]
- * [timeUntilInWords timeUntilInWords()]
-
-*Errors:*
- * [errorMessageOn errorMessageOn()]
- * [errorMessagesFor errorMessagesFor()]
 
 *Forms (object properties):*
  * [checkBox checkBox()]
@@ -91,3 +78,5 @@ These functions can be called from the views to create output for use in a HTML 
  * [stripTags stripTags()]
  * [titleize titleize()]
  * [truncate truncate()]
+
+<font color="red">*THE REST OF THE CONTENT ON THIS PAGE WILL BE GENERATED FROM THE SOURCE CODE*</font>
