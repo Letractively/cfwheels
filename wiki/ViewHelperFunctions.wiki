@@ -50,18 +50,6 @@ These functions can be called from the views to create output for use in a HTML 
  * [timeSelectTags timeSelectTags()]
  * [yearSelectTag yearSelectTag()]
 
-*Links:*
- * [autoLink autoLink()]
- * [buttonTo buttonTo()]
- * [linkTo linkTo()]
- * [mailTo mailTo()]
- * [paginationLinks paginationLinks()]
-
-*Media:*
- * [imageTag imageTag()]
- * [javaScriptIncludeTag javaScriptIncludeTag()]
- * [styleSheetLinkTag styleSheetLinkTag()]
-
 *Miscellaneous:*
  * [cycle cycle()]
  * [resetCycle resetCycle()]
