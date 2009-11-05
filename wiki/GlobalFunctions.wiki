@@ -11,8 +11,4 @@ These functions are general purpose functions and can be called from anywhere.
 
 ==Functions==
 
- * [deObfuscateParam deObfuscateParam()]
- * [get get()]
- * [model model()]
- * [obfuscateParam obfuscateParam()]
- * [URLFor URLFor()]
+<font color="red">*THE REST OF THE CONTENT ON THIS PAGE WILL BE GENERATED FROM THE SOURCE CODE*</font>
