@@ -16,23 +16,3 @@ These methods are called from the `init` function of your model files.
 ==Functions==
 
 <font color="red">*THE REST OF THE CONTENT ON THIS PAGE WILL BE GENERATED FROM THE SOURCE CODE*</font>
-
-*Callbacks:*
- * [afterCreate afterCreate()]
- * [afterDelete afterDelete()]
- * [afterSave afterSave()]
- * [afterUpdate afterUpdate()] 
- * [afterValidation afterValidation()]
- * [afterValidationOnCreate afterValidationOnCreate()]
- * [afterValidationOnUpdate afterValidationOnUpdate()]
- * [beforeCreate beforeCreate()]
- * [beforeDelete beforeDelete()]
- * [beforeSave beforeSave()]
- * [beforeUpdate beforeUpdate()]
- * [beforeValidation beforeValidation()]
- * [beforeValidationOnCreate beforeValidationOnCreate()]
- * [beforeValidationOnUpdate beforeValidationOnUpdate()]
-
-*General:*
- * [property property()]
- * [table table()]
