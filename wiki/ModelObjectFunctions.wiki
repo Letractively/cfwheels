@@ -47,23 +47,4 @@ These methods operate on individual objects which means you first have to fetch 
  * [hasChanged XXXHasChanged()]
  * [changedFrom XXXChangedFrom()]
 
-*CRUD:*
- * [delete delete()]
- * [save save()]
- * [update update()]
-
-*Errors:*
- * [addError addError()]
- * [addErrorToBase addErrorToBase()]
- * [allErrors allErrors()]
- * [clearErrors clearErrors()]
- * [errorCount errorCount()]
- * [errorsOn errorsOn()]
- * [errorsOnBase errorsOnBase()]
- * [hasErrors hasErrors()]
- * [valid valid()]
-
-*Miscellaneous:*
- * [isNew isNew()]
- * [key key()]
- * [reload reload()]
+<font color="red">*THE REST OF THE CONTENT ON THIS PAGE WILL BE GENERATED FROM THE SOURCE CODE*</font>
