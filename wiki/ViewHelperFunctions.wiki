@@ -54,17 +54,4 @@ These functions can be called from the views to create output for use in a HTML 
  * [cycle cycle()]
  * [resetCycle resetCycle()]
 
-*Text:*
- * [capitalize capitalize()]
- * [excerpt excerpt()]
- * [highlight highlight()]
- * [humanize humanize()]
- * [pluralize pluralize()]
- * [simpleFormat simpleFormat()]
- * [singularize singularize()]
- * [stripLinks stripLinks()]
- * [stripTags stripTags()]
- * [titleize titleize()]
- * [truncate truncate()]
-
 <font color="red">*THE REST OF THE CONTENT ON THIS PAGE WILL BE GENERATED FROM THE SOURCE CODE*</font>
