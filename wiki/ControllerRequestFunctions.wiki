@@ -1,5 +1,5 @@
 #summary Listing of all controller request functions.
-#labels chapter,0.9
+#labels chapter,1.0
 
 These functions are called from actions in your controller files.
 
@@ -15,15 +15,6 @@ These functions are called from actions in your controller files.
 
 ==Functions==
 
-*Flash:*
- * [flash flash()]
- * [flashClear flashClear()]
- * [flashCount flashCount()]
- * [flashDelete flashDelete()]
- * [flashInsert flashInsert()]
- * [flashIsEmpty flashIsEmpty()]
- * [flashKeyExists flashKeyExists()]
-
 *Miscellaneous:*
  * [isAjax isAjax()]
  * [isGet isGet()]
@@ -32,9 +23,4 @@ These functions are called from actions in your controller files.
  * [sendEmail sendEmail()]
 
 *Rendering:*
- * [renderNothing renderNothing()]
- * [renderPage renderPage()]
- * [renderPageToString renderPageToString()]
- * [renderPartial renderPartial()]
- * [renderText renderText()]
  * [sendFile sendFile()]
