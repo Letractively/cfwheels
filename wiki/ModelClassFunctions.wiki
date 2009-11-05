@@ -20,9 +20,9 @@ These methods operate on the class as a whole and not on individual objects and 
 ==Functions==
 
 *Read:*
-* [findAll findAllByXXX()]
-* [findAll findAllByXXXAndXXX()]
-* [findOne findOneByXXX()]
-* [findOne findOneByXXXAndXXX()]
+ * [findAll findAllByXXX()]
+ * [findAll findAllByXXXAndXXX()]
+ * [findOne findOneByXXX()]
+ * [findOne findOneByXXXAndXXX()]
 
 <font color="red">*THE REST OF THE CONTENT ON THIS PAGE WILL BE GENERATED FROM THE SOURCE CODE*</font>
