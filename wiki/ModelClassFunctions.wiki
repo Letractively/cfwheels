@@ -19,31 +19,4 @@ These methods operate on the class as a whole and not on individual objects and 
 
 ==Functions==
 
-*Create:*
- * [create create()]
- * [new new()]
-
-*Delete:*
- * [deleteAll deleteAll()]
- * [deleteByKey deleteByKey()]
- * [deleteOne deleteOne()]
-
-*Miscellaneous:*
- * [columnNames columnNames()]
- * [exists exists()]
- * [primaryKey primaryKey()]
- * [propertyNames propertyNames()]
-
-*Read:*
- * [findAll findAll()]
- * [findAll findAllByXXX()]
- * [findAll findAllByXXXAndXXX()]
- * [findByKey findByKey()]
- * [findOne findOne()]
- * [findOne findOneByXXX()]
- * [findOne findOneByXXXAndXXX()]
-
-*Update:*
- * [updateAll updateAll()]
- * [updateByKey updateByKey()]
- * [updateOne updateOne()]
+<font color="red">*THE REST OF THE CONTENT ON THIS PAGE WILL BE GENERATED FROM THE SOURCE CODE*</font>
