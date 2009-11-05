@@ -15,12 +15,4 @@ These functions are called from actions in your controller files.
 
 ==Functions==
 
-*Miscellaneous:*
- * [isAjax isAjax()]
- * [isGet isGet()]
- * [isPost isPost()]
- * [redirectTo redirectTo()]
- * [sendEmail sendEmail()]
-
-*Rendering:*
- * [sendFile sendFile()]
+<font color="red">*THE REST OF THE CONTENT ON THIS PAGE WILL BE GENERATED FROM THE SOURCE CODE*</font>
