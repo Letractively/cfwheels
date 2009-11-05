@@ -11,5 +11,4 @@ These functions should be called from files in the `config` folder.
 
 ==Functions==
 
- * [addRoute addRoute()]
- * [set set()]
+<font color="red">*THE REST OF THE CONTENT ON THIS PAGE WILL BE GENERATED FROM THE SOURCE CODE*</font>
