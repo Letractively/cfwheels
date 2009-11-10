@@ -129,12 +129,29 @@ Here is a current list of categories and subcategories that can be used in the `
 
  * `configuration`
  * `global`
+   * `miscellaneous`
+   * `string`
  * `controller-initialization`
  * `controller-request`
+   * `miscellaneous`
  * `model-initialization`
+   * `associations`
+   * `callbacks`
+   * `validation`
  * `model-class`
+   * `read`
+   * `statistics`
+   * `update`
  * `model-object`
+   * `error`
+   * `miscellaneous`
  * `view-helper`
+   * `content`
+   * `error`
+   * `link`
+   * `forms-object`
+   * `forms-plain`
+   * `text`
 
 ====Argument Documentation====
 
