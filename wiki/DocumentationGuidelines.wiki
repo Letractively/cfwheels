@@ -146,12 +146,17 @@ Here is a current list of categories and subcategories that can be used in the `
    * `error`
    * `miscellaneous`
  * `view-helper`
-   * `content`
-   * `error`
-   * `link`
+   * `assets`
+   * `dates`
+   * `errors`
+   * `forms-general`
    * `forms-object`
    * `forms-plain`
+   * `links`
+   * `miscellaneous`
+   * `sanitize`
    * `text`
+   * `urls`
 
 ====Argument Documentation====
 
