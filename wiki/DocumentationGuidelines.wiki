@@ -133,17 +133,25 @@ Here is a current list of categories and subcategories that can be used in the `
    * `string`
  * `controller-initialization`
  * `controller-request`
+   * `flash`
    * `miscellaneous`
+   * `rendering`
  * `model-initialization`
    * `associations`
    * `callbacks`
-   * `validation`
+   * `miscellaneous`
+   * `validations`
  * `model-class`
+   * `create`
+   * `delete`
+   * `miscellaneous`
    * `read`
    * `statistics`
    * `update`
  * `model-object`
-   * `error`
+   * `changes`
+   * `crud`
+   * `errors`
    * `miscellaneous`
  * `view-helper`
    * `assets`
