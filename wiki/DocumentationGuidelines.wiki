@@ -87,7 +87,7 @@ Within each public function (those not beginning with a `$` character), use the 
 || *Attribute* || *Required* || *Default* || *Description* ||
 || `hint` || Yes || || A concise description of what the function does. Also include any notes like what types of values that are supported and returned. ||
 || `examples` || Yes || || Example code for common use cases. ||
-|| `categories` || Yes || || Comma-delimited list of categories that the function belongs to. Choices are `configuration`, `global`, `controller-initialization`, `controller-request`, `model-initialization`, `model-class`, `model-object`, and `view-helper`. ||
+|| `categories` || Yes || || Comma-delimited list of parent and optional subcategory that the function belongs to. See the _List of Categories_ section below for valid valies. ||
 || `chapters` || No || `[empty string]` || Comma-delimited list of related documentation chapters' URL slugs. For example, `using-routes` for the [UsingRoutes Using Routes] chapter. ||
 || `functions` || No || `[empty string]` || Related Wheels core functions. For example, `validatesPresenceOf`, `addRoute`, or `timeAgoInWords`. ||
 || `history` || No || || Bulleted list of how function behavior changes from version to version of Wheels. ||
@@ -122,6 +122,19 @@ Here is another example for the `new()` function:
     '
     categories="model-class" chapters="creating-records" functions="create">
 }}}
+
+=====List of Categories=====
+
+Here is a current list of categories and subcategories that can be used in the `categories` attribute of the `cffunction` tags.
+
+ * `configuration`
+ * `global`
+ * `controller-initialization`
+ * `controller-request`
+ * `model-initialization`
+ * `model-class`
+ * `model-object`
+ * `view-helper`
 
 ====Argument Documentation====
 
