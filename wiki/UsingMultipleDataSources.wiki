@@ -29,9 +29,8 @@ One thing to keep in mind when using multiple data sources with Wheels is that i
 
 Let's say you have the following models set up:
 
-models/Photo.cfc:
+`models/Photo.cfc`:
 {{{
-<!--- 
 <cfcomponent extends="Model">
 
     <cffunction name="init">
@@ -42,7 +41,7 @@ models/Photo.cfc:
 </cfcomponent>
 }}}
 
-models/PhotoGallery.cfc:
+`models/PhotoGallery.cfc`:
 {{{
 <cfcomponent extends="Model">
 
