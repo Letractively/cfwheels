@@ -100,7 +100,7 @@ Finally, there is a way to specify that your plugin needs another plugin install
 
 ==Stand-Alone Plugins==
 
-If your plugin is completely stand-alone, you can call it from its view page using just the name of the plugin. This works because Wheels has created a pointer to the plugin object residing in the `application` scope. One example of a stand-alone plugin is the PluginManager. If you check out its view code, you will see that it calls itself like this:
+If your plugin is completely stand-alone, you can call it from its view page using just the name of the plugin. This works because Wheels has created a pointer to the plugin object residing in the `application` scope. One example of a stand-alone plugin is the !PluginManager. If you check out its view code, you will see that it calls itself like this:
 
 {{{
 <cfset pluginManager.installPlugin(URL.plugin)>
