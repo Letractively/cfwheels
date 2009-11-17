@@ -1,5 +1,5 @@
 #summary Our listing of steps to take while upgrading your Wheels application from earlier versions to 1.0.
-#labels chapter,1.0,published_prod
+#labels chapter,1.0,published_dev
 
 The easiest way to upgrade is to setup an empty website, deploy a fresh copy of Wheels 1.0, and then transfer your application code to it. When transferring, please make note of the following changes and make the appropriate changes to your code.
 
