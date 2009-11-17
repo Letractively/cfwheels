@@ -36,7 +36,8 @@ When you are passing in two values, make special note of the fact that they shou
 In the examples above, we've used the `findOne()` method, but you can use the same approach on a `findAll()` method as well.
 
 ==Passing in Other Finder Parameters==
-`findOne()` or `findAll()`. This means that you can also pass in any arguments that are accepted by those two methods.
+
+In the background, these dynamically-named methods just pass along execution to `findOne()` or `findAll()`. This means that you can also pass in any arguments that are accepted by those two methods.
 
 The below code, for example, is perfectly valid:
 
