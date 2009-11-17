@@ -27,7 +27,9 @@ If you install a plugin that depends on another plugin you will get a warning me
 
 ==Available Plugins==
 
-To view all official plugins that are available for Wheels you can go to the "Plugins Directory" on our website. You'll find it at this URL: http://cfwheels.org/plugins. While there you can also download the `PluginManager` and use that instead. It lets you browse and install plugins directly from inside Wheels itself. It's quite handy!
+To view all official plugins that are available for Wheels you can go to the [http://cfwheels.org/plugins Plugins Directory] on our website.
+
+While there, you can also download the [http://cfwheels.org/plugins/listing/8 PluginManager]. It lets you browse and install plugins directly from inside your Wheels application. It's quite handy!
 
 ==Creating Your Own Plugins==
 
