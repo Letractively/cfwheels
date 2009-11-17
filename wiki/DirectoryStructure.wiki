@@ -1,5 +1,5 @@
 #summary Finding your way around a Wheels application.
-#labels chapter,1.0,published_prod
+#labels chapter,1.0,draft
 
 After downloading and unzipping Wheels, here's the directory structure that you will see (plus signs indicate folders):
 
@@ -103,7 +103,7 @@ If you use IIS 6 and want to use URL rewriting, you'll need this file. Otherwise
 
 ===`web.config`===
 
-Same as above but used for version 7 of IIS.
+Same as `IsapiRewrite4.ini` but used for version 7 of IIS instead.
 
 ===`Application.cfc`, `index.cfm`, `rewrite.cfm` and `root.cfm`===
 
