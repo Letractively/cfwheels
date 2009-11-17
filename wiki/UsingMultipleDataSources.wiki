@@ -1,5 +1,5 @@
 #summary How to use more than one database in your Wheels application.
-#labels chapter,1.0,draft
+#labels chapter,1.0,published_prod
 
 Sometimes you need to pull data from more than one database, whether it's by choice (for performance or security reasons, perhaps) or because that's the way your infrastructure is set up. It's something you have to find a way to deal with.
 
