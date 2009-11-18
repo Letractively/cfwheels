@@ -73,7 +73,7 @@ This is a good place to put your images. It's not required to have them here, bu
 
 ===`javascripts`===
 
-This is a good place to put your JavaScript files. 
+This is a good place to put your !JavaScript files. 
 
 ===`stylesheets`===
 
