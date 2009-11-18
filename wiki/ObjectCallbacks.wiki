@@ -1,5 +1,5 @@
 #summary Learn how to write code that runs every time a given object is created, updated, or deleted.
-#labels chapter,1.0,published_prod
+#labels chapter,1.0,draft
 
 Callbacks in Wheels allow you to have code executed before and/or after certain operations on an object. This requires some further explanation, so let's go straight to an example of a real-world application: the e-commerce checkout.
 
@@ -7,10 +7,10 @@ Callbacks in Wheels allow you to have code executed before and/or after certain 
 
 Let's look at a possible scenario for what happens when a visitor to your imaginary e-commerce website submits her credit card details to finalize an order:
 
- * You create a new `order` object using the [new new()] method based on the incoming form parameters.
- * You call the [save save()] method on the `order` object, which will cause Wheels to first validate the object and then store it in the database if it passes validation.
- * The next day, you call the [update update()] method on the object because the user decided to change the shipping method for the order.
- * Another day passes, and you call the [delete delete()] method on the object because the visitor called in to cancel the order.
+ * You create a new `order` object using the `new()` method based on the incoming form parameters.
+ * You call the `save()` method on the `order` object, which will cause Wheels to first validate the object and then store it in the database if it passes validation.
+ * The next day, you call the `update()` method on the object because the user decided to change the shipping method for the order.
+ * Another day passes, and you call the `delete()` method on the object because the visitor called in to cancel the order.
 
 Let's say you want to have the following things executed somewhere in the code:
 
@@ -27,26 +27,26 @@ Part of the `Order.cfc` model file:
 {{{
 <cfcomponent extends="Model">
   
-  <cffunction name="init">
-    <cfset beforeValidationOnCreate("fixCreditCard")>
-    <cfset afterValidation("calculateShippingCost")>
-    <cfset afterDelete("sendConfirmationEmail")>
-  </cffunction>  
+    <cffunction name="init">
+        <cfset beforeValidationOnCreate("fixCreditCard")>
+        <cfset afterValidation("calculateShippingCost")>
+        <cfset afterDelete("sendConfirmationEmail")>
+    </cffunction>  
 
-  <cffunction name="fixCreditCard">
-    Code for stripping out dashes in credit card numbers goes here...
-    <cfreturn true>
-  </cffunction>
+    <cffunction name="fixCreditCard">
+        Code for stripping out dashes in credit card numbers goes here...
+        <cfreturn true>
+    </cffunction>
 
-  <cffunction name="calculateShippingCost">
-    Code for calculating shipping cost goes here...
-    <cfreturn true>
-  </cffunction>
+    <cffunction name="calculateShippingCost">
+        Code for calculating shipping cost goes here...
+        <cfreturn true>
+    </cffunction>
 
-  <cffunction name="sendConfirmationEmail">
-    Code for sending confirmation email goes here...
-    <cfreturn true>
-  </cffunction>
+    <cffunction name="sendConfirmationEmail">
+        Code for sending confirmation email goes here...
+        <cfreturn true>
+    </cffunction>
 
 </cfcomponent>
 }}}
@@ -74,16 +74,16 @@ The following 17 functions can be used to register callbacks.
 
 As you can see above, there are places (5, to be exact) where one callback or the other will be executed, but not both.
 
- # The very first possible callback that can take place in an object's life cycle is either [afterNew afterNew()] or [afterFind afterFind()].
- # The [afterNew afterNew()] callback methods are triggered when you create the object yourself for the very first time, using the [new new()] method, for example.
- # [afterFind afterFind()] is triggered when the object is created as a result of fetching a record from the database, using [findByKey findByKey()], for example. (There is some special behavior for this callback type that we'll explain in detail later on in this chapter).
+ # The very first possible callback that can take place in an object's life cycle is either `afterNew()` or `afterFind()`.
+ # The `afterNew()` callback methods are triggered when you create the object yourself for the very first time, using the `new()` method, for example.
+ # `afterFind()` is triggered when the object is created as a result of fetching a record from the database, using `findByKey()`, for example. (There is some special behavior for this callback type that we'll explain in detail later on in this chapter).
  # The remaining callbacks run depending on whether or not we're running a "create," "update," or "delete."
 
 ==Special Case #1: `findAll()` and the `afterFind` Callback==
 
-When you read about the [afterFind afterFind()] callback above, you may have thought that it must surely only work for [findOne findOne()]/[findByKey findByKey()] calls but not for [findAll findAll()] because those calls return query result sets by default, not objects.
+When you read about the `afterFind()` callback above, you may have thought that it must surely only work for `findOne()`/`findByKey()` calls but not for `findAll()` because those calls return query result sets by default, not objects.
 
-Believe it or not, callbacks are even triggered on [findAll findAll()]! You do need to write your callback code differently to cater to [findAll findAll()] because there will be no `this` scope in the query object. Instead of modifying properties in the `this` scope like normal, the properties are passed in to the callback method via the `arguments` struct.
+Believe it or not, callbacks are even triggered on `findAll()`! You do need to write your callback code differently to cater to `findAll()` because there will be no `this` scope in the query object. Instead of modifying properties in the `this` scope like normal, the properties are passed in to the callback method via the `arguments` struct.
 
 Sounds complicated? This example should clear it up a little. Let's show some code to display how you can handle setting a `fullName` property on a hypothetical "artist" model:
 
@@ -126,10 +126,10 @@ The `setFullName` method handles the concatenation of the names, but the interes
 
 ==Special Case #2: The `updateAll()` and `deleteAll()` Methods==
 
-Please note that if you use the [updateAll updateAll()] or the [deleteAll deleteAll()] methods in Wheels, they will not instantiate objects by default, and thus any callbacks will be skipped. This is good for performance reasons because if you update 1,000 records at once, you probably don't want to run the callbacks on each object. Especially not if they involve database calls.
+Please note that if you use the `updateAll()` or the `deleteAll()` methods in Wheels, they will not instantiate objects by default, and thus any callbacks will be skipped. This is good for performance reasons because if you update 1,000 records at once, you probably don't want to run the callbacks on each object. Especially not if they involve database calls.
 
-However, if you want to execute all callbacks in those methods as well, all you have to do is pass in `instantiate=true` to the [updateAll updateAll()]/[deleteAll deleteAll()] methods.
+However, if you want to execute all callbacks in those methods as well, all you have to do is pass in `instantiate=true` to the `updateAll()`/`deleteAll()` methods.
 
 ==Breaking a Callback Chain==
 
-If you want to completely break the save/delete operation chain for an object, you can do so by returning `false` from your callback method. (Otherwise, always return `true` or nothing at all.) By breaking the chain, we mean that if you, for example, have called the [save save()] method on a new object and the method you've registered with a [beforeCreate beforeCreate()] call returns `false`, the method will exit early, returning `false` and no record will be inserted in the database.
+If you want to completely break the save/delete operation chain for an object, you can do so by returning `false` from your callback method. (Otherwise, always return `true` or nothing at all.) By breaking the chain, we mean that if you, for example, have called the `save()` method on a new object and the method you've registered with a `beforeCreate()` call returns `false`, the method will exit early, returning `false` and no record will be inserted in the database.
