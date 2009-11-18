@@ -52,7 +52,9 @@ Unfortunately, there is no built-in URL rewriting mechanism in IIS 6, so getting
 
 ==Deleting Unnecessary Files==
 
-The sole purpose of the `.htaccess` (for Apache), `web.config` (for IIS 7) and `IsapiRewrite4.ini` (for IIS 6) files is to make it possible to use URL rewriting. If you don't plan on using URL rewriting at all you can safely delete these files. Also, if you're using URL rewriting on Apache you can delete the IIS specific files and vice versa. 
+The sole purpose of the `.htaccess` (for Apache), `web.config` (for IIS 7) and `IsapiRewrite4.ini` (for IIS 6) files is to make it possible to use URL rewriting.
+
+If you don't plan on using URL rewriting at all, you can safely delete these files. Also, if you're using URL rewriting on Apache you can delete the IIS specific files and vice versa. 
 
 ==Don't Forget to Restart==
 
