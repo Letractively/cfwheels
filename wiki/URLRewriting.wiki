@@ -44,16 +44,16 @@ This requires that the [http://www.iis.net/extensions/URLRewrite URL Rewrite Mod
 
 Unfortunately, there is no built-in URL rewriting mechanism in IIS 6, so getting Wheels working with pretty URLs is a little more complicated than with Apache and IIS 7 (which often comes with the official "URL Rewrite Module" installed by default). Here's what you need to do:
 
- # Download "Ionic's ISAPI Rewrite Filter" from [http://iirf.codeplex.com/]. *NOTE:* the version must be v1.2.16 or later.
+ # Download [http://iirf.codeplex.com/ Ionic's ISAPI Rewrite Filter]. *NOTE:* the version must be v1.2.16 or later.
  # Unzip the file, get the `IsapiRewrite4.dll` file from the `lib` folder and put it in the root of your website. (It needs to be in the same folder as the `IsapiRewrite4.ini` file.)
  # To enable the rewrite filter in IIS 6, click on `Properties` for your website, then go to the `ISAPI Filters` tab and click the `Add...` button.
  # Type in anything you want as the `Filter Name` and point the `Executable` to the `IsapiRewrite4.dll` file.
  # Uncomment the rewrite rules in the `IsapiRewrite4.ini` file.
 
-==Deleting unnecessary files==
+==Deleting Unnecessary Files==
 
 The sole purpose of the `.htaccess` (for Apache), `web.config` (for IIS 7) and `IsapiRewrite4.ini` (for IIS 6) files is to make it possible to use URL rewriting. If you don't plan on using URL rewriting at all you can safely delete these files. Also, if you're using URL rewriting on Apache you can delete the IIS specific files and vice versa. 
 
-==Don't forget to restart==
+==Don't Forget to Restart==
 
 If you need to make changes to get URL rewriting to work it's important to remember to always restart the web server and the ColdFusion server to make sure the changes are picked up by Wheels. If you don't have access to restart services on your server you can issue a `reload=true` request, it's often enough.
