@@ -58,4 +58,6 @@ If you don't plan on using URL rewriting at all, you can safely delete these fil
 
 ==Don't Forget to Restart==
 
-If you need to make changes to get URL rewriting to work it's important to remember to always restart the web server and the ColdFusion server to make sure the changes are picked up by Wheels. If you don't have access to restart services on your server you can issue a `reload=true` request, it's often enough.
+If you need to make changes to get URL rewriting to work, it's important to remember to always restart the web server and the !ColdFusion server to make sure the changes are picked up by Wheels.
+
+If you don't have access to restart services on your server, you can issue a `reload=true` request. It's often enough.
