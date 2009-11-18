@@ -99,7 +99,7 @@ This file is used by Apache, and you specifically need it for URL rewriting to w
 
 ===`IsapiRewrite4.ini`===
 
-If you use IIS 6 and want to use URL rewriting, you'll need this file. Otherwise, you can safely delete it.
+If you use IIS 6 and want to use [URLRewriting URL rewriting], you'll need this file. Otherwise, you can safely delete it.
 
 ===`web.config`===
 
