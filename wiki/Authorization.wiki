@@ -1,14 +1,15 @@
 #summary Sample application for a simple authorization interface.
-#labels chapter,1.0
+#labels chapter,1.0,draft
 
-All sample applications come full of comments so it's a good way to learn Wheels if
-you're one of those people who prefer playing around with code rather than reading more abstract tutorials.
+This sample application comes full of comments, so it's a good way to learn Wheels if
+you prefer playing around with code rather than reading more abstract tutorials.
 
-This sample application covers how to setup authorization business rules on your controllers, basic login, logout, etc.
+This sample application covers how to set up authorization business rules on your controllers, basic login, logout, etc.
 
 ==Instructions==
 
-Download, unzip and run the app (it comes with !ColdFusion on Wheels 1.0 included).
+Download, unzip, and run the application. (It includes with !ColdFusion on Wheels 1.0).
 
 ==Download==
+
 [http://cfwheels.googlecode.com/files/authorization.1.0-r3619.zip Click here to download.]
