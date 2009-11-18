@@ -17,7 +17,7 @@ http://localhost/blog/new
 
 Combine this with the routing functionality of Wheels, and you get the capablility of creating some really human-friendly (easier to remember, say over the phone, etc.) and search engine friendly (easier to crawl, higher !PageRank, etc.) URLs.
 
-Once you have uncommented the rewrite rules (found in either `.htaccess`, `web.config` or `IsapiRewrite4.ini`), Wheels will try and determine if your web server is capable of rewriting URLs and turn it on for you automatically. Depending on what web server you have and what folder you run Wheels from you sometimes need to tweak things a little though. Follow the instructions below for details on how to set up your web server and customize the rewrite rules when necessary.
+Once you have uncommented the rewrite rules (found in either `.htaccess`, `web.config` or `IsapiRewrite4.ini`), Wheels will try and determine if your web server is capable of rewriting URLs and turn it on for you automatically. Depending on what web server you have and what folder you run Wheels from, you may need to tweak things a little though. Follow the instructions below for details on how to set up your web server and customize the rewrite rules when necessary.
 
 ==Instructions for Apache==
 
