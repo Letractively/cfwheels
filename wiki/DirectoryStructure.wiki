@@ -65,7 +65,7 @@ Make all your configuration changes here. You can set the environment, routes, a
 
 ===`files`===
 
-Any files that you intend to deliver to the user using the [sendFile sendFile()] function should be placed here. Even if you don't use that function to deliver files, this folder can still serve as file storage if you like.
+Any files that you intend to deliver to the user using the `sendFile()` function should be placed here. Even if you don't use that function to deliver files, this folder can still serve as file storage if you like.
 
 ===`images`===
 
