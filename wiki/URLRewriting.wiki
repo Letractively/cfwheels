@@ -46,8 +46,8 @@ Unfortunately, there is no built-in URL rewriting mechanism in IIS 6, so getting
 
  # Download [http://iirf.codeplex.com/ Ionic's ISAPI Rewrite Filter]. *NOTE:* the version must be v1.2.16 or later.
  # Unzip the file, get the `IsapiRewrite4.dll` file from the `lib` folder and put it in the root of your website. (It needs to be in the same folder as the `IsapiRewrite4.ini` file.)
- # To enable the rewrite filter in IIS 6, click on `Properties` for your website, then go to the `ISAPI Filters` tab and click the `Add...` button.
- # Type in anything you want as the `Filter Name` and point the `Executable` to the `IsapiRewrite4.dll` file.
+ # To enable the rewrite filter in IIS 6, click on _Properties_ for your website, then go to the _ISAPI Filters_ tab and click the _Add..._ button.
+ # Type in anything you want as the _Filter Name_ and point the _Executable_ to the `IsapiRewrite4.dll` file.
  # Uncomment the rewrite rules in the `IsapiRewrite4.ini` file.
 
 ==Deleting Unnecessary Files==
