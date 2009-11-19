@@ -160,31 +160,4 @@ Lastly, if your view needs to return XML code or other data for JavaScript calls
 
 ==Email Layouts==
 
-When sending emails, you can use the exact same layout conventions that we've already covered earlier in this chapter.
-
-The only difference is that layouts are turned off by default for emails. So if you want to use a layout, you need to set `sendEmail()`'s `layout` to the path of the layout that you would like to use.
-
-For example:
-
-{{{
-<cfset user = model("user").findOne(where="email='#params.email#'")>
-<cfset sendEmail(template="loginDetails", layout="/emailLayout", subject="...", to=user.email, from="...")>
-<cfset flashInsert(notice="Your login details were sent to #user.email#")>
-<cfset redirectTo(action="entrance")>
-}}}
-
-So this example would use the layout file at `views/emaillayout.cfm`.
-
-See the _Using a Different Layout than the Default Layout_ section above for a description of how paths work for the `layout` argument.
-
-===Multipart Email Layouts===
-
-The [SendingEmail Sending Email] chapter describes how to send multipart emails using the `sendEmail()` function. Wheels also lets you set up layouts in this scenario for the HTML and plain text emails.
-
-If we set up generic email layouts at `views/plainemaillayout.cfm` and `views/htmlemaillayout.cfm`, we would call `sendEmail()` like so:
-
-{{{
-<cfset sendEmail(templates="plainLoginDetails,htmlLoginDetails", layouts="/plainEmailLayout,/htmlEmailLayout", subject="...", to=user.email, from="...")>
-}}}
-
-For both the `templates` and `layouts` arguments (notice the plurals), we send a list of view files to use. Wheels will figure out which of the templates and layouts are the HTML versions and separate out the MIME parts for you automatically.
+For a discussion on using layouts in emails sent by Wheels, refer to the [SendingEmail Sending Email] chapter.
