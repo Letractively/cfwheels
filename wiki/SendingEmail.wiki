@@ -1,5 +1,5 @@
 #summary Use Wheels to simplify the task of setting up automated emails in your application.
-#labels chapter,1.0,published_prod
+#labels chapter,1.0,draft
 
 Sending emails in Wheels is done from your controller files with the [sendEmail sendEmail()] function. It's basically a wrapper around `cfmail`, but it has some smart functionality and a more Wheels-like approach in general.
 
@@ -66,15 +66,15 @@ Consider the following example:
 
 Here we are sending an email by including the `myemailtemplate` template and passing values for `recipientName` and `startDate` to it.
 
-Did you notice that we did not have to specify the `type` attribute of `cfmail`? Wheels is smart enough to figure out that you want to send as HTML since you have tags in the email body. (You can override this behavior if necessary though by passing in the `type` argument.)
-
-===Multi-Part Emails===
-
-The intelligence doesn't end there though. You can have Wheels send a multi-part email by passing in a list of templates to the `templates` argument (notice the plural), and Wheels will automatically figure out which one is text and which one is HTML.
-
-It is also important to note that the `template` argument should be the path to the view's folder name and template file name without the extension. If the template is in the current controller, then you don't need to specify a folder path to the template file. In that case, just be sure to store the template file in the folder with the rest of the views for that controller.
+Note that the `template` argument should be the path to the view's folder name and template file name without the extension. If the template is in the current controller, then you don't need to specify a folder path to the template file. In that case, just be sure to store the template file in the folder with the rest of the views for that controller.
 
 The logic for which file to include follows the same logic as the `template` argument to [renderPage renderPage()].
+
+Did you notice that we did not have to specify the `type` attribute of `cfmail`? Wheels is smart enough to figure out that you want to send as HTML since you have tags in the email body. (You can override this behavior if necessary though by passing in the `type` argument.)
+
+===Multipart Emails===
+
+The intelligence doesn't end there though. You can have Wheels send a multipart email by passing in a list of templates to the `templates` argument (notice the plural), and Wheels will automatically figure out which one is text and which one is HTML.
 
 ==Bonus Step: Email Layouts==
 
@@ -119,5 +119,30 @@ In this case, the 2 calls to [sendEmail sendEmail()] would be nearly identical, 
   )
 >
 }}}
+
+===Multipart Email Layouts===
+
+Wheels also lets you set up layouts for the HTML and plain text parts in a multipart email.
+
+If we set up generic email layouts at `views/plainemaillayout.cfm` and `views/htmlemaillayout.cfm`, we would call `sendEmail()` like so:
+
+{{{
+<!---Multipart customer email --->
+<cfset
+  sendEmail(
+    from="service@yourwebsite.com",
+    templates="/myemailtemplateplain,/myemailtemplatehtml",
+    layouts="customerPlain,customerHtml",
+    to=member.email,
+    subject="Thank You for Becoming a Member",
+    recipientName=member.name,
+    startDate=member.startDate
+  )
+>
+}}}
+
+For both the `templates` and `layouts` arguments (again, notice the plurals), we provide a list of view files to use. Wheels will figure out which of the templates and layouts are the HTML versions and separate out the MIME parts for you automatically.
+
+==Go Send Some Emails==
 
 Now you're all set to send emails the Wheels way. Just don't be a spammer, please!
