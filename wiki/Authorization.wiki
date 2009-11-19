@@ -1,5 +1,5 @@
 #summary Sample application for a simple authorization interface.
-#labels chapter,1.0,draft
+#labels chapter,1.0,published_prod
 
 This sample application comes full of comments, so it's a good way to learn Wheels if
 you prefer playing around with code rather than reading more abstract tutorials.
@@ -12,4 +12,4 @@ Download, unzip, and run the application. (It includes with !ColdFusion on Wheel
 
 ==Download==
 
-[http://cfwheels.googlecode.com/files/authorization.1.0-r3619.zip Click here to download.]
+[http://cfwheels.googlecode.com/files/authorization.1.0-r3619.zip Download Authorization Sample]
