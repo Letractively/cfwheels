@@ -24,4 +24,4 @@ with !ColdFusion on Wheels 1.0.)
 
 ==Download==
 
-[http://cfwheels.googlecode.com/files/administration.1.0-r3617.zip Click here to download]
+[http://cfwheels.googlecode.com/files/administration.1.0-r3617.zip Download Administration Sample]
