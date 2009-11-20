@@ -13,6 +13,14 @@ You can also set values based on what environment you have set. For example, you
 
 To change a Wheels application default, you generally use the [set set()] function. With it, you can perform all sorts of tweaks to the framework's default behaviors.
 
+==How to Access Configuration Values==
+
+Use the `get()` function to access the value of a Wheels application setting. Just pass it the name of the setting.
+
+<cfif get("environment") is "production">
+    <!--- Do something for production environment --->
+</cfif>
+
 ==Types of Configurations Available==
 
 There are several types of configurations that you can perform in Wheels to override all those default behaviors. In Wheels, you can find all these configuration options:
