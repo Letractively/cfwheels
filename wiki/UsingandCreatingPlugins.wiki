@@ -19,7 +19,7 @@ Reloading Wheels is required when installing/uninstalling. (Issue a `reload=true
 
 ===File Permissions on `plugins` Folder===
 
-You may need to change access permissions on your application's `plugins` folder so that Wheels can write the subfolders and files that it needs to run. If you get an error when testing out a plugin, you may need to loosen up the access level.
+You may need to change access permissions on your application's `plugins` folder so that Wheels can write the subfolders and files that it needs to run. If you get an error when testing out a plugin, you may need to loosen up the permission level.
 
 ==Plugin Naming, Versioning, and Dependencies==
 
