@@ -337,7 +337,7 @@ Here is an example using a query object called `eyeColor` to power the possible 
 
 If the `profile` object already has a value set for `eyeColorId`, then `radioButton()` will make sure that that value is checked on page load.
 
-If `profile.eyeColorId`'s value were already set to 2, the rendered HTML for our example would appear similar to this:
+If `profile.eyeColorId`'s value were already set to `1`, the rendered HTML for our example would appear similar to this:
 
 {{{
 <fieldset>
