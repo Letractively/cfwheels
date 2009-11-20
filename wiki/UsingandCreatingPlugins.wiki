@@ -98,6 +98,21 @@ Finally, there is a way to specify that your plugin needs another plugin install
 <cfcomponent output="false" dependency="someOtherPlugin">
 }}}
 
+==Disabling Plugin Caching During Development==
+
+When your Wheels application first initializes, it will unzip and cache the files in the `plugins` folder. This is great for performance but can be annoying when you're developing your own plugin. (By default, every time you make a change to your plugin, you need to rezip your plugin files and reload the Wheels application by adding `?reload=true` to the URL.)
+
+To force Wheels to skip this unzipping process, set the `overwritePlugins` setting to `false` for your `design` and/or `development` environments.
+
+{{{
+<!--- In config/design/settings.cfm --->
+<cfset set(overwritePlugins=false)>
+}}}
+
+With this setting, you'll only need to reload the application without worrying about your file being overwritten by the contents of the corresponding zip file.
+
+See the chapter on [ConfigurationsandDefaults Configurations and Defaults] for more details about changing Wheels settings.
+
 ==Stand-Alone Plugins==
 
 If your plugin is completely stand-alone, you can call it from its view page using just the name of the plugin. This works because Wheels has created a pointer to the plugin object residing in the `application` scope. One example of a stand-alone plugin is the !PluginManager. If you check out its view code, you will see that it calls itself like this:
