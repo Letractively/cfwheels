@@ -58,7 +58,7 @@ The most important thing to remember when creating your view is to be careful no
 
 ==Cleaning Up Output==
 
-A view's job is also to clean up the values provided by the controller before being displayed. This is especially important when content in a data source is not HTML-escaped.
+A view's job is also to clean up the values provided by the controller before being displayed. This is especially important when content from a data source is not HTML-escaped.
 
 For example, if the view is to display the `title` column from a query object called `posts`, it should escape HTML special characters:
 
