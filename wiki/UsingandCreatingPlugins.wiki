@@ -33,7 +33,7 @@ While there, you can also download the [http://cfwheels.org/plugins/listing/8 Pl
 
 ==Creating Your Own Plugins==
 
-To create a plugin named `MyPlugin`, you will need to create a `MyPlugin.cfc` and an `index.cfm` file. Then zip these together as `MyPlugin.cfc-x.x.zip`, where `x.x` is the version number of your plugin.
+To create a plugin named `MyPlugin`, you will need to create a `MyPlugin.cfc` and an `index.cfm` file. Then zip these together as `MyPlugin-x.x.zip`, where `x.x` is the version number of your plugin.
 
 The only other requirement to make a plugin work is that `MyPlugin.cfc` must contain a method named `init`. This method must set a variable called `this.version`, specifying the Wheels version (or several Wheels version numbers in a list) the plugin is meant to be used on, and then return itself.
 
