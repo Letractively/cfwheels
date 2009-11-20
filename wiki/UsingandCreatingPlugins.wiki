@@ -98,7 +98,7 @@ Finally, there is a way to specify that your plugin needs another plugin install
 <cfcomponent output="false" dependency="someOtherPlugin">
 }}}
 
-==Disabling Plugin Caching During Development==
+==Disabling Plugin Overwriting During Development==
 
 When your Wheels application first initializes, it will unzip and cache the files in the `plugins` folder. This is great for performance but can be annoying when you're developing your own plugin. (By default, every time you make a change to your plugin, you need to rezip your plugin files and reload the Wheels application by adding `?reload=true` to the URL.)
 
