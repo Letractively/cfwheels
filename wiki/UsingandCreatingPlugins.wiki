@@ -17,6 +17,10 @@ If you want to remove it later simply delete the `zip` file. (Wheels will clean 
 
 Reloading Wheels is required when installing/uninstalling. (Issue a `reload=true` request.)
 
+===File Permissions on `plugins` Folder===
+
+You may need to change access permissions on your application's `plugins` folder so that Wheels can write the subfolders and files that it needs to run. If you get an error when testing out a plugin, you may need to loosen up the access level.
+
 ==Plugin Naming, Versioning, and Dependencies==
 
 When you download plugins, you will see that they are named something like this: `Scaffold-0.1.zip`. In this case, `0.1` is the version number of the `Scaffold` plugin. If you drop both `Scaffold-0.1.zip` and `Scaffold-0.2.zip` in the `plugins` folder, Wheels will use the one with the highest version number and ignore any others.
