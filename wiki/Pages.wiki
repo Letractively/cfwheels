@@ -55,3 +55,17 @@ When writing your view code, you will have access to the variables you have set 
 In addition to the variables you have set yourself, you can also access the `params` struct. This contains anything passed in through the URL or with a form. If you want to follow MVC rules more closely though, we recommend only accessing the `params` struct in the controller and then setting new variables for the information you need access to in the view.
 
 The most important thing to remember when creating your view is to be careful not to put too much code in there. Avoid code dealing with the incoming request (this can be moved to the controller) and code containing business logic (consider moving this to a model). If you have view-related code but too much of it, it may be beneficial to break it out into a helper or a partial.
+
+==Cleaning Up Output==
+
+A view's job is also to clean up the values provided by the controller before being displayed. This is especially important when content in a data source is not HTML-escaped.
+
+For example, if the view is to display the `title` column from a query object called `posts`, it should escape HTML special characters:
+
+{{{
+<ul>
+    <cfoutput query="posts">
+        <li>#HtmlEditFormat(posts.title)#</li>
+    </cfoutput>
+</ul>
+}}}
