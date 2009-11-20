@@ -53,6 +53,13 @@ You can then pass the route name as the `route` argument of `linkTo()`. With thi
 #linkTo(text="#user.firstName# #user.lastName#", route="profile", username=user.username)#
 }}}
 
+==Images as Links==
+
+If you'd like to use an image as a link to another page, simply pass the output of `imageTag()` to the `text` argument of `linkTo()`:
+
+{{{
+#linkTo(text="imageTag(source="authors.jpg"), controller="blog", action="authors")#
+}}}
 
 ==What If I Don't Have URL Rewriting Enabled?==
 
