@@ -335,13 +335,15 @@ Here is an example using a query object called `eyeColor` to power the possible 
 </fieldset>
 }}}
 
-The rendered HTML would appear similar to this:
+If the `profile` object already has a value set for `eyeColorId`, then `radioButton()` will make sure that that value is checked on page load.
+
+If `profile.eyeColorId`'s value were already set to 2, the rendered HTML for our example would appear similar to this:
 
 {{{
 <fieldset>
     <legend>Eye Color</legend>
     <input type="radio" id="profile-eyeColorId-2" name="profile[eyeColorId]" value="2" /><label for="profile-eyeColorId-2">Blue</label><br />
-    <input type="radio" id="profile-eyeColorId-1" name="profile[eyeColorId]" value="1" /><label for="profile-eyeColorId-1">Brown</label><br />
+    <input type="radio" id="profile-eyeColorId-1" name="profile[eyeColorId]" value="1" /><label for="profile-eyeColorId-1" checked="checked">Brown</label><br />
     <input type="radio" id="profile-eyeColorId-3" name="profile[eyeColorId]" value="3" /><label for="profile-eyeColorId-3">Hazel</label><br />
 </fieldset>
 }}}
