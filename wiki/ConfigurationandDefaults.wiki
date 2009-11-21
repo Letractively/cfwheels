@@ -1,5 +1,5 @@
 #summary An overview of Wheels configuration and how is it used in your applications. Learn how to override a Wheels convention to make it your own.
-#labels chapter,1.0,published_prod
+#labels chapter,1.0,draft
 
 We all love the "Convention over Configuration" motto of Wheels, but what about those two cases that pop into everyone's head? _What if I want to develop in my own way?_ Or, _What about an existing application that I need to port into Wheels?_ Gladly, that's what configuration and defaults are there for. Let's take a look at exactly how is this performed.
 
@@ -21,6 +21,18 @@ Use the `get()` function to access the value of a Wheels application setting. Ju
 <cfif get("environment") is "production">
     <!--- Do something for production environment --->
 </cfif>
+}}}
+
+==Setting ColdFusion `application` Configurations==
+
+In `Application.cfc`, you can normally set values for your application's properties in the `this` scope. Wheels still provides these options to you in the file at `config/app.cfm`.
+
+Here is an example of what can go in `config/app.cfm`:
+
+{{{
+<cfset this.name = "TheNextSiteToBeatTwitter">
+<cfset this.sessionManagement = false>
+<cfset this.customTagPaths = ListAppend(this.customTagPaths, ExpandPath("../customtags"))>
 }}}
 
 ==Types of Configurations Available==
