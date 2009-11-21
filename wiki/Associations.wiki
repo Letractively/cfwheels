@@ -1,5 +1,5 @@
 #summary Through some simple configuration, Wheels allows you to unlock some powerful functionality to use your database tables' relationships in your code.
-#labels chapter,1.0,published_prod
+#labels chapter,1.0,draft
 
 _Associations_ in Wheels allow you to define the relationships between your database tables. After configuring these relationships, doing pesky table joins becomes a trivial task. And like all other ORM functions in Wheels, this is done without writing a single line of SQL.
 
@@ -240,6 +240,14 @@ Another rule is that whenever a method accepts an object as its first argument, 
 You may be concerned that using a dynamic finder adds yet another database call to your application.
 
 If it makes you feel any better, all calls in your Wheels request that generate the same SQL queries will be cached for that request. No need to worry about the performance implications of making multiple calls to the same `author.posts()` call in the scenario above, for example.
+
+====Passing Arguments to Dynamic Shortcut Methods====
+
+You can also pass arguments to dynamic shortcut methods where applicable. For example, with the [findAll XXX()] method, perhaps we'd want to limit a post's comment listing to just ones left today. We can pass a `where` argument similar to what is passed to the `findAll()` function that powers [findAll XXX()] behind the scenes.
+
+{{{
+<cfset comments = post.comments(where="createdAt >= '#DateFormat(Now(), "yyyy-mm-dd")# 0:00:00'")>
+}}}
 
 ==Many-to-Many Relationships==
 
