@@ -246,7 +246,7 @@ If it makes you feel any better, all calls in your Wheels request that generate 
 You can also pass arguments to dynamic shortcut methods where applicable. For example, with the [findAll XXX()] method, perhaps we'd want to limit a post's comment listing to just ones left today. We can pass a `where` argument similar to what is passed to the `findAll()` function that powers [findAll XXX()] behind the scenes.
 
 {{{
-<cfset comments = post.comments(where="createdAt >= '#DateFormat(Now(), "yyyy-mm-dd")# 0:00:00'")>
+<cfset comments = post.comments(where="createdAt >= '#DateFormat(Now(), "yyyy-mm-dd")# 00:00:00'")>
 }}}
 
 ==Many-to-Many Relationships==
