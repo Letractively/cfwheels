@@ -1,5 +1,5 @@
 #summary Environments that match your development stages.
-#labels chapter,1.0,published_prod
+#labels chapter,1.0,draft
 
 Wheels allows you to set up different _environments_ that match stages in your development cycle. That way you can configure different values that match what services to call and how your app behaves based on where you are in your development.
 
@@ -17,7 +17,7 @@ Besides the 2 environments mentioned above, there are 3 more. Let's go through t
 
  * Shows friendly Wheels specific errors as well as regular !ColdFusion errors on screen.
  * Does not email you when an error is encountered.
- * All caches are cleared before each request (which means it never caches anything in between requests but still speeds things up slightly by caching data during the request).
+ * All caches are cleared before each request, except for settings defined in any of the files in the `config` folder.
 
 ===Development===
 
