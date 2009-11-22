@@ -85,23 +85,73 @@ So that is Partial URL Rewriting. The URLs are shorter and cleaner than No URL R
 
 ===Full URL Rewriting===
 
-The built-in URL rewriting functionality of Wheels helps you create friendly, search engine safe URLs. No more are the days of URLs polluted with question marks, ampersands, and equals signs!
-
-Consider the URL below:
+So far we've looked at standard URLs with no rewriting applied and Partial URL Rewriting. Now we'll look at Full URL rewriting. This class of URLs eliminate the `index.cfm` from the URL as well. We know we are always routing things through a single file, so why should we have to specify it on every URL. Well in short we don't! So the above URL in Full URL Rewriting more would look like this:
 
 {{{
-http://www.example.com/say/hello
+http://www.mydomain.com/say/hello
 }}}
 
-Like all URLs that you're familiar with, the `http://www.example.com/` portion of the URL defines the domain or server name of your application. This portion is similar to any other URL on the Web. Really not much to see here, so let's move on.
+Now we're getting somewhere. We're using all the magic Wheels has to offer. We've gotten rid of the `index.cfm` from the URLs so your application can live along side a Ruby on Rails application or a Django application and have the same pretty URLs. So how does Wheels do this. Although Wheels can support this third class of URLs it requires some additional capabilities from your server environment. First of all it requires Path Info support similar to Partial URL Rewriting but it also requires additional URL processing support by your web server.
 
-The next portion is where the magic happens.
+On Apache web servers the `mod_rewrite` module is required. We won't get into how to install that but if it is installed in your Apache server then you can use it and wheels has a configuration file that you can use right away. On IIS 6.0 servers this capability is not built in but can be added using [http://cheeso.members.winisp.net/IIRF.aspx IIRF]. 
 
-In other !ColdFusion frameworks, we're used to seeing variables separated by `?` and `&`. With Fusebox, for example, we'd probably see a URL like `http://www.example.com/index.cfm?fuseaction=say.hello`. Yuck.
+Wheels ships with two configuration files for Apache there is a `.htaccess' file at the root of the Wheels directory and for IIS there is a `IsapiRewrite4.ini` configuration file also at the root of the Wheels directory. You only need one of these files but the other is there in case you decide to move your application to a different server and change technologies. 
 
-Wheels, on the other hand, uses _URL rewriting_. Instead of specifying variables by separating them with `?` and `&`, the different variables are passed to the application as folder names.
+Lets take a look at the contents of the `.htaccess` file as it ships with the Wheels distribution. 
 
-Our example URL defines which components and methods within the application get called by the URL. The example URL above tells our application to execute the `say` controller and call the `hello` action within that controller. So this is how the URL of a Wheels application maps to the parts of the MVC pattern described above.
+{{{
+# this file can be deleted if you're not planning on using URL rewriting with Apache.
+
+# you can add your own files and folders that should be excluded from URL rewriting by adding them to the "RewriteCond" line below.
+
+# please read the online documentation on http://cfwheels.org for more information about URL rewriting.
+
+
+# UNCOMMENT ALL LINES BELOW THIS ONE TO TURN ON THE URL REWRITING RULES
+
+# Options +FollowSymLinks
+
+# RewriteEngine On
+
+# RewriteCond %{REQUEST_URI} !^.*/(flex2gateway|jrunscripts|cfide|cfformgateway|railo-context|files|images|javascripts|miscellaneous|stylesheets|robots.txt|sitemap.xml|rewrite.cfm)($|/.*$) [NC]
+# RewriteRule ^(.*)$ ./rewrite.cfm/$1 [L]
+}}}
+
+As the contents of the file suggest you need to uncomment the last few lines to turn on the Rewriting Engine and configure the rules for the Wheels framework.
+
+The contents of the `IsapiRewrite4.ini` file are similarly commented out and look like this:
+
+{{{
+# this file can be deleted if you're not planning on using URL rewriting with IIS 6.
+
+# you can add your own files and folders that should be excluded from URL rewriting by adding them to the first "RewriteRule" line below.
+
+# please read the online documentation on http://cfwheels.org for more information about URL rewriting.
+
+
+# UNCOMMENT ALL LINES BELOW THIS ONE TO TURN ON THE URL REWRITING RULES
+
+# RewriteRule (^/(flex2gateway|jrunscripts|cfide|cfformgateway|railo-context|files|images|javascripts|miscellaneous|stylesheets|robots.txt|sitemap.xml|rewrite.cfm)($|/.*$)) $1 [L,I]
+# RewriteRule ^/(.*)$ /rewrite.cfm/$1 [L]
+}}}
+
+Once again you'll have to uncomment the last few lines of the file before the configuration rules take effect but you first have to make sure the `IsapiRewrite4.dll` is installed and functioning properly. 
+
+So how does all this magic work? In Full Rewriting mode, Wheels takes the passed in URL...
+
+{{{
+http://www.mydomain.com/say/hello
+}}}
+
+...and converts it to the following:
+
+{{{
+http://www.mydomain.com/rewrite.cfm/say/hello
+}}}
+
+From that point on the URL is treated like a Partial Rewriting URL as we discussed above. All this is happening in the background without you having to do anything beyond the initial configuration.
+
+So we've seen the three different classes of URLs that Wheels supports. We've seen how Partial URL Rewriting depends on the server support for Path Info CGI variables and also how the Full URL Rewriting require a rewriting engine like mod_rewrite for Apache or IIRF for IIS 6.0 in addition to Path Info CGI support.
 
 ==Hello World: Your First Wheels App==
 
@@ -122,11 +172,11 @@ First, create a file called `Say.cfc` in the `controllers` directory and add the
 
 Congratulations, you just created your first Wheels controller! What does this controller do, you might ask? Well, to be honest, not much. It has no functions defined so it doesn't add any new functionality to our Wheels application. But because it extends the base `Controller` component, it inherits quite a bit of powerful functionality and is now tied into our Wheels application.
 
-So what happens if we try to call our new controller right now? Lets take a look! Open your browser and point your browser to the new controller. Do this by simply entering `http://localhost/say` in your browser of choice. You may need to enter a different URL, depending on how your web server is configured.
+So what happens if we try to call our new controller right now? Lets take a look! Open your browser and point your browser to the new controller. Do this by simply entering `http://localhost/index.cfm/say` in your browser of choice. You may need to enter a different URL, depending on how your web server is configured. In my case I will be using the host name `cfwheels.1.0` so my URL will look like `http://cfwheels.1.0/index.cfm/say`. 
 
 If you did everything right, you will get the Wheels error shown below in _Figure 2_. (Ironic that getting an error is doing something right, huh? Don't get used to it, buddy!)
 
-http://cfwheels.googlecode.com/files/wheels-0.9.4-no-view-error-screen.jpg
+http://cfwheels.googlecode.com/files/wheels-1.0-no-view-error-screen.jpg
 
 _Figure 2: Wheels error after setting up your blank `say` controller._
 
