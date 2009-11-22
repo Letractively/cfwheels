@@ -61,12 +61,24 @@ http://www.mydomain.com/index.cfm/say/hello
 
 As you can see this form of URLs are much cleaner. We've trimmed off most of the unnecessary pieces of the URL. What remains is the protocol, domain, and file like before, but now we sprinkle some Wheels magic. The next item on the URL is the controller in this case {{{say}}} and finally the action to invoke in that controller which in this case is {{{hello}}}. 
 
-Here is where we start depending on some server capabilities though. In order for partial URLs to work, your server environment must support Path Info.Typically this means that the Servlet Engine you are using for your CFML engine must support Path Info. A server that supports the Path Info variable will take whatever was on the query string beyond the file name, in the example above {{{/say/hello}}}, and make it available to the application by passing it in the cgi variable path_info. That is how Wheels knows what controller and action you want to call. Unfortunately this information is not always passed along. For example the Jetty servlet engine does not support Path info so if you use the Railo Express server you will not be able to get Partial URLs to work. The easiest way to see if your server supports passing Path Info information is to put the following code on a page and see if it contains the additional URL information.
+Here is where we start depending on some server capabilities though. In order for partial URLs to work, your server environment must support Path Info.Typically this means that the Servlet Engine you are using for your CFML engine must support Path Info. A server that supports the Path Info variable will take whatever was on the query string beyond the file name, in the example above {{{/say/hello}}}, and make it available to the application by passing it in the cgi variable path_info. That is how Wheels knows what controller and action you want to call. Unfortunately this information is not always passed along. For example the Jetty servlet engine does not support Path info so if you use the Railo Express server you will not be able to get Partial URLs to work. The easiest way to see if your server supports passing Path Info information is to create a test.cfm page and put the following code in the page.
 
 {{{
 <cfoutput>#cgi.path_info#</cfoutput>
 }}}
- 
+
+Then call the page using a URL like:
+
+{{{http://my-dev-server/test.cfm/more/information/to/pass
+
+Obviously you'll have to change `my-dev-server` to the path to the server you place your test page on. But what is important is what comes after the `test.cfm` file name. If your server supports Path Info then your test page should output:
+
+{{{
+more/information/to/pass
+}}}
+
+So that is Partial URL Rewriting. The URLs are shorter and cleaner than No URL Rewriting and typically don't require you to configure anything. Your server either supports them or it doesn't. Wheels will automatically determine if your server supports them and begin using them so really there is nothing for you to do here. The only issue with these URLs is the `index.cfm` in the middle of the URL. Lets see how we can get rid of that as well.
+
 ===Full URL Rewriting===
 
 The built-in URL rewriting functionality of Wheels helps you create friendly, search engine safe URLs. No more are the days of URLs polluted with question marks, ampersands, and equals signs!
