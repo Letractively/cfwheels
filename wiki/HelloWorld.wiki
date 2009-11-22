@@ -1,5 +1,5 @@
 #summary This is the obligatory Hello World tutorial.
-#labels chapter,0.9.4,draft
+#labels chapter,1.0,draft
 
 In this tutorial, we'll be writing a simple application to make sure we have Wheels installed properly and that everything is working as it should. Along the way, you'll get to know some basics about how applications built on top of Wheels work.
 
@@ -9,7 +9,7 @@ Let's make sure we're all on the same page. I'm going to assume that you've alre
 
 Okay, so you have Wheels installed and can see the Wheels "Congratulations!" page as shown in _Figure 1_ below. That wasn't that hard now, was it?
 
-http://cfwheels.googlecode.com/files/wheels-0.9.4-congratulations-screen.jpg
+http://cfwheels.googlecode.com/files/wheels-1.0-congratulations-screen.jpg
 
 _Figure 1: Wheels congratulations screen._
 
