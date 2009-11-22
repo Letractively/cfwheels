@@ -37,6 +37,12 @@ Others have written entire volumes describing the MVC pattern and its pros and c
 
 ==URLs in Wheels==
 
+Wheels handles three different classes of URLs depending on the capabilities of your web server. The most basic form is No URL Rewriting, then Partial URL Rewriting, and finally Full URL Rewriting. Wheels will attempt to determine what level of URL Rewriting your server supports and automatically configure your application to use the most advanced level of URL Rewriting your server environment allows. So lets take a look at each class of URLs that Wheels supports.
+
+===No URL Rewriting===
+===Partial URL Rewriting===
+===Full URL Rewriting===
+
 The built-in URL rewriting functionality of Wheels helps you create friendly, search engine safe URLs. No more are the days of URLs polluted with question marks, ampersands, and equals signs!
 
 Consider the URL below:
