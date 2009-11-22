@@ -40,6 +40,15 @@ Others have written entire volumes describing the MVC pattern and its pros and c
 Wheels handles three different classes of URLs depending on the capabilities of your web server. The most basic form is No URL Rewriting, then Partial URL Rewriting, and finally Full URL Rewriting. Wheels will attempt to determine what level of URL Rewriting your server supports and automatically configure your application to use the most advanced level of URL Rewriting your server environment allows. So lets take a look at each class of URLs that Wheels supports.
 
 ===No URL Rewriting===
+
+This is the most basic form of URLs that Wheels handles. There is really nothing special about this since its what we are all used to. The URLs make use of a single file that all requests are routed through and specifically pass all the variables and values in the query string. Lets take a look at an example URL in this format:
+
+{{{
+http://www.mydomain.com/index.cfm?controller=say&action=hello
+}}}
+
+Now lets break this apart and see what is going on. There really is no magic here, we first specify the protocol to use, in this case {{{http}}}, then we specify the domain name, here we are using a dummy on {{{www.mydomain.com}}}, then we specify the file to call {{{index.cfm}}}. Up to this point nothing new going one, we've seen this all before. Now we specify that we want to call the say controller using {{{controller=say}}} and finally we indicate that we want to invoke the hello action of the say controller using {{{action=hello}}}.
+ 
 ===Partial URL Rewriting===
 ===Full URL Rewriting===
 
