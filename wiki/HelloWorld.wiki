@@ -167,7 +167,7 @@ http://cfwheels.1.0/index.cfm/say/goodbye
 
 Your browser should look like _Figure 5_ below:
 
-http://cfwheels.googlecode.com/files/wheels-0.9.4-goodbye-world-screen.jpg
+http://cfwheels.googlecode.com/files/wheels-1.0-goodbye-world-screen.jpg
 
 _Figure 3: Your new `goodbye` action._
 
