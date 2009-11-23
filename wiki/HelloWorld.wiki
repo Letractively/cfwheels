@@ -189,7 +189,7 @@ The [linkTo linkTo()] function is a built-in Wheels function. In this case, we a
 
 Once you have added the additional line of code to the end of the `say/hello.cfm` view file, save your file and call the `say/hello` action from your browser. Your browser should look like _Figure 6_ below.
 
-http://cfwheels.googlecode.com/files/wheels-0.9.4-hello-world-linked-screen.jpg
+http://cfwheels.googlecode.com/files/wheels-1.0-hello-world-linked-screen.jpg
 
 _Figure 6: Your `say/hello` action with a link to the `goodbye` action._
 
