@@ -32,7 +32,11 @@ First, create a file called `Say.cfc` in the `controllers` directory and add the
 
 Congratulations, you just created your first Wheels controller! What does this controller do, you might ask? Well, to be honest, not much. It has no functions defined so it doesn't add any new functionality to our Wheels application. But because it extends the base `Controller` component, it inherits quite a bit of powerful functionality and is now tied into our Wheels application.
 
-So what happens if we try to call our new controller right now? Lets take a look! Open your browser and point your browser to the new controller. Do this by simply entering `http://localhost/index.cfm/say` in your browser of choice. You may need to enter a different URL, depending on how your web server is configured. In my case I will be using the host name `cfwheels.1.0` so my URL will look like `http://cfwheels.1.0/index.cfm/say`. 
+So what happens if we try to call our new controller right now? Lets take a look! Open your browser and point your browser to the new controller. Do this by simply entering `http://localhost/index.cfm/say` in your browser of choice. You may need to enter a different URL, depending on how your web server is configured. In my case I will be using the host name `cfwheels.1.0` so my URL will look like:
+
+{{{
+http://cfwheels.1.0/index.cfm/say
+}}}
 
 If you did everything right, you will get the Wheels error shown below in _Figure 2_. (Ironic that getting an error is doing something right, huh? Don't get used to it, buddy!)
 
@@ -60,7 +64,7 @@ As you can see, we created an empty function named `hello`.
 Now let's call our new action in the browser and see what we get. To call the `hello` action we simply add `/hello` to the end of the previous URL that we used to call our `say` controller:
 
 {{{
-http://localhost/say/hello
+http://cfwheels.1.0/say/hello
 }}}
 
 Once again, we get a Wheels error. Although we have created the controller and added the `hello` action to it, we haven't created the _view_.
@@ -158,7 +162,7 @@ Add the following code to the `goodbye.cfm` page and save it.
 If we did everything right, we should be able to call the new say/goodbye action using the following URL:
 
 {{{
-http://localhost/say/goodbye
+http://cfwheels.1.0/index.cfm/say/goodbye
 }}}
 
 Your browser should look like _Figure 5_ below:
