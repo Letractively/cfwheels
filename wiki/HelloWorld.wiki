@@ -81,7 +81,7 @@ Now inside the `say` directory, create a file called `hello.cfm`. In the `hello.
 
 Save your `hello.cfm` file, and let's call our `say/hello` action once again. You have your first working Wheels page if your browser looks like _Figure 3_ below.
 
-http://cfwheels.googlecode.com/files/wheels-0.9.4-hello-world-screen.jpg
+http://cfwheels.googlecode.com/files/wheels-1.0-hello-world-screen.jpg
 
 _Figure 3: Your first working Wheels action._
 
@@ -122,7 +122,7 @@ Next, we will modify our `say/hello.cfm` view file so that it looks like the cod
 
 Now call your `say/hello` action again in your browser. Your browser should look like _Figure 4_ below.
 
-http://cfwheels.googlecode.com/files/wheels-0.9.4-hello-world-dynamic-screen.jpg
+http://cfwheels.googlecode.com/files/wheels-1.0-hello-world-dynamic-screen.jpg
 
 _Figure 4: Hello World with the current date and time._
 
