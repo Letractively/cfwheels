@@ -169,7 +169,7 @@ Your browser should look like _Figure 5_ below:
 
 http://cfwheels.googlecode.com/files/wheels-1.0-goodbye-world-screen.jpg
 
-_Figure 3: Your new `goodbye` action._
+_Figure 5: Your new `goodbye` action._
 
 ===Linking to Other Actions===
 
