@@ -1,5 +1,5 @@
 #summary Our listing of steps to take while upgrading your Wheels application from earlier versions to 1.0.
-#labels chapter,1.0,draft
+#labels chapter,1.0,published_prod
 
 The easiest way to upgrade is to setup an empty website, deploy a fresh copy of Wheels 1.0, and then transfer your application code to it. When transferring, please make note of the following changes and make the appropriate changes to your code.
 
@@ -16,7 +16,7 @@ The easiest way to upgrade is to setup an empty website, deploy a fresh copy of 
 
 ==File System Changes==
 
- * *1.0:* There is now an `app.cfm` file in the `config` folder.
+ * *1.0:* There is now an `app.cfm` file in the `config` folder. Use it to set variables that you'd normally set in `Application.cfc` (i.e., `this.name`, `this.sessionManagement`, `this.customTagPaths`, etc.)
  * *1.0:* There is now a `web.config` file in the root.
  * *1.0:* There is now a `Wheels.cfc` file in the `models` folder.
  * *1.0:* The `Wheels.cfc` file in the `controllers` folder has been updated.
