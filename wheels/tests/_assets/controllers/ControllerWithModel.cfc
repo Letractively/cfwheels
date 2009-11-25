@@ -1,5 +1,5 @@
 <cfcomponent extends="wheelsMapping.controller">
 
-	<cfset user = model("user").findOne(where="lastname = 'petruzzi'")>
+	<cfset ModelUsers1 = model("Users").findByKey(1)>
 
 </cfcomponent>

@@ -1,27 +1,10 @@
-<!--- PUBLIC CONTROLLER REQUEST FUNCTIONS --->
-
-<cffunction name="isAjax" returntype="boolean" access="public" output="false" hint="Returns whether the page was called from JavaScript or not."
-	examples=
-	'
-		<cfset requestIsAjax = isAjax()>
-	'
-	categories="controller-request,miscellaneous" chapters="" functions="isGet,isPost">
-	<cfscript>
-		var returnValue = "";
-		if (request.cgi.http_x_requested_with == "XMLHTTPRequest")
-			returnValue = true;
-		else
-			returnValue = false;
-	</cfscript>
-	<cfreturn returnValue>
-</cffunction>
-
-<cffunction name="isGet" returntype="boolean" access="public" output="false" hint="Returns whether the request was a normal (GET) request or not."
+<cffunction name="isGet" returntype="boolean" access="public" output="false"
+	hint="Returns whether the request was a normal (GET) request or not."
 	examples=
 	'
 		<cfset requestIsGet = isGet()>
 	'
-	categories="controller-request,miscellaneous" chapters="" functions="isAjax,isPost">
+	categories="controller-request" chapters="" functions="isAjax,isPost">
 	<cfscript>
 		var returnValue = "";
 		if (request.cgi.request_method == "get")
@@ -32,12 +15,13 @@
 	<cfreturn returnValue>
 </cffunction>
 
-<cffunction name="isPost" returntype="boolean" access="public" output="false" hint="Returns whether the request came from a form submission or not."
+<cffunction name="isPost" returntype="boolean" access="public" output="false"
+	hint="Returns whether the request came from a form submission or not."
 	examples=
 	'
 		<cfset requestIsPost = isPost()>
 	'
-	categories="controller-request,miscellaneous" chapters="" functions="isAjax,isGet">
+	categories="controller-request" chapters="" functions="isAjax,isGet">
 	<cfscript>
 		var returnValue = "";
 		if (request.cgi.request_method == "post")
@@ -48,41 +32,39 @@
 	<cfreturn returnValue>
 </cffunction>
 
-<cffunction name="pagination" returntype="struct" access="public" output="false" hint="Returns a struct with information about the specificed paginated query. The variables that will be returned are `currentPage`, `totalPages` and `totalRecords`."
+<cffunction name="isAjax" returntype="boolean" access="public" output="false"
+	hint="Returns whether the page was called from JavaScript or not."
 	examples=
 	'
-		<cfparam name="params.page" default="1">
-		<cfset allAuthors = model("author").findAll(page=params.page, perPage=25, order="lastName", handle="authorsData")>
-		<cfset paginationData = pagination("authorsData")>
+		<cfset requestIsAjax = isAjax()>
 	'
-	categories="controller-request,miscellaneous" chapters="getting-paginated-data,displaying-links-for-pagination" functions="paginationLinks,findAll">
-	<cfargument name="handle" type="string" required="false" default="query" hint="The handle given to the query to return pagination information for.">
+	categories="controller-request" chapters="" functions="isGet,isPost">
 	<cfscript>
-		if (application.wheels.showErrorInformation)
-		{
-			if (!StructKeyExists(request.wheels, arguments.handle))
-			{
-				$throw(type="Wheels.QueryHandleNotFound", message="Wheels couldn't find a query with the handle of `#arguments.handle#`.", extendedInfo="Make sure your `findAll` call has the `page` argument specified and matching `handle` argument if specified.");
-			}
-		}
+		var returnValue = "";
+		if (request.cgi.http_x_requested_with == "XMLHTTPRequest")
+			returnValue = true;
+		else
+			returnValue = false;
 	</cfscript>
-	<cfreturn request.wheels[arguments.handle]>
+	<cfreturn returnValue>
 </cffunction>
 
-<cffunction name="sendEmail" returntype="void" access="public" output="false" hint="Sends an email using a template and an optional layout to wrap it in."
+<cffunction name="sendEmail" returntype="void" access="public" output="false"
+	hint="Sends an email using a template and an optional layout to wrap it in."
 	examples=
 	'
-		<!--- Get a member and send a welcome email passing in a few custom variables to the template --->
+		<cfset sendEmail("myemailtemplate")>
+
 		<cfset member = model("member").findByKey(newMember.id)>
 		<cfset sendEmail(to=member.email, template="myemailtemplate", subject="Thank You for Becoming a Member", recipientName=member.name, startDate=member.startDate)>
 	'
-	categories="controller-request,miscellaneous" chapters="sending-email" functions="">
+	categories="controller-request" chapters="sending-email" functions="">
 	<cfargument name="templates" type="string" required="false" default="" hint="The path to the email template or two paths if you want to send a multipart email. if the `detectMultipart` argument is `false` the template for the text version should be the first one in the list (can also be called with the `template` argument).">
-	<cfargument name="from" type="string" required="true" hint="Email address to send from.">
-	<cfargument name="to" type="string" required="true" hint="Email address to send to.">
-	<cfargument name="subject" type="string" required="true" hint="The subject line of the email.">
-	<cfargument name="layouts" type="any" required="false" default="#application.wheels.functions.sendEmail.layouts#" hint="Layout(s) to wrap body in.">
-	<cfargument name="detectMultipart" type="boolean" required="false" default="#application.wheels.functions.sendEmail.detectMultipart#" hint="When set to `true` Wheels will detect which of the templates is text and which one is html (by counting the `<` characters).">
+	<cfargument name="from" type="string" required="true" hint="Email address to send from">
+	<cfargument name="to" type="string" required="true" hint="Email address to send to">
+	<cfargument name="subject" type="string" required="true" hint="The subject line of the email">
+	<cfargument name="layouts" type="any" required="false" default="#application.wheels.functions.sendEmail.layouts#" hint="Layout(s) to wrap body in">
+	<cfargument name="detectMultipart" type="boolean" required="false" default="#application.wheels.functions.sendEmail.detectMultipart#" hint="When set to `true` Wheels will detect which of the templates is text and which one is html (by counting the `<` characters)">
 	<cfscript>
 		var loc = {};
 
@@ -150,19 +132,19 @@
 	</cfscript>
 </cffunction>
 
-<cffunction name="sendFile" returntype="void" access="public" output="false" hint="Sends a file to the user (from the `files` folder by default)."
+<cffunction name="sendFile" returntype="void" access="public" output="false"
+	hint="Sends a file to the user."
 	examples=
 	'
-		<!--- Send a PDF file to the user --->
 		<cfset sendFile(file="wheels_tutorial_20081028_J657D6HX.pdf")>
 
-		<!--- Send the same file but give the user a different name in the browser dialog window --->
 		<cfset sendFile(file="wheels_tutorial_20081028_J657D6HX.pdf", name="Tutorial.pdf")>
 
-		<!--- Send a file that is located outside of the web root --->
+		<cfset sendFile(file="wheels_tutorial_20081028_J657D6HX.pdf", disposition="inline")>
+
 		<cfset sendFile(file="../../tutorials/wheels_tutorial_20081028_J657D6HX.pdf")>
 	'
-	categories="controller-request,miscellaneous" chapters="sending-files" functions="">
+	categories="controller-request" chapters="sending-files" functions="">
 	<cfargument name="file" type="string" required="true" hint="The file to send to the user">
 	<cfargument name="name" type="string" required="false" default="" hint="The file name to show in the browser download dialog box">
 	<cfargument name="type" type="string" required="false" default="" hint="The HTTP content type to deliver the file as">

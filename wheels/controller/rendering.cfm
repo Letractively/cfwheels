@@ -1,25 +1,22 @@
-<!--- PUBLIC CONTROLLER REQUEST FUNCTIONS --->
-
-<cffunction name="renderPage" returntype="any" access="public" output="false" hint="Renders content to the browser by including the view page for the specified `controller` and `action`."
+<cffunction name="renderPage" returntype="any" access="public" output="false"
+	hint="Renders content to the browser by including the view page for the specified controller and action."
 	examples=
 	'
-		<!--- Render a view page for a different action than the current one --->
 		<cfset renderPage(action="someOtherAction")>
 
-		<!--- Render the view page for the current action but without a layout and cache it for 60 minutes --->
 		<cfset renderPage(layout=false, cache=60)>
 	'
-	categories="controller-request,rendering" chapters="rendering-pages" functions="renderNothing,renderText,renderPartial">
-	<cfargument name="controller" type="string" required="false" default="#variables.params.controller#" hint="Controller to include the view page for.">
-	<cfargument name="action" type="string" required="false" default="#variables.params.action#" hint="Action to include the view page for.">
-	<cfargument name="template" type="string" required="false" default="" hint="A specific template to render.">
-	<cfargument name="layout" type="any" required="false" default="#application.wheels.functions.renderPage.layout#" hint="The layout to wrap the content in.">
-	<cfargument name="cache" type="any" required="false" default="" hint="Minutes to cache the content for.">
-	<cfargument name="returnAs" type="string" required="false" default="" hint="Set to `string` to return the result to the controller instead of sending it to the browser immediately.">
-	<cfargument name="showDebugInformation" type="any" required="false" default="#application.wheels.showDebugInformation#" hint="Whether or not to show debug information at the end of the output. This is useful to override as `false` when you're testing XML output in an environment where the value for `showDebugInformation` is set to `true`.">
+	categories="controller-request" chapters="rendering-pages" functions="renderPageToString,renderNothing,renderText,renderPartial">
+	<cfargument name="controller" type="string" required="false" default="#variables.params.controller#" hint="Controller to include the view page for">
+	<cfargument name="action" type="string" required="false" default="#variables.params.action#" hint="Action to include the view page for">
+	<cfargument name="template" type="string" required="false" default="" hint="A specific template to render">
+	<cfargument name="layout" type="any" required="false" default="#application.wheels.functions.renderPage.layout#" hint="The layout to wrap the content in">
+	<cfargument name="cache" type="any" required="false" default="" hint="Minutes to cache the content for">
+	<cfargument name="returnAs" type="string" required="false" default="" hint="Set to `string` to return the result to the controller instead of sending it to the browser immediately">
+	<cfargument name="$showDebugInformation" type="any" required="false" default="#application.wheels.showDebugInformation#" hint="Whether or not to show debug information at the end of the output. This is useful to override as `false` when you're testing XML output in an environment where the value for `showDebugInformation` is set to `true`">
 	<cfscript>
 		var loc = {};
-		$dollarify(arguments, "controller,action,template,layout,cache,returnAs,showDebugInformation");
+		arguments = $dollarify(arguments, "controller,action,template,layout,cache,returnAs");
 		if (application.wheels.showDebugInformation)
 			$debugPoint("view");
 		// if renderPage was called with a layout set a flag to indicate that it's ok to show debug info at the end of the request
@@ -54,42 +51,42 @@
 	</cfif>
 </cffunction>
 
-<cffunction name="renderNothing" returntype="void" access="public" output="false" hint="Renders a blank string to the browser. This is very similar to calling `cfabort` with the advantage that any after filters you have set on the action will still be run."
+<cffunction name="renderNothing" returntype="void" access="public" output="false"
+	hint="Renders a blank string to the browser. This is very similar to calling 'cfabort' with the advantage that any after filters you have set on the action will still be run."
 	examples=
 	'
-		<!--- Render a blank white page to the browser --->
 		<cfset renderNothing()>
 	'
-	categories="controller-request,rendering" chapters="rendering-pages" functions="renderPage,renderText,renderPartial">
+	categories="controller-request" chapters="rendering-pages" functions="renderPage,renderPageToString,renderText,renderPartial">
 	<cfscript>
 		request.wheels.response = "";
 	</cfscript>
 </cffunction>
 
-<cffunction name="renderText" returntype="void" access="public" output="false" hint="Renders the specified text to the browser."
+<cffunction name="renderText" returntype="void" access="public" output="false"
+	hint="Renders the specified text to the browser."
 	examples=
 	'
-		<!--- Render just the text "Done!" to the browser --->
 		<cfset renderText("Done!")>
 	'
-	categories="controller-request,rendering" chapters="rendering-pages" functions="renderPage,renderNothing,renderPartial">
-	<cfargument name="text" type="any" required="true" hint="The text to be rendered.">
+	categories="controller-request" chapters="rendering-pages" functions="renderPage,renderPageToString,renderNothing,renderPartial">
+	<cfargument name="text" type="any" required="true" hint="The text to be rendered">
 	<cfscript>
 		request.wheels.response = arguments.text;
 	</cfscript>
 </cffunction>
 
-<cffunction name="renderPartial" returntype="any" access="public" output="false" hint="Renders content to the browser by including a partial."
+<cffunction name="renderPartial" returntype="any" access="public" output="false"
+	hint="Renders content to the browser by including a partial."
 	examples=
 	'
-		<!--- Render the partial `_comment.cfm` located in the current controller''s view folder --->
 		<cfset renderPartial("comment")>
 	'
-	categories="controller-request,rendering" chapters="rendering-pages" functions="renderPage,renderNothing,renderText">
-	<cfargument name="partial" type="string" required="true" hint="The name of the file to be used (starting with an optional path and with the underscore and file extension excluded).">
-	<cfargument name="cache" type="any" required="false" default="" hint="See documentation for @renderPage.">
-	<cfargument name="layout" type="string" required="false" default="#application.wheels.functions.renderPartial.layout#" hint="See documentation for @renderPage.">
-	<cfargument name="returnAs" type="string" required="false" default="" hint="See documentation for @renderPage.">
+	categories="controller-request" chapters="rendering-pages" functions="renderPage,renderPageToString,renderNothing,renderText">
+	<cfargument name="partial" type="string" required="true" hint="The name of the file to be used (starting with an optional path and with the underscore and file extension excluded)">
+	<cfargument name="cache" type="any" required="false" default="" hint="See documentation for @renderPage">
+	<cfargument name="layout" type="string" required="false" default="#application.wheels.functions.renderPartial.layout#" hint="See documentation for @renderPage">
+	<cfargument name="returnAs" type="string" required="false" default="" hint="See documentation for @renderPage">
 	<cfscript>
 		var loc = {};
 		loc.partial = $includeOrRenderPartial(argumentCollection=$dollarify(arguments, "partial,cache,layout,returnAs"));
@@ -102,8 +99,6 @@
 		<cfreturn loc.returnValue>
 	</cfif>
 </cffunction>
-
-<!--- PRIVATE FUNCTIONS --->
 
 <cffunction name="$renderPageAndAddToCache" returntype="string" access="public" output="false">
 	<cfscript>
@@ -306,13 +301,10 @@
 				{
 					arguments.current = loc.i;
 					loc.properties = loc.array[loc.i].properties();
-					
-					// we have to overwrite the values in each loop but first we remove the ones that are in the original arguments since they take precedence
 					for (loc.key in loc.originalArguments)
 						if (StructKeyExists(loc.properties, loc.key))
 							StructDelete(loc.properties, loc.key);
 					StructAppend(arguments, loc.properties, true);
-					
 					loc.returnValue = loc.returnValue & $includeAndReturnOutput(argumentCollection=arguments);
 					if (StructKeyExists(arguments, "$spacer") && loc.i < loc.iEnd)
 						loc.returnValue = loc.returnValue & arguments.$spacer;

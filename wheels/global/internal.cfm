@@ -110,7 +110,7 @@
 		if (application.wheels.URLRewriting == "Off")
 			loc.delim = "&";
 		else
-			loc.delim = "?";		
+			loc.delim = "?";
 		loc.returnValue = "";
 		loc.iEnd = ListLen(arguments.params, "&");
 		for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
@@ -450,21 +450,4 @@ Should now call bar() instead and marking foo() as deprecated
 		<cfset arrayappend(request.wheels.deprecation, loc.ret)>
 	</cfif>
 	<cfreturn loc.ret>
-</cffunction>
-
-<cffunction name="$namedRoutePositions" returntype="void" access="public" output="false">
-	<cfscript>
-	var loc = {};
-	loc.iEnd = ArrayLen(application.wheels.routes);
-	for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
-	{
-		loc.route = application.wheels.routes[loc.i];
-		if (StructKeyExists(loc.route, "name") && len(loc.route.name))
-		{
-			if (!StructKeyExists(application.wheels.namedRoutePositions, loc.route.name))
-				application.wheels.namedRoutePositions[loc.route.name] = "";
-			application.wheels.namedRoutePositions[loc.route.name] = ListAppend(application.wheels.namedRoutePositions[loc.route.name], loc.i);
-		}
-	}
-	</cfscript>
 </cffunction>

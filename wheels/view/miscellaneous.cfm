@@ -1,46 +1,5 @@
-<cffunction name="contentForLayout" returntype="string" access="public" output="false" hint="Used inside a layout file to output the HTML created in the view."
-	examples=
-	'
-		<!--- views/layout.cfm --->
-		<html>
-		<head>
-		    <title>My Site</title>
-		</head>
-		<body>
-
-		<cfoutput>
-		##contentForLayout()##
-		</cfoutput>
-
-		</body>
-		</html>
-	'
-	categories="view-helper,miscellaneous" chapters="using-layouts">
-	<cfreturn request.wheels.contentForLayout>
-</cffunction>
-
-<cffunction name="includePartial" returntype="string" access="public" output="false" hint="Includes the specified file in the view. Similar to using `cfinclude` but with the ability to cache the result and using Wheels specific file look-up. By default, Wheels will look for the file in the current controller's view folder. To include a file relative from the `views` folder, you can start the path supplied to `name` with a forward slash."
-	examples=
-	'
-		<cfoutput>##includePartial("login")##</cfoutput>
-		-> If we''re in the "admin" controller, Wheels will include the file "views/admin/_login.cfm".
-
-		<cfoutput>##includePartial(partial="misc/doc", cache=30)##</cfoutput>
-		-> If we''re in the "admin" controller, Wheels will include the file "views/admin/misc/_doc.cfm" and cache it for 30 minutes.
-
-		<cfoutput>##includePartial(partial="/shared/button")##</cfoutput>
-		-> Wheels will include the file "views/shared/_button.cfm".
-	'
-	categories="view-helper,miscellaneous" chapters="pages,partials" functions="renderPartial">
-	<cfargument name="partial" type="any" required="true" hint="See documentation for @renderPartial.">
-	<cfargument name="group" type="string" required="false" default="" hint="Field to group the query by. A new query will be passed into the partial template for you to iterate over.">
-	<cfargument name="cache" type="any" required="false" default="" hint="See documentation for @renderPartial.">
-	<cfargument name="layout" type="string" required="false" default="#application.wheels.functions.includePartial.layout#" hint="See documentation for @renderPartial.">
-	<cfargument name="spacer" type="string" required="false" default="" hint="HTML or string to place between partials when called using a query.">
-	<cfreturn $includeOrRenderPartial(argumentCollection=$dollarify(arguments, "partial,group,cache,layout,spacer"))>
-</cffunction>
-
-<cffunction name="cycle" returntype="string" access="public" output="false" hint="Cycles through list values every time it is called."
+<cffunction name="cycle" returntype="string" access="public" output="false"
+	hint="Cycles through list values every time it is called."
 	examples=
 	'
 		<!--- alternating table row colors --->
@@ -70,9 +29,9 @@
 			</div>
 		</cfoutput>
 	'
-	categories="view-helper,miscellaneous" functions="resetCycle">
-	<cfargument name="values" type="string" required="true" hint="List of values to cycle through.">
-	<cfargument name="name" type="string" required="false" default="default" hint="Name to give the cycle. Useful when you use multiple cycles on a page.">
+	categories="view-helper" functions="resetCycle">
+	<cfargument name="values" type="string" required="true" hint="List of values to cycle through">
+	<cfargument name="name" type="string" required="false" default="default" hint="Name to give the cycle. Useful when you use multiple cycles on a page">
 	<cfscript>
 		var loc = {};
 		if (!StructKeyExists(request.wheels, "cycle"))
@@ -93,7 +52,8 @@
 	<cfreturn loc.returnValue>
 </cffunction>
 
-<cffunction name="resetCycle" returntype="void" access="public" output="false" hint="Resets a cycle so that it starts from the first list value the next time it is called."
+<cffunction name="resetCycle" returntype="void" access="public" output="false"
+	hint="Resets a cycle so that it starts from the first list value the next time it is called."
 	examples=
 	'
 		<!--- alternating row colors and shrinking emphasis --->
@@ -109,9 +69,9 @@
 			</div>
 		</cfoutput>
 	'
-	categories="view-helper,miscellaneous" functions="cycle"
+	categories="view-helper" functions="cycle"
 	>
-	<cfargument name="name" type="string" required="false" default="default" hint="The name of the cycle to reset.">
+	<cfargument name="name" type="string" required="false" default="default" hint="The name of the cycle to reset">
 	<cfscript>
 		if (StructKeyExists(request.wheels, "cycle") && StructKeyExists(request.wheels.cycle, arguments.name))
 			StructDelete(request.wheels.cycle, arguments.name);
