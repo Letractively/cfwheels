@@ -35,17 +35,14 @@ Part of the `Order.cfc` model file:
 
     <cffunction name="fixCreditCard">
         Code for stripping out dashes in credit card numbers goes here...
-        <cfreturn true>
     </cffunction>
 
     <cffunction name="calculateShippingCost">
         Code for calculating shipping cost goes here...
-        <cfreturn true>
     </cffunction>
 
     <cffunction name="sendConfirmationEmail">
         Code for sending confirmation email goes here...
-        <cfreturn true>
     </cffunction>
 
 </cfcomponent>
@@ -72,20 +69,19 @@ The following 17 functions can be used to register callbacks.
 
 ===Callback Life Cycle===
 
-As you can see above, there are places (5, to be exact) where one callback or the other will be executed, but not both.
+As you can see above, there are a few places (5, to be exact) where one callback or the other will be executed, but not both.
 
- # The very first possible callback that can take place in an object's life cycle is either `afterNew()` or `afterFind()`.
- # The `afterNew()` callback methods are triggered when you create the object yourself for the very first time, using the `new()` method, for example.
- # `afterFind()` is triggered when the object is created as a result of fetching a record from the database, using `findByKey()`, for example. (There is some special behavior for this callback type that we'll explain in detail later on in this chapter).
- # The remaining callbacks run depending on whether or not we're running a "create," "update," or "delete."
+The very first possible callback that can take place in an object's life cycle is either `afterNew()` or `afterFind()`. The `afterNew()` callback methods are triggered when you create the object yourself for the very first time, using the `new()` method, for example. `afterFind()` is triggered when the object is created as a result of fetching a record from the database, using `findByKey()`, for example. (There is some special behavior for this callback type that we'll explain in detail later on in this chapter).
+
+The remaining callbacks get executed depending on whether or not we're running a "create", "update", or "delete" operation.
 
 ==Special Case #1: `findAll()` and the `afterFind` Callback==
 
 When you read about the `afterFind()` callback above, you may have thought that it must surely only work for `findOne()`/`findByKey()` calls but not for `findAll()` because those calls return query result sets by default, not objects.
 
-Believe it or not, callbacks are even triggered on `findAll()`! You do need to write your callback code differently to cater to `findAll()` because there will be no `this` scope in the query object. Instead of modifying properties in the `this` scope like normal, the properties are passed in to the callback method via the `arguments` struct.
+Believe it or not, but callbacks are even triggered on `findAll()`! You do need to write your callback code differently to cater to `findAll()` because there will be no `this` scope in the query object. Instead of modifying properties in the `this` scope like you normally would, the properties are passed in to the callback method via the `arguments` struct.
 
-Sounds complicated? This example should clear it up a little. Let's show some code to display how you can handle setting a `fullName` property on a hypothetical "artist" model:
+Does that sound complicated? This example should clear it up a little. Let's show some code to display how you can handle setting a `fullName` property on a hypothetical `artist` model:
 
 {{{
 <cfcomponent extends="Model" output="false">
@@ -118,13 +114,13 @@ Sounds complicated? This example should clear it up a little. Let's show some co
 </cfcomponent>
 }}}
 	
-In our example model, an artist's name can consist of both a first name and a last name like in "John Mayer" or just the last name like in "Springstein."
+In our example model, an artist's name can consist of both a first name and a last name like in "John Mayer" or just the band / last name like in "Abba".
 
 The `setFullName` method handles the concatenation of the names, but the interesting stuff is in the `addFullName` method. This is where we check if the `arguments` struct is empty. If it is, then we know we're dealing with an object and can proceed to work with the `this` scope. Otherwise, we do the changes directly on the `arguments` struct and return it back.
 
 (Always remember to return the `arguments` struct, otherwise Wheels won't be able to tell that you actually wanted to make any changes to the query.)
 
-==Special Case #2: The `updateAll()` and `deleteAll()` Methods==
+==Special Case #2: Callbacks and the `updateAll()` and `deleteAll()` Methods==
 
 Please note that if you use the `updateAll()` or the `deleteAll()` methods in Wheels, they will not instantiate objects by default, and thus any callbacks will be skipped. This is good for performance reasons because if you update 1,000 records at once, you probably don't want to run the callbacks on each object. Especially not if they involve database calls.
 
@@ -132,4 +128,4 @@ However, if you want to execute all callbacks in those methods as well, all you 
 
 ==Breaking a Callback Chain==
 
-If you want to completely break the save/delete operation chain for an object, you can do so by returning `false` from your callback method. (Otherwise, always return `true` or nothing at all.) By breaking the chain, we mean that if you, for example, have called the `save()` method on a new object and the method you've registered with a `beforeCreate()` call returns `false`, the method will exit early, returning `false` and no record will be inserted in the database.
+If you want to completely break the callback chain for an object, you can do so by returning `false` from your callback method. (Otherwise, always return `true` or nothing at all.) By breaking the chain, we mean that if you, for example, have called the `save()` method on a new object and the method you've registered with a `beforeCreate()` call returns `false`, the method will exit early, returning `false` and no record will be inserted in the database.
