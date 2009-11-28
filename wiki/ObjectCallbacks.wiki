@@ -50,7 +50,7 @@ Part of the `Order.cfc` model file:
 
 The above code registers 3 methods to be run at specific points in the life cycle of all objects in your application. 
 
-==All Possible Callbacks==
+==Registering and Controlling Callbacks==
 
 The following 17 functions can be used to register callbacks.
 
@@ -75,7 +75,7 @@ The very first possible callback that can take place in an object's life cycle i
 
 The remaining callbacks get executed depending on whether or not we're running a "create", "update", or "delete" operation.
 
-==Breaking a Callback Chain==
+===Breaking a Callback Chain===
 
 If you want to completely break the callback chain for an object, you can do so by returning `false` from your callback method. (Otherwise, always return `true` or nothing at all.) By breaking the chain, we mean that if you, for example, have called the `save()` method on a new object and the method you've registered with a `beforeCreate()` call returns `false`, the method will exit early, returning `false` and no record will be inserted in the database.
 
