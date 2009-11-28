@@ -75,6 +75,20 @@ The very first possible callback that can take place in an object's life cycle i
 
 The remaining callbacks get executed depending on whether or not we're running a "create", "update", or "delete" operation.
 
+==Breaking a Callback Chain==
+
+If you want to completely break the callback chain for an object, you can do so by returning `false` from your callback method. (Otherwise, always return `true` or nothing at all.) By breaking the chain, we mean that if you, for example, have called the `save()` method on a new object and the method you've registered with a `beforeCreate()` call returns `false`, the method will exit early, returning `false` and no record will be inserted in the database.
+
+===Order of Callbacks===
+
+Sometimes you need to run more than one method at a specific point in the object's life cycle. You can do this by passing in a list of method names like this:
+
+{{{
+<cfset beforeSave("checkSomething,checkSomethingElse")>
+}}}
+
+When an object is saved in your application these two callbacks will be executed in the order you registered them. The `checkSomething` method will be executed first and unless it returns `false` the `checkSomethingElse` method will be executed directly afterwards.
+
 ==Special Case #1: `findAll()` and the `afterFind` Callback==
 
 When you read about the `afterFind()` callback above, you may have thought that it must surely only work for `findOne()`/`findByKey()` calls but not for `findAll()` because those calls return query result sets by default, not objects.
@@ -125,7 +139,3 @@ The `setFullName` method handles the concatenation of the names, but the interes
 Please note that if you use the `updateAll()` or the `deleteAll()` methods in Wheels, they will not instantiate objects by default, and thus any callbacks will be skipped. This is good for performance reasons because if you update 1,000 records at once, you probably don't want to run the callbacks on each object. Especially not if they involve database calls.
 
 However, if you want to execute all callbacks in those methods as well, all you have to do is pass in `instantiate=true` to the `updateAll()`/`deleteAll()` methods.
-
-==Breaking a Callback Chain==
-
-If you want to completely break the callback chain for an object, you can do so by returning `false` from your callback method. (Otherwise, always return `true` or nothing at all.) By breaking the chain, we mean that if you, for example, have called the `save()` method on a new object and the method you've registered with a `beforeCreate()` call returns `false`, the method will exit early, returning `false` and no record will be inserted in the database.
