@@ -12,4 +12,4 @@ Download, unzip, and run the application. (It includes with !ColdFusion on Wheel
 
 ==Download==
 
-[http://cfwheels.googlecode.com/files/authorization.1.0-r3855.zip Download Authorization Sample]
+[http://cfwheels.googlecode.com/files/authorization.1.0-r3856.zip Download Authorization Sample]
