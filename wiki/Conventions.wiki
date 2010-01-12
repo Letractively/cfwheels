@@ -1,0 +1,35 @@
+#summary With a convention-over-configuration framework like Wheels, it's important to know the conventions. This is your guide.
+
+There is a specific set of standards that Wheels follows when you run it in its default state. This is to save you time. With conventions in place, you can get started coding without worrying about configuring every little detail.
+
+But it is important for you to know these conventions, especially if you're running an operating system and/or DBMS configuration that's picky about things like case sensitivity.
+
+==File and Folder Naming Conventions==
+
+===Controllers, Actions, and Views===
+
+Controllers, actions, and views are closely linked together by default. And how you name them will influence the URLs that Wheels will generate.
+
+===Controllers===
+
+First, a controller is a CFC file placed in the `controllers` folder. It should be named in `PascalCase`. For example, a site map controller would be stored at `controllers/SiteMap.cfc`.
+
+Multi-word controllers will be delimited by hyphens in their calling URLs. For example, a URL of `/site-map` will reference the `SiteMap` controller.
+
+See [UsingRoutes Using Routes] for instructions on overriding this behavior.
+
+===Actions===
+
+Methods within the controllers, known as actions, should be named in `camelCase`.
+
+Like with controllers, any time a capital letter is used in `camelCase`, a hyphen will be used as a word delimiter in the corresponding URL. For example, a URL of `/site-map/search-engines` will reference the `searchEngines` action in the `SiteMap` controller.
+
+See [UsingRoutes Using Routes] for instructions on overriding this behavior.
+
+===Views===
+
+By default, view files are named after the action names and are stored in folders that correspond to controller names. Both the folder names and view file names should be all lowercase, and there is no word delimiter.
+
+In our `/site-map/search-engines` URL example, the corresponding view file would be stored at `views/sitemap/searchengines.cfm`.
+
+For information on overriding this behavior, refer to documentation for the `renderPage()` function and read the [Pages] chapter.
