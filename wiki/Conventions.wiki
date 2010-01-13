@@ -1,12 +1,32 @@
 #summary With a convention-over-configuration framework like Wheels, it's important to know the conventions. This is your guide.
+#labels chapter,1.0
 
 There is a specific set of standards that Wheels follows when you run it in its default state. This is to save you time. With conventions in place, you can get started coding without worrying about configuring every little detail.
 
 But it is important for you to know these conventions, especially if you're running an operating system and/or DBMS configuration that's picky about things like case sensitivity.
 
-==File and Folder Naming Conventions==
+==URLs==
 
-===Controllers, Actions, and Views===
+Wheels uses a very flexible routing system to match your application's URLs to controllers, views, and parameters.
+
+Within this routing system is a _default route_ that handles many scenarios that you'll run across as a developer. The default route is mapped using the pattern `[controller]/[action]/[key]`.
+
+Consider this example URL:
+
+{{{
+http://localhost/users/edit/12
+}}}
+
+This maps to the `user` controller, `edit` action, and a `key` of `12`. For all intents and purposes, this will load a view for editing a user with a primary key value in the database of `12`.
+
+This URL pattern works up the chain and will also handle the following example URLs:
+
+|| *URL* || *Controller* || *Action* || *Key* ||
+|| `http://localhost/users/edit/12` || `users` || `edit` || `12` ||
+|| `http://localhost/users/add || `users` || `add` || `Undefined` ||
+|| `http://localhost/users || `users` || `index` || `Undefined` ||
+
+==Naming Conventions for Controllers, Actions, and Views==
 
 Controllers, actions, and views are closely linked together by default. And how you name them will influence the URLs that Wheels will generate.
 
