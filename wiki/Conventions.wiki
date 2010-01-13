@@ -26,6 +26,8 @@ This URL pattern works up the chain and will also handle the following example U
 || `http://localhost/users/add` || `users` || `add` || `Undefined` ||
 || `http://localhost/users` || `users` || `index` || `Undefined` ||
 
+See [UsingRoutes Using Routes] for instructions on overriding this behavior.
+
 ==Naming Conventions for Controllers, Actions, and Views==
 
 Controllers, actions, and views are closely linked together by default. And how you name them will influence the URLs that Wheels will generate.
@@ -53,3 +55,21 @@ By default, view files are named after the action names and are stored in folder
 In our `/site-map/search-engines` URL example, the corresponding view file would be stored at `views/sitemap/searchengines.cfm`.
 
 For information on overriding this behavior, refer to documentation for the `renderPage()` function and read the [Pages] chapter.
+
+==Naming Conventions for Models and Databases==
+
+By default, the names of Wheels models, model properties, database tables, and database fields all relate to each other. Wheels even sets a sensible default for the CFML data source used for database interactions.
+
+===Data Sources===
+
+Wheels will automatically look for a data source with the same name as the folder that your application is deployed in. If your Wheels application is in a folder called `blog`, Wheels will look for a data source called `blog`, for example.
+
+Refer to the [ConfigurationandDefaults Configuration and Defaults] chapter for instructions on overriding data source information.
+
+===Plural Database Tables, Singular Models===
+
+A model file generally represents a single record in a corresponding database table. To fit with this metaphor, a Wheels model file stored in the `models` folder is named in a singular fashion. The corresponding database table should be named as the plural version of the model filename.
+
+For example, a `user` model represents a record from the `users` database table. Wheels also recognizes plural patterns like `binary`/`binaries`, `mouse`/mice`, `child`/`children`, etc.
+
+Like controller files, models are also CFCs and are named `PascalCase`. They are stored in the `models` folder. So the `user` model would be stored at `models/User.cfc`.
