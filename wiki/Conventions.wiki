@@ -73,3 +73,11 @@ A model file generally represents a single record in a corresponding database ta
 For example, a `user` model represents a record from the `users` database table. Wheels also recognizes plural patterns like `binary`/`binaries`, `mouse`/mice`, `child`/`children`, etc.
 
 Like controller files, models are also CFCs and are named `PascalCase`. They are stored in the `models` folder. So the `user` model would be stored at `models/User.cfc`.
+
+===Everything in the Database Is Lowercase===
+
+In your database, both table names and column names should be lowercase. The `customersegments` table could have fields called `title`, `regionid`, and `incomelevel`, for example.
+
+Because of CFML's case insensitive nature, we recommend that you refer to model names and corresponding properties in `camelCase`. This makes for easier readability in your application code.
+
+In the `customersegments` example above, you could refer to the properties in your CFML as `title`, `regionId`, and `incomeLevel` to stick to CFML's Java-style roots. (Built-in CFML functions are often written in `camelCase` and `PascalCase`, after all.)
