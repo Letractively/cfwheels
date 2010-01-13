@@ -23,8 +23,8 @@ This URL pattern works up the chain and will also handle the following example U
 
 || *URL* || *Controller* || *Action* || *Key* ||
 || `http://localhost/users/edit/12` || `users` || `edit` || `12` ||
-|| `http://localhost/users/add || `users` || `add` || `Undefined` ||
-|| `http://localhost/users || `users` || `index` || `Undefined` ||
+|| `http://localhost/users/add` || `users` || `add` || `Undefined` ||
+|| `http://localhost/users` || `users` || `index` || `Undefined` ||
 
 ==Naming Conventions for Controllers, Actions, and Views==
 
