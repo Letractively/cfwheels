@@ -66,7 +66,7 @@ Wheels will automatically look for a data source with the same name as the folde
 
 Refer to the [ConfigurationandDefaults Configuration and Defaults] chapter for instructions on overriding data source information.
 
-===Plural Database Tables, Singular Models===
+===Plural Database Table Names, Singular Model Names===
 
 A model file generally represents a single record in a corresponding database table. To fit with this metaphor, a Wheels model file stored in the `models` folder is named in a singular fashion. The corresponding database table should be named as the plural version of the model filename.
 
