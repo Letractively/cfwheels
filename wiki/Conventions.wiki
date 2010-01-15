@@ -56,6 +56,16 @@ In our `/site-map/search-engines` URL example, the corresponding view file would
 
 For information on overriding this behavior, refer to documentation for the `renderPage()` function and read the [Pages] chapter.
 
+===Layouts===
+
+A special type of view file called a _layout_ defines markup that should surround the views loaded by the application. The default layout is stored at `views/layout.cfm` and is automatically used by all views in the application.
+
+Controller-level layouts can also be set automatically by creating a file called `layout.cfm` and storing it in the given controller's view folder. For example, to create a layout for the `users` controller, the file would be stored at `views/users/layout.cfm`.
+
+When a controller-level layout is present, it overrides the default layout stored in the root `views` folder.
+
+For information on overriding the layout file to be loaded by an action, see the chapter on [UsingLayouts Using Layouts].
+
 ==Naming Conventions for Models and Databases==
 
 By default, the names of Wheels models, model properties, database tables, and database fields all relate to each other. Wheels even sets a sensible default for the CFML data source used for database interactions.
