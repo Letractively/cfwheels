@@ -1,4 +1,4 @@
-#summary With a convention-over-configuration framework like Wheels, it's important to know the conventions. This is your guide.
+#summary With a convention-over-configuration framework like Wheels, it's important to know these conventions. This is your guide.
 #labels chapter,1.0
 
 There is a specific set of standards that Wheels follows when you run it in its default state. This is to save you time. With conventions in place, you can get started coding without worrying about configuring every little detail.
@@ -95,3 +95,9 @@ Because of CFML's case insensitive nature, we recommend that you refer to model 
 In the `customersegments` example above, you could refer to the properties in your CFML as `title`, `regionId`, and `incomeLevel` to stick to CFML's Java-style roots. (Built-in CFML functions are often written in `camelCase` and `PascalCase`, after all.)
 
 For information on overriding column and property names, refer to documentation for the `property()` function and the [ObjectRelationalMapping Object Relational Mapping] chapter.
+
+==Configurations and Function Defaults==
+
+There are many default values and settings that you can tweak in Wheels when you need to. Some of them are conventions and others are just configurations available for you to change.
+
+For details on what you can configure, read the [ConfigurationsandDefaults Configurations and Defaults] chapter.
