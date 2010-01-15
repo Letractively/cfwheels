@@ -68,11 +68,13 @@ Refer to the [ConfigurationandDefaults Configuration and Defaults] chapter for i
 
 ===Plural Database Table Names, Singular Model Names===
 
-A model file generally represents a single record in a corresponding database table. To fit with this metaphor, a Wheels model file stored in the `models` folder is named in a singular fashion. The corresponding database table should be named as the plural version of the model filename.
+Wheels adopts a Rails-style naming conventions for database tables and model files. Think of a database table as a collection of model objects; therefore, it is named with a plural name. Think of a model object as a representation of a single record from the database table; therefore, it is named with a singular word.
 
 For example, a `user` model represents a record from the `users` database table. Wheels also recognizes plural patterns like `binary`/`binaries`, `mouse`/mice`, `child`/`children`, etc.
 
 Like controller files, models are also CFCs and are named `PascalCase`. They are stored in the `models` folder. So the `user` model would be stored at `models/User.cfc`.
+
+For instructions on overriding database naming conventions, refer to documentation for the `table()` function and the chapter on [ObjectRelationalMapping Object Relational Mapping].
 
 ===Everything in the Database Is Lowercase===
 
@@ -81,3 +83,5 @@ In your database, both table names and column names should be lowercase. The `cu
 Because of CFML's case insensitive nature, we recommend that you refer to model names and corresponding properties in `camelCase`. This makes for easier readability in your application code.
 
 In the `customersegments` example above, you could refer to the properties in your CFML as `title`, `regionId`, and `incomeLevel` to stick to CFML's Java-style roots. (Built-in CFML functions are often written in `camelCase` and `PascalCase`, after all.)
+
+For information on overriding column and property names, refer to documentation for the `property()` function and the [ObjectRelationalMapping Object Relational Mapping] chapter.
