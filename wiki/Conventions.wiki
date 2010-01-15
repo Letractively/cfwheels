@@ -96,8 +96,8 @@ In the `customersegments` example above, you could refer to the properties in yo
 
 For information on overriding column and property names, refer to documentation for the `property()` function and the [ObjectRelationalMapping Object Relational Mapping] chapter.
 
-==Configurations and Function Defaults==
+==Configuration and Defaults==
 
-There are many default values and settings that you can tweak in Wheels when you need to. Some of them are conventions and others are just configurations available for you to change.
+There are many default values and settings that you can tweak in Wheels when you need to. Some of them are conventions and others are just configurations available for you to change. You can even change argument defaults for built-in Wheels functions to keep your code DRYer.
 
-For details on what you can configure, read the [ConfigurationsandDefaults Configurations and Defaults] chapter.
+For more details on what you can configure, read the [ConfigurationandDefaults Configuration and Defaults] chapter.
