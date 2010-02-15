@@ -65,12 +65,17 @@
 	<cfargument name="where" type="string" required="false" default="" hint="See documentation for @average.">
 	<cfargument name="include" type="string" required="false" default="" hint="See documentation for @average.">
 	<cfscript>
-		arguments.type = "COUNT";
-		arguments.property = variables.wheels.class.keys;
 		if (Len(arguments.include))
+		{
 			arguments.distinct = true;
+			arguments.property = variables.wheels.class.keys;
+		}
 		else
+		{
 			arguments.distinct = false;
+			arguments.property = "*";
+		}
+		arguments.type = "COUNT";
 	</cfscript>
 	<cfreturn $calculate(argumentCollection=arguments)>
 </cffunction>
@@ -145,18 +150,25 @@
 		if (arguments.distinct)
 			arguments.select = arguments.select & "DISTINCT ";
 
-		// create a list of columns for the `SELECT` clause either from regular properties on the model or calculated ones
-		loc.properties = "";
-		loc.iEnd = ListLen(arguments.property);
-		for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
+		// create a list of columns for the `SELECT` clause (unless just `*` was passed in) either from regular properties on the model or calculated ones
+		if (arguments.property == "*")
 		{
-			loc.iItem = Trim(ListGetAt(arguments.property, loc.i));
-			if (ListFindNoCase(variables.wheels.class.propertyList, loc.iItem))
-				loc.properties = ListAppend(loc.properties, variables.wheels.class.tableName & "." & variables.wheels.class.properties[loc.iItem].column);
-			else if (ListFindNoCase(variables.wheels.class.calculatedPropertyList, loc.iItem))
-				loc.properties = ListAppend(loc.properties, variables.wheels.class.calculatedProperties[loc.iItem].sql);
+			arguments.select = arguments.select & arguments.property;
 		}
-		arguments.select = arguments.select & loc.properties;
+		else
+		{
+			loc.properties = "";
+			loc.iEnd = ListLen(arguments.property);
+			for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
+			{
+				loc.iItem = Trim(ListGetAt(arguments.property, loc.i));
+				if (ListFindNoCase(variables.wheels.class.propertyList, loc.iItem))
+					loc.properties = ListAppend(loc.properties, variables.wheels.class.tableName & "." & variables.wheels.class.properties[loc.iItem].column);
+				else if (ListFindNoCase(variables.wheels.class.calculatedPropertyList, loc.iItem))
+					loc.properties = ListAppend(loc.properties, variables.wheels.class.calculatedProperties[loc.iItem].sql);
+			}
+			arguments.select = arguments.select & loc.properties;
+		}
 
 		// alias the result with `AS`, this means that Wheels will not try and change the string (which is why we have to add the table name above since it won't be done automatically)
 		arguments.select = arguments.select & ") AS result";

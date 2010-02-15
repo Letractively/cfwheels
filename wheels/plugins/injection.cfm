@@ -16,9 +16,7 @@
 				$wheels.iItem = ListGetAt($wheels.iList, $wheels.i);
 				$wheels.pluginName = ListFirst($wheels.iItem, ".");
 				$wheels.methodName = ListLast($wheels.iItem, ".");
-				if (!StructKeyExists(variables, "core"))
-					variables.core = {};
-				if (StructKeyExists(variables, $wheels.methodName) && !StructKeyExists(variables.core, $wheels.methodName))
+				if (StructKeyExists(variables, $wheels.methodName))
 					variables.core[$wheels.methodName] = variables[$wheels.methodName];
 				variables[$wheels.methodName] = application.wheels.plugins[$wheels.pluginName][$wheels.methodName];
 			}

@@ -1,69 +1,100 @@
-<!--- PUBLIC MODEL CLASS METHODS --->
-
-<!--- create --->
-
-<cffunction name="create" returntype="any" access="public" output="false" hint="Creates a new object, saves it to the database (if the validation permits it) and returns it. If the validation fails, the unsaved object (with errors added to it) is still returned. Property names and values can be passed in either using named arguments or as a struct to the `properties` argument."
+﻿<cffunction name="findByKey" returntype="any" access="public" output="false"
+	hint="Fetches the requested record and returns it as an object. Returns `false` if no record is found. You can override this behavior to return a `cfquery` result set instead, similar to what's described in the documentation for @findOne."
 	examples=
 	'
-		<!--- Create a new author and save it to the database --->
-		<cfset newAuthor = model("author").create(params.author)>
+		<!--- Getting the author with the primary key vale 99 as an object --->
+		<cfset auth = model("author").findByKey(99)>
 
-		<!--- Same as above using named arguments --->
-		<cfset newAuthor = model("author").create(firstName="John", lastName="Doe")>
+		<!--- Getting an author based on a form/URL value and then checking if it was found --->
+		<cfset auth = model("author").findByKey(params.key)>
+		<cfif NOT IsObject(auth)>
+			<cfset flashInsert(message="Author ##params.key## was not found")>
+			<cfset redirectTo(back=true)>
+		</cfif>
 
-		<!--- Same as above using both named arguments and a struct --->
-		<cfset newAuthor = model("author").create(active=1, properties=params.author)>
-
-		<!--- If you have a `hasOne` or `hasMany` association setup from `customer` to `order` you can do a scoped call (the `createOrder` method below will call `model("order").create(customerId=aCustomer.id, shipping=params.shipping)` internally) --->
-		<cfset aCustomer = model("customer").findByKey(params.customerId)>
-		<cfset anOrder = aCustomer.createOrder(shipping=params.shipping)>
+		<!--- If you have a `belongsTo` association setup from `comment` to `post` you can do a scoped call (the `post` method below will call `model("post").findByKey(comment.postId)` internally) --->
+		<cfset aComment = model("comment").findByKey(params.commentId)>
+		<cfset aPost = aComment.post()>
 	'
-	categories="model-class,create" chapters="creating-records,associations" functions="hasOne,hasMany,new">
-	<cfargument name="properties" type="struct" required="false" default="#StructNew()#" hint="See documentation for @new.">
-	<cfargument name="defaults" type="boolean" required="false" default="#application.wheels.functions.create.defaults#" hint="See documentation for @save.">
-	<cfargument name="parameterize" type="any" required="false" default="#application.wheels.functions.create.parameterize#" hint="See documentation for @save.">
+	categories="model-class" chapters="reading-records,associations" functions="belongsTo,findAll,findOne">
+	<cfargument name="key" type="any" required="true" hint="Primary key value(s) of the record to fetch. Separate with comma if passing in multiple primary key values. Accepts a string, list or a numeric value.">
+	<cfargument name="select" type="string" required="false" default="" hint="See documentation for @findAll.">
+	<cfargument name="include" type="string" required="false" default="" hint="See documentation for @findAll.">
+	<cfargument name="cache" type="any" required="false" default="" hint="See documentation for @findAll.">
+	<cfargument name="reload" type="boolean" required="false" default="#application.wheels.functions.findByKey.reload#" hint="See documentation for @findAll.">
+	<cfargument name="parameterize" type="any" required="false" default="#application.wheels.functions.findByKey.parameterize#" hint="See documentation for @findAll.">
+	<cfargument name="returnAs" type="string" required="false" default="#application.wheels.functions.findByKey.returnAs#" hint="Can be set to either `object` or `query`. See documentation for @findAll for more info.">
+	<cfargument name="$softDeleteCheck" type="boolean" required="false" default="true">
 	<cfscript>
-		var loc = {};
-		loc.parameterize = arguments.parameterize;
-		StructDelete(arguments, "parameterize");
-		loc.returnValue = new(argumentCollection=arguments);
-		loc.returnValue.save(parameterize=loc.parameterize, defaults=arguments.defaults);
+		var returnValue = "";
+		// convert primary key column name(s) / value(s) to a WHERE clause that is then used in the findOne call
+		arguments.where = $keyWhereString(values=arguments.key);
+		StructDelete(arguments, "key");
+		returnValue = findOne(argumentCollection=arguments);
 	</cfscript>
-	<cfreturn loc.returnValue>
+	<cfreturn returnValue>
 </cffunction>
 
-<cffunction name="new" returntype="any" access="public" output="false" hint="Creates a new object based on supplied properties and returns it. The object is not saved to the database, it only exists in memory. Property names and values can be passed in either using named arguments or as a struct to the `properties` argument."
+<cffunction name="findOne" returntype="any" access="public" output="false"
+	hint="Fetches the first record found based on the `WHERE` and `ORDER BY` clauses. With the default settings (i.e. the `returnAs` argument set to `object`) a model object will be returned if the record is found and the boolean value `false` if not. Instead of using the `where` argument you can create cleaner code by making use of a concept called dynamic finders."
 	examples=
 	'
-		<!--- Create a new author in memory (not saved to the database) --->
-		<cfset newAuthor = model("author").new()>
+		<!--- Getting the most recent order as an object from the database --->
+		<cfset anOrder = model("order").findOne(order="datePurchased DESC")>
 
-		<!--- Create a new author based on properties in a struct --->
-		<cfset newAuthor = model("author").new(params.authorStruct)>
+		<!--- Using a dynamic finder to get the first person with the last name `Smith`. Same as calling model("user").findOne(where"lastName=''Smith''") --->
+		<cfset person = model("user").findOneByLastName("Smith")>
 
-		<!--- Create a new author by passing in named arguments --->
-		<cfset newAuthor = model("author").new(firstName="John", lastName="Doe")>
+		<!--- Getting a specific user using a dynamic finder. Same as calling model("user").findOne(where"email=''someone@somewhere.com'' AND password=''mypass''") --->
+		<cfset user = model("user").findOneByEmailAndPassword("someone@somewhere.com,mypass")>
 
-		<!--- If you have a `hasOne` or `hasMany` association setup from `customer` to `order` you can do a scoped call (the `newOrder` method below will call `model("order").new(customerId=aCustomer.id)` internally) --->
-		<cfset aCustomer = model("customer").findByKey(params.customerId)>
-		<cfset anOrder = aCustomer.newOrder(shipping=params.shipping)>
+		<!--- If you have a `hasOne` association setup from `user` to `profile` you can do a scoped call (the `profile` method below will call `model("profile").findOne(where="userId=##user.id##")` internally) --->
+		<cfset aUser = model("user").findByKey(params.userId)>
+		<cfset aProfile = aUser.profile()>
+
+		<!--- If you have a `hasMany` association setup from `post` to `comment` you can do a scoped call (the `findOneComment` method below will call `model("comment").findOne(where="postId=##post.id##")` internally) --->
+		<cfset aPost = model("post").findByKey(params.postId)>
+		<cfset aComment = aPost.findOneComment(where="text=''I Love Wheels!''")>
 	'
-	categories="model-class,create" chapters="creating-records,associations" functions="create,hasMany,hasOne">
-	<cfargument name="properties" type="struct" required="false" default="#StructNew()#" hint="The properties you want to set on the object (can also be passed in as named arguments).">
-	<cfargument name="defaults" type="boolean" required="false" default="#application.wheels.functions.new.defaults#" hint="See documentation for @save.">
+	categories="model-class" chapters="reading-records,associations" functions="findAll,findByKey,hasMany,hasOne">
+	<cfargument name="where" type="string" required="false" default="" hint="See documentation for @findAll.">
+	<cfargument name="order" type="string" required="false" default="" hint="See documentation for @findAll.">
+	<cfargument name="select" type="string" required="false" default="" hint="See documentation for @findAll.">
+	<cfargument name="include" type="string" required="false" default="" hint="See documentation for @findAll.">
+	<cfargument name="cache" type="any" required="false" default="" hint="See documentation for @findAll.">
+	<cfargument name="reload" type="boolean" required="false" default="#application.wheels.functions.findOne.reload#" hint="See documentation for @findAll.">
+	<cfargument name="parameterize" type="any" required="false" default="#application.wheels.functions.findOne.parameterize#" hint="See documentation for @findAll.">
+	<cfargument name="returnAs" type="string" required="false" default="#application.wheels.functions.findOne.returnAs#" hint="Can be set to either `object` or `query`. See documentation for @findAll for more info.">
+	<cfargument name="$softDeleteCheck" type="boolean" required="false" default="true">
 	<cfscript>
-		var loc = {};
-		arguments.properties = $setProperties(argumentCollection=arguments, filterList="properties,defaults", setOnModel=false);
-		loc.returnValue = $createInstance(properties=arguments.properties, persisted=false);
-		if (arguments.defaults)
-			loc.returnValue.$setDefaultValues();
+		var returnValue = "";
+
+		if (Len(arguments.include) && StructKeyExists(variables.wheels.class.associations, arguments.include) && variables.wheels.class.associations[arguments.include].joinType != "inner")
+		{
+			// since we're joining with associated tables we could potentially get duplicate records for one object and we work around this by using the pagination code which has this functionality built in
+			arguments.page = 1;
+			arguments.perPage = 1;
+			arguments.count = 1;
+		}
+		else
+		{
+			// no joins will be done so we can safely get just one record from the database
+			arguments.maxRows = 1;
+		}
+		returnValue = findAll(argumentCollection=arguments);
+		if (IsArray(returnValue))
+		{
+			if (ArrayLen(returnValue))
+				returnValue = returnValue[1];
+			else
+				returnValue = false;
+		}
 	</cfscript>
-	<cfreturn loc.returnValue>
+	<cfreturn returnValue>
 </cffunction>
 
-<!--- read --->
-
-<cffunction name="findAll" returntype="any" access="public" output="false" hint="Returns records from the database table mapped to this model according to the arguments passed in (use the `where` argument to decide which records to get, use the `order` argument to set in what order those records should be returned and so on). The records will be returned as either a `cfquery` result set or an array of objects (depending on what the `returnAs` argument is set to). Instead of using the `where` argument you can create cleaner code by making use of a concept called dynamic finders."
+<cffunction name="findAll" returntype="any" access="public" output="false"
+	hint="Returns records from the database table mapped to this model according to the arguments passed in (use the `where` argument to decide which records to get, use the `order` argument to set in what order those records should be returned and so on). The records will be returned as either a `cfquery` result set or an array of objects (depending on what the `returnAs` argument is set to). Instead of using the `where` argument you can create cleaner code by making use of a concept called dynamic finders."
 	examples=
 	'
 		<!--- Getting only 5 users and ordering them randomly --->
@@ -88,10 +119,9 @@
 		<cfset aPost = model("post").findByKey(params.postId)>
 		<cfset comments = aPost.comments()>
 	'
-	categories="model-class,read" chapters="reading-records,associations" functions="findByKey,findOne,hasMany">
+	categories="model-class" chapters="reading-records,associations" functions="findByKey,findOne,hasMany">
 	<cfargument name="where" type="string" required="false" default="" hint="This argument maps to the `WHERE` clause of the query. The following operators are supported: `=`, `<>`, `<`, `<=`, `>`, `>=`, `LIKE`, `AND`, and `OR` (note that the key words have to be written in upper case). You can also use parentheses to group statements. You do not have to specify the table name(s), Wheels will do that for you.">
 	<cfargument name="order" type="string" required="false" default="#application.wheels.functions.findAll.order#" hint="This argument maps to the `ORDER BY` clause of the query. You do not have to specify the table name(s), Wheels will do that for you.">
-	<cfargument name="group" type="string" required="false" default="#application.wheels.functions.findAll.group#" hint="This argument maps to the `GROUP BY` clause of the query. You do not have to specify the table name(s), Wheels will do that for you.">
 	<cfargument name="select" type="string" required="false" default="" hint="This argument determines how the `SELECT` clause for the query used to return data will look.	You can pass in a list of the properties (which maps to columns) that you want returned from your table(s). If you don't set this argument at all, Wheels will select all properties from your table(s). If you specify a table name (e.g. `users.email`) or alias a column (e.g. `fn AS firstName`) in the list then the entire list will be passed through unchanged and used in the `SELECT` clause of the query. If not, Wheels will prepend the table name and resolve any naming collisions (which could happen when using the `include` argument) automatically for you. The naming collisions are resolved by prepending the model name to the property name so `users.firstName` could become `userFirstName` for example.">
 	<cfargument name="distinct" type="boolean" required="false" default="false" hint="Boolean value to decide whether to add the `DISTINCT` keyword to your `SELECT` clause. Wheels will, when necessary, add this automatically (when using pagination and a `hasMany` association is used in the `include` argument to name one example).">
 	<cfargument name="include" type="string" required="false" default="" hint="Associations that should be included in the query using `INNER` or `LEFT OUTER` joins (which join type that is used depends on how the association has been set up in your model). If all included associations are set on the current model you can specify them in a list, e.g. `department,addresses,emails`. You can build more complex `include` strings by using parentheses when the association is set on an included model, like `album(artist(genre))` for example.">
@@ -111,9 +141,9 @@
 	<cfscript>
 		var loc = {};
 
-		// we only allow direct associations to be loaded when returning objects
-		if (application.wheels.showErrorInformation && Len(arguments.returnAs) && arguments.returnAs != "query" && Find("(", arguments.include) && arguments.returnIncluded)
-			$throw(type="Wheels", message="Incorrect Arguments", extendedInfo="You may only include direct associations to this object when returning an array of objects.");
+		// we only allow one association to be loaded when returning objects
+		if (application.wheels.showErrorInformation && Len(arguments.returnAs) && arguments.returnAs != "query" && (Find(",", arguments.include) || Find("(", arguments.include)))
+			$throw(type="Wheels.IncorrectArguments", message="You cannot specify more than one association in the `include` argument when returning an array of objects.", extendedInfo="Limit yourself to just one association or set `returnAs` to `query` instead.");
 
 		// count records and get primary keys for pagination
 		if (arguments.page)
@@ -121,7 +151,7 @@
 			if (Len(arguments.order))
 			{
 				// insert primary keys to order clause unless they are already there, this guarantees that the ordering is unique which is required to make pagination work properly
-				loc.compareList = $listClean(ReplaceNoCase(ReplaceNoCase(arguments.order, " ASC", "", "all"), " DESC", "", "all"));
+				loc.compareList = Replace(ReplaceNoCase(ReplaceNoCase(arguments.order, " ASC", "", "all"), " DESC", "", "all"), ", ", ",", "all");
 				loc.iEnd = ListLen(variables.wheels.class.keys);
 				for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
 				{
@@ -139,7 +169,7 @@
 				loc.distinct = true;
 			else
 				loc.distinct = false;
-			if (arguments.count gt 0)
+			if (arguments.count > 0)
 				loc.totalRecords = arguments.count;
 			else
 				loc.totalRecords = this.count(where=arguments.where, include=arguments.include, reload=arguments.reload, cache=arguments.cache, distinct=loc.distinct);
@@ -154,12 +184,12 @@
 				loc.totalPages = Ceiling(loc.totalRecords/arguments.perPage);
 				loc.limit = arguments.perPage;
 				loc.offset = (arguments.perPage * arguments.page) - arguments.perPage;
-
+				
 				// if the full range of records is not requested we correct the limit to get the exact amount instead
 				// for example if totalRecords is 57, limit is 10 and offset 50 (i.e. requesting records 51-60) we change the limit to 7
-				if ((loc.limit + loc.offset) gt loc.totalRecords)
+				if ((loc.limit + loc.offset) > loc.totalRecords)
 					loc.limit = loc.totalRecords - loc.offset;
-
+				
 				if (loc.limit < 1)
 				{
 					// if limit is 0 or less it means that a page that has no records was asked for so we return an empty query
@@ -168,7 +198,8 @@
 				else
 				{
 					loc.values = findAll($limit=loc.limit, $offset=loc.offset, select=variables.wheels.class.keys, where=arguments.where, order=arguments.order, include=arguments.include, reload=arguments.reload, cache=arguments.cache, distinct=loc.distinct);
-					if (loc.values.RecordCount) {
+					if (loc.values.recordCount)
+					{
 						loc.paginationWhere = "";
 						loc.iEnd = ListLen(variables.wheels.class.keys);
 						for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
@@ -209,15 +240,14 @@
 			arguments.where = REReplace(arguments.where, variables.wheels.class.RESQLWhere, "\1?\8" , "all");
 
 			// get info from cache when available, otherwise create the generic select, from, where and order by clause
-			loc.queryShellKey = variables.wheels.class.modelName & $hashStruct(arguments);
+			loc.queryShellKey = variables.wheels.class.name & $hashStruct(arguments);
 			loc.sql = $getFromCache(loc.queryShellKey, "sql");
 			if (!IsArray(loc.sql))
 			{
 				loc.sql = [];
-				loc.sql = $addSelectClause(sql=loc.sql, select=arguments.select, include=arguments.include);
-				ArrayAppend(loc.sql, $fromClause(include=arguments.include));
+				loc.sql = $addSelectClause(sql=loc.sql, select=arguments.select, include=arguments.include, distinct=arguments.distinct);
+				loc.sql = $addFromClause(sql=loc.sql, include=arguments.include);
 				loc.sql = $addWhereClause(sql=loc.sql, where=loc.originalWhere, include=arguments.include, $softDeleteCheck=arguments.$softDeleteCheck);
-				loc.sql = $addGroupByClause(sql=loc.sql, select=arguments.select, group=arguments.group, include=arguments.include, distinct=arguments.distinct);
 				loc.sql = $addOrderByClause(sql=loc.sql, order=arguments.order, include=arguments.include);
 				$addToCache(key=loc.queryShellKey, value=loc.sql, category="sql");
 			}
@@ -226,7 +256,7 @@
 			loc.sql = $addWhereClauseParameters(sql=loc.sql, where=loc.originalWhere);
 
 			// return existing query result if it has been run already in current request, otherwise pass off the sql array to the query
-			loc.queryKey = "wheels" & variables.wheels.class.modelName & $hashStruct(arguments) & loc.originalWhere;
+			loc.queryKey = "wheels" & variables.wheels.class.name & $hashStruct(arguments) & loc.originalWhere;
 			if (!arguments.reload && StructKeyExists(request, loc.queryKey))
 			{
 				loc.findAll = request[loc.queryKey];
@@ -249,7 +279,7 @@
 				loc.findAll = variables.wheels.class.adapter.$query(argumentCollection=loc.finderArgs);
 				request[loc.queryKey] = loc.findAll; // <- store in request cache so we never run the exact same query twice in the same request
 			}
-			request.wheels[Hash(GetMetaData(loc.findAll.query).toString())] = variables.wheels.class.modelName; // place an identifer in request scope so we can reference this query when passed in to view functions
+			request.wheels[Hash(GetMetaData(loc.findAll.query).toString())] = variables.wheels.class.name; // place an identifer in request scope so we can reference this query when passed in to view functions 
 			if (arguments.returnAs == "query")
 			{
 				loc.returnValue = loc.findAll.query;
@@ -266,39 +296,25 @@
 					{
 						if (Len(arguments.include) && arguments.returnIncluded)
 						{
-							loc.xEnd = ListLen(arguments.include);
-							for (loc.x = 1; loc.x lte loc.xEnd; loc.x++) {
-								loc.include = ListGetAt(arguments.include, loc.x);
-								if (variables.wheels.class.associations[loc.include].type == "hasMany")
+							if (variables.wheels.class.associations[arguments.include].type == "hasMany")
+							{
+								loc.object[arguments.include] = [];
+								for (loc.j=1; loc.j <= loc.findAll.query.recordCount; loc.j++)
 								{
-									loc.object[loc.include] = [];
-									loc.hasManyDoneObjects = "";
-									for (loc.j=1; loc.j <= loc.findAll.query.recordCount; loc.j++)
+									// create object instance from values in current query row if it belongs to the current object
+									loc.primaryKeyColumnValues = "";
+									loc.kEnd = ListLen(variables.wheels.class.keys);
+									for (loc.k=1; loc.k <= loc.kEnd; loc.k++)
 									{
-										loc.hasManyObject = model(variables.wheels.class.associations[loc.include].modelName).$createInstance(properties=loc.findAll.query, persisted=true, row=loc.j, base=false);
-										if (!ListFind(loc.hasManyDoneObjects, loc.hasManyObject.key(), Chr(7)))
-										{
-											// create object instance from values in current query row if it belongs to the current object
-											loc.primaryKeyColumnValues = "";
-											loc.kEnd = ListLen(variables.wheels.class.keys);
-											for (loc.k=1; loc.k <= loc.kEnd; loc.k++)
-											{
-												loc.primaryKeyColumnValues = ListAppend(loc.primaryKeyColumnValues, loc.findAll.query[ListGetAt(variables.wheels.class.keys, loc.k)][loc.j]);
-											}
-											if (Len(loc.hasManyObject.key()) && loc.object.key() == loc.primaryKeyColumnValues)
-												ArrayAppend(loc.object[loc.include], loc.hasManyObject);
-
-											loc.hasManyDoneObjects = ListAppend(loc.hasManyDoneObjects, loc.hasManyObject.key(), Chr(7));
-										}
+										loc.primaryKeyColumnValues = ListAppend(loc.primaryKeyColumnValues, loc.findAll.query[ListGetAt(variables.wheels.class.keys, loc.k)][loc.j]);
 									}
-
-									if (ArrayIsEmpty(loc.object[loc.include]))
-										StructDelete(loc.object, loc.include, false);
+									if (loc.object.key() == loc.primaryKeyColumnValues)
+										ArrayAppend(loc.object[arguments.include], model(variables.wheels.class.associations[arguments.include].class).$createInstance(properties=loc.findAll.query, persisted=true, row=loc.j));
 								}
-								else
-								{
-									loc.object[loc.include] = model(variables.wheels.class.associations[loc.include].modelName).$createInstance(properties=loc.findAll.query, persisted=true, row=loc.i, base=false);
-								}
+							}
+							else
+							{
+								loc.object[arguments.include] = model(variables.wheels.class.associations[arguments.include].class).$createInstance(properties=loc.findAll.query, persisted=true, row=loc.i);
 							}
 						}
 						ArrayAppend(loc.returnValue, loc.object);
@@ -311,90 +327,102 @@
 	<cfreturn loc.returnValue>
 </cffunction>
 
-<cffunction name="findByKey" returntype="any" access="public" output="false" hint="Fetches the requested record and returns it as an object. Returns `false` if no record is found. You can override this behavior to return a `cfquery` result set instead, similar to what's described in the documentation for @findOne."
+<cffunction name="exists" returntype="boolean" access="public" output="false"
+	hint="Checks if a record exists in the table. You can pass in either a primary key value to the `key` argument or a string to the `where` argument."
 	examples=
 	'
-		<!--- Getting the author with the primary key vale 99 as an object --->
-		<cfset auth = model("author").findByKey(99)>
+		<!--- Checking if Joe exists in the database --->
+		<cfset result = model("user").exists(where="firstName=''Joe''")>
 
-		<!--- Getting an author based on a form/URL value and then checking if it was found --->
-		<cfset auth = model("author").findByKey(params.key)>
-		<cfif NOT IsObject(auth)>
-			<cfset flashInsert(message="Author ##params.key## was not found")>
-			<cfset redirectTo(back=true)>
+		<!--- Checking if a specific user exists based on a primary key valued passed in through the URL/form in an if statement --->
+		<cfif model("user").exists(keyparams.key)>
+			<!--- Do something... --->
 		</cfif>
 
-		<!--- If you have a `belongsTo` association setup from `comment` to `post` you can do a scoped call (the `post` method below will call `model("post").findByKey(comment.postId)` internally) --->
+		<!--- If you have a `belongsTo` association setup from `comment` to `post` you can do a scoped call (the `hasPost` method below will call `model("post").exists(comment.postId)` internally) --->
 		<cfset aComment = model("comment").findByKey(params.commentId)>
-		<cfset aPost = aComment.post()>
+		<cfset commentHasAPost = aComment.hasPost()>
+
+		<!--- If you have a `hasOne` association setup from `user` to `profile` you can do a scoped call (the `hasProfile` method below will call `model("profile").exists(where="userId=##user.id##")` internally) --->
+		<cfset aUser = model("user").findByKey(params.userId)>
+		<cfset userHasProfile = aUser.hasProfile()>
+
+		<!--- If you have a `hasMany` association setup from `post` to `comment` you can do a scoped call (the `hasComments` method below will call `model("comment").exists(where="postid=##post.id##")` internally) --->
+		<cfset aPost = model("post").findByKey(params.postId)>
+		<cfset postHasComments = aPost.hasComments()>
 	'
-	categories="model-class,read" chapters="reading-records,associations" functions="belongsTo,findAll,findOne">
-	<cfargument name="key" type="any" required="true" hint="Primary key value(s) of the record to fetch. Separate with comma if passing in multiple primary key values. Accepts a string, list or a numeric value.">
-	<cfargument name="select" type="string" required="false" default="" hint="See documentation for @findAll.">
-	<cfargument name="include" type="string" required="false" default="" hint="See documentation for @findAll.">
-	<cfargument name="cache" type="any" required="false" default="" hint="See documentation for @findAll.">
-	<cfargument name="reload" type="boolean" required="false" default="#application.wheels.functions.findByKey.reload#" hint="See documentation for @findAll.">
-	<cfargument name="parameterize" type="any" required="false" default="#application.wheels.functions.findByKey.parameterize#" hint="See documentation for @findAll.">
-	<cfargument name="returnAs" type="string" required="false" default="#application.wheels.functions.findByKey.returnAs#" hint="Can be set to either `object` or `query`. See documentation for @findAll for more info.">
-	<cfargument name="$softDeleteCheck" type="boolean" required="false" default="true">
+	categories="model-class" chapters="reading-records,associations" functions="belongsTo,hasMany,hasOne">
+	<cfargument name="key" type="any" required="false" default="" hint="See documentation for @findByKey.">
+	<cfargument name="where" type="string" required="false" default="" hint="See documentation for @findAll.">
+	<cfargument name="reload" type="boolean" required="false" default="#application.wheels.functions.exists.reload#" hint="See documentation for @findAll.">
+	<cfargument name="parameterize" type="any" required="false" default="#application.wheels.functions.exists.parameterize#" hint="See documentation for @findAll.">
 	<cfscript>
-		var returnValue = "";
-		// convert primary key column name(s) / value(s) to a WHERE clause that is then used in the findOne call
-		arguments.where = $keyWhereString(values=arguments.key);
-		StructDelete(arguments, "key");
-		returnValue = findOne(argumentCollection=arguments);
+		var loc = {};
+		if (application.wheels.showErrorInformation)
+			if (Len(arguments.key) && Len(arguments.where))
+				$throw(type="Wheels.IncorrectArguments", message="You cannot pass in both `key` and `where`.");
+		if (Len(arguments.where))
+			loc.returnValue = findOne(where=arguments.where, reload=arguments.reload, returnAs="query").recordCount == 1;
+		else if (Len(arguments.key))
+			loc.returnValue = findByKey(key=arguments.key, reload=arguments.reload, returnAs="query").recordCount == 1;
+		else
+			loc.returnValue = false;
 	</cfscript>
-	<cfreturn returnValue>
+	<cfreturn loc.returnValue>
 </cffunction>
 
-<cffunction name="findOne" returntype="any" access="public" output="false" hint="Fetches the first record found based on the `WHERE` and `ORDER BY` clauses. With the default settings (i.e. the `returnAs` argument set to `object`) a model object will be returned if the record is found and the boolean value `false` if not. Instead of using the `where` argument you can create cleaner code by making use of a concept called dynamic finders."
+<cffunction name="updateByKey" returntype="boolean" access="public" output="false"
+	hint="Finds the object with the supplied key and saves it (if validation permits it) with the supplied properties and/or named arguments. Property names and values can be passed in either using named arguments or as a struct to the `properties` argument. Returns `true` if the object was found and updated successfully, `false` otherwise."
 	examples=
 	'
-		<!--- Getting the most recent order as an object from the database --->
-		<cfset anOrder = model("order").findOne(order="datePurchased DESC")>
+		<!--- Updates the object with `33` as the primary key value with values passed in through the URL/form --->
+		<cfset result = model("post").updateByKey(33, params.post)>
 
-		<!--- Using a dynamic finder to get the first person with the last name `Smith`. Same as calling model("user").findOne(where"lastName=''Smith''") --->
-		<cfset person = model("user").findOneByLastName("Smith")>
-
-		<!--- Getting a specific user using a dynamic finder. Same as calling model("user").findOne(where"email=''someone@somewhere.com'' AND password=''mypass''") --->
-		<cfset user = model("user").findOneByEmailAndPassword("someone@somewhere.com,mypass")>
-
-		<!--- If you have a `hasOne` association setup from `user` to `profile` you can do a scoped call (the `profile` method below will call `model("profile").findOne(where="userId=##user.id##")` internally) --->
-		<cfset aUser = model("user").findByKey(params.userId)>
-		<cfset aProfile = aUser.profile()>
-
-		<!--- If you have a `hasMany` association setup from `post` to `comment` you can do a scoped call (the `findOneComment` method below will call `model("comment").findOne(where="postId=##post.id##")` internally) --->
-		<cfset aPost = model("post").findByKey(params.postId)>
-		<cfset aComment = aPost.findOneComment(where="text=''I Love Wheels!''")>
+		<!--- Updates the object with `33` using named arguments --->
+		<cfset result = model("post").updateByKey(key=33, title="New version of Wheels just released", published=1)>
 	'
-	categories="model-class,read" chapters="reading-records,associations" functions="findAll,findByKey,hasMany,hasOne">
-	<cfargument name="where" type="string" required="false" default="" hint="See documentation for @findAll.">
-	<cfargument name="order" type="string" required="false" default="" hint="See documentation for @findAll.">
-	<cfargument name="select" type="string" required="false" default="" hint="See documentation for @findAll.">
-	<cfargument name="include" type="string" required="false" default="" hint="See documentation for @findAll.">
-	<cfargument name="cache" type="any" required="false" default="" hint="See documentation for @findAll.">
-	<cfargument name="reload" type="boolean" required="false" default="#application.wheels.functions.findOne.reload#" hint="See documentation for @findAll.">
-	<cfargument name="parameterize" type="any" required="false" default="#application.wheels.functions.findOne.parameterize#" hint="See documentation for @findAll.">
-	<cfargument name="returnAs" type="string" required="false" default="#application.wheels.functions.findOne.returnAs#" hint="Can be set to either `object` or `query`. See documentation for @findAll for more info.">
-	<cfargument name="$softDeleteCheck" type="boolean" required="false" default="true">
+	categories="model-class" chapters="updating-records,associations" functions="hasOne,hasMany,update,updateAll,updateOne">
+	<cfargument name="key" type="any" required="true" hint="See documentation for @findByKey.">
+	<cfargument name="properties" type="struct" required="false" default="#StructNew()#" hint="See documentation for @new.">
 	<cfscript>
 		var returnValue = "";
-
-		returnValue = findAll(argumentCollection=arguments);
-		if (IsArray(returnValue))
-		{
-			if (ArrayLen(returnValue))
-				returnValue = returnValue[1];
-			else
-				returnValue = false;
-		}
+		arguments.where = $keyWhereString(values=arguments.key);
+		StructDelete(arguments, "key");
+		returnValue = updateOne(argumentCollection=arguments);
 	</cfscript>
 	<cfreturn returnValue>
 </cffunction>
 
-<!--- update --->
+<cffunction name="updateOne" returntype="boolean" access="public" output="false"
+	hint="Gets an object based on the arguments used and updates it with the supplied properties. Returns `true` if an object was found and updated successfully, `false` otherwise."
+	examples=
+	'
+		<!--- Sets the `new` property to `1` on the most recently released product --->
+		<cfset result = model("product").updateOne(order="releaseDate DESC", new=1)>
 
-<cffunction name="updateAll" returntype="numeric" access="public" output="false" hint="Updates all properties for the records that match the where argument. Property names and values can be passed in either using named arguments or as a struct to the `properties` argument. By default objects will not be instantiated and therefore callbacks and validations are not invoked. You can change this behavior by passing in `instantiate=true`. This method returns the number of records that were updated."
+		<!--- If you have a `hasOne` association setup from `user` to `profile` you can do a scoped call (the `removeProfile` method below will call `model("profile").updateOne(where="userId=##aUser.id##", userId="")` internally) --->
+		<cfset aUser = model("user").findByKey(params.userId)>
+		<cfset aUser.removeProfile()>
+	'
+	categories="model-class" chapters="updating-records,associations" functions="hasOne,update,updateAll,updateByKey">
+	<cfargument name="where" type="string" required="false" default="" hint="See documentation for @findAll.">
+	<cfargument name="order" type="string" required="false" default="" hint="See documentation for @findAll.">
+	<cfargument name="properties" type="struct" required="false" default="#StructNew()#" hint="See documentation for @new.">
+	<cfscript>
+		var loc = {};
+		loc.object = findOne(where=arguments.where, order=arguments.order);
+		StructDelete(arguments, "where");
+		StructDelete(arguments, "order");
+		if (IsObject(loc.object))
+			loc.returnValue = loc.object.update(argumentCollection=arguments);
+		else
+			loc.returnValue = false;
+	</cfscript>
+	<cfreturn loc.returnValue>
+</cffunction>
+
+<cffunction name="updateAll" returntype="numeric" access="public" output="false"
+	hint="Updates all properties for the records that match the where argument. Property names and values can be passed in either using named arguments or as a struct to the `properties` argument. By default objects will not be instantiated and therefore callbacks and validations are not invoked. You can change this behavior by passing in `instantiate=true`. This method returns the number of records that were updated."
 	examples=
 	'
 		<!--- Update the `published` and `publishedAt` properties for all records that have `published=0` --->
@@ -404,7 +432,7 @@
 		<cfset aPost = model("post").findByKey(params.postId)>
 		<cfset removedSuccessfully = aPost.removeAllComments()>
 	'
-	categories="model-class,update" chapters="updating-records,associations" functions="hasMany,update,updateByKey,updateOne">
+	categories="model-class" chapters="updating-records,associations" functions="hasMany,update,updateByKey,updateOne">
 	<cfargument name="where" type="string" required="false" default="" hint="See documentation for @findAll.">
 	<cfargument name="include" type="string" required="false" default="" hint="See documentation for @findAll.">
 	<cfargument name="properties" type="struct" required="false" default="#StructNew()#" hint="See documentation for @new.">
@@ -413,7 +441,12 @@
 	<cfargument name="$softDeleteCheck" type="boolean" required="false" default="true">
 	<cfscript>
 		var loc = {};
-		arguments.properties = $setProperties(argumentCollection=arguments, filterList="where,include,properties,parameterize,instantiate,$softDeleteCheck", setOnModel=false);
+		loc.namedArgs = "where,include,properties,parameterize,instantiate,$softDeleteCheck";
+		for (loc.key in arguments)
+		{
+			if (!ListFindNoCase(loc.namedArgs, loc.key))
+				arguments.properties[loc.key] = arguments[loc.key];
+		}
 		if (arguments.instantiate)
 		{
     		// find and instantiate each object and call its update function
@@ -451,57 +484,50 @@
 	<cfreturn loc.returnValue>
 </cffunction>
 
-<cffunction name="updateByKey" returntype="boolean" access="public" output="false" hint="Finds the object with the supplied key and saves it (if validation permits it) with the supplied properties and/or named arguments. Property names and values can be passed in either using named arguments or as a struct to the `properties` argument. Returns `true` if the object was found and updated successfully, `false` otherwise."
+<cffunction name="deleteByKey" returntype="boolean" access="public" output="false"
+	hint="Finds the record with the supplied key and deletes it. Returns `true` on successful deletion of the row, `false` otherwise."
 	examples=
 	'
-		<!--- Updates the object with `33` as the primary key value with values passed in through the URL/form --->
-		<cfset result = model("post").updateByKey(33, params.post)>
-
-		<!--- Updates the object with `33` using named arguments --->
-		<cfset result = model("post").updateByKey(key=33, title="New version of Wheels just released", published=1)>
+		<!--- Delete the user with the primary key value of `1` --->
+		<cfset result = model("user").deleteByKey(1)>
 	'
-	categories="model-class,update" chapters="updating-records,associations" functions="hasOne,hasMany,update,updateAll,updateOne">
+	categories="model-class" chapters="deleting-records" functions="delete,deleteAll,deleteOne">
 	<cfargument name="key" type="any" required="true" hint="See documentation for @findByKey.">
-	<cfargument name="properties" type="struct" required="false" default="#StructNew()#" hint="See documentation for @new.">
 	<cfscript>
-		var returnValue = "";
-		arguments.where = $keyWhereString(values=arguments.key);
-		StructDelete(arguments, "key");
-		returnValue = updateOne(argumentCollection=arguments);
+		var loc = {};
+		loc.where = $keyWhereString(values=arguments.key);
+		loc.returnValue = deleteOne(where=loc.where);
 	</cfscript>
-	<cfreturn returnValue>
+	<cfreturn loc.returnValue>
 </cffunction>
 
-<cffunction name="updateOne" returntype="boolean" access="public" output="false" hint="Gets an object based on the arguments used and updates it with the supplied properties. Returns `true` if an object was found and updated successfully, `false` otherwise."
+<cffunction name="deleteOne" returntype="boolean" access="public" output="false"
+	hint="Gets an object based on conditions and deletes it."
 	examples=
 	'
-		<!--- Sets the `new` property to `1` on the most recently released product --->
-		<cfset result = model("product").updateOne(order="releaseDate DESC", new=1)>
+		<!--- Delete the user that signed up last --->
+		<cfset result = model("user").deleteOne(order="signupDate DESC")>
 
-		<!--- If you have a `hasOne` association setup from `user` to `profile` you can do a scoped call (the `removeProfile` method below will call `model("profile").updateOne(where="userId=##aUser.id##", userId="")` internally) --->
+		<!--- If you have a `hasOne` association setup from `user` to `profile` you can do a scoped call (the `deleteProfile` method below will call `model("profile").deleteOne(where="userId=##aUser.id##")` internally) --->
 		<cfset aUser = model("user").findByKey(params.userId)>
-		<cfset aUser.removeProfile()>
+		<cfset aUser.deleteProfile()>
 	'
-	categories="model-class,update" chapters="updating-records,associations" functions="hasOne,update,updateAll,updateByKey">
+	categories="model-class" chapters="deleting-records,associations" functions="delete,deleteAll,deleteOne,hasOne">
 	<cfargument name="where" type="string" required="false" default="" hint="See documentation for @findAll.">
 	<cfargument name="order" type="string" required="false" default="" hint="See documentation for @findAll.">
-	<cfargument name="properties" type="struct" required="false" default="#StructNew()#" hint="See documentation for @new.">
 	<cfscript>
 		var loc = {};
 		loc.object = findOne(where=arguments.where, order=arguments.order);
-		StructDelete(arguments, "where");
-		StructDelete(arguments, "order");
 		if (IsObject(loc.object))
-			loc.returnValue = loc.object.update(argumentCollection=arguments);
+			loc.returnValue = loc.object.delete();
 		else
 			loc.returnValue = false;
 	</cfscript>
 	<cfreturn loc.returnValue>
 </cffunction>
 
-<!--- delete --->
-
-<cffunction name="deleteAll" returntype="numeric" access="public" output="false" hint="Deletes all records that match the where argument. By default objects will not be instantiated and therefore callbacks and validations are not invoked. You can change this behavior by passing in `instantiate=true`. Returns the number of records that were deleted."
+<cffunction name="deleteAll" returntype="numeric" access="public" output="false"
+	hint="Deletes all records that match the where argument. By default objects will not be instantiated and therefore callbacks and validations are not invoked. You can change this behavior by passing in `instantiate=true`. Returns the number of records that were deleted."
 	examples=
 	'
 		<!--- Delete all inactive users without instantiating them (will skip validation and callbacks) --->
@@ -511,7 +537,7 @@
 		<cfset aPost = model("post").findByKey(params.postId)>
 		<cfset howManyDeleted = aPost.deleteAllComments()>
 	'
-	categories="model-class,delete" chapters="deleting-records,associations" functions="delete,deleteByKey,deleteOne,hasMany">
+	categories="model-class" chapters="deleting-records,associations" functions="delete,deleteByKey,deleteOne,hasMany">
 	<cfargument name="where" type="string" required="false" default="" hint="See documentation for @findAll.">
 	<cfargument name="include" type="string" required="false" default="" hint="See documentation for @findAll.">
 	<cfargument name="parameterize" type="any" required="false" default="#application.wheels.functions.deleteAll.parameterize#" hint="See documentation for @findAll.">
@@ -529,7 +555,7 @@
 			{
 				loc.object = $createInstance(properties=loc.records, row=loc.i, persisted=true);
 				if (loc.object.delete(parameterize=arguments.parameterize))
-					loc.returnValue++;
+					loc.returnValue = loc.returnValue + 1;
 			}
 		}
 		else
@@ -546,151 +572,8 @@
 	<cfreturn loc.returnValue>
 </cffunction>
 
-<cffunction name="deleteByKey" returntype="boolean" access="public" output="false" hint="Finds the record with the supplied key and deletes it. Returns `true` on successful deletion of the row, `false` otherwise."
-	examples=
-	'
-		<!--- Delete the user with the primary key value of `1` --->
-		<cfset result = model("user").deleteByKey(1)>
-	'
-	categories="model-class,delete" chapters="deleting-records" functions="delete,deleteAll,deleteOne">
-	<cfargument name="key" type="any" required="true" hint="See documentation for @findByKey.">
-	<cfscript>
-		var loc = {};
-		loc.where = $keyWhereString(values=arguments.key);
-		loc.returnValue = deleteOne(where=loc.where);
-	</cfscript>
-	<cfreturn loc.returnValue>
-</cffunction>
-
-<cffunction name="deleteOne" returntype="boolean" access="public" output="false" hint="Gets an object based on conditions and deletes it."
-	examples=
-	'
-		<!--- Delete the user that signed up last --->
-		<cfset result = model("user").deleteOne(order="signupDate DESC")>
-
-		<!--- If you have a `hasOne` association setup from `user` to `profile` you can do a scoped call (the `deleteProfile` method below will call `model("profile").deleteOne(where="userId=##aUser.id##")` internally) --->
-		<cfset aUser = model("user").findByKey(params.userId)>
-		<cfset aUser.deleteProfile()>
-	'
-	categories="model-class,delete" chapters="deleting-records,associations" functions="delete,deleteAll,deleteOne,hasOne">
-	<cfargument name="where" type="string" required="false" default="" hint="See documentation for @findAll.">
-	<cfargument name="order" type="string" required="false" default="" hint="See documentation for @findAll.">
-	<cfscript>
-		var loc = {};
-		loc.object = findOne(where=arguments.where, order=arguments.order);
-		if (IsObject(loc.object))
-			loc.returnValue = loc.object.delete();
-		else
-			loc.returnValue = false;
-	</cfscript>
-	<cfreturn loc.returnValue>
-</cffunction>
-
-<!--- other --->
-
-<cffunction name="exists" returntype="boolean" access="public" output="false" hint="Checks if a record exists in the table. You can pass in either a primary key value to the `key` argument or a string to the `where` argument."
-	examples=
-	'
-		<!--- Checking if Joe exists in the database --->
-		<cfset result = model("user").exists(where="firstName=''Joe''")>
-
-		<!--- Checking if a specific user exists based on a primary key valued passed in through the URL/form in an if statement --->
-		<cfif model("user").exists(keyparams.key)>
-			<!--- Do something... --->
-		</cfif>
-
-		<!--- If you have a `belongsTo` association setup from `comment` to `post` you can do a scoped call (the `hasPost` method below will call `model("post").exists(comment.postId)` internally) --->
-		<cfset aComment = model("comment").findByKey(params.commentId)>
-		<cfset commentHasAPost = aComment.hasPost()>
-
-		<!--- If you have a `hasOne` association setup from `user` to `profile` you can do a scoped call (the `hasProfile` method below will call `model("profile").exists(where="userId=##user.id##")` internally) --->
-		<cfset aUser = model("user").findByKey(params.userId)>
-		<cfset userHasProfile = aUser.hasProfile()>
-
-		<!--- If you have a `hasMany` association setup from `post` to `comment` you can do a scoped call (the `hasComments` method below will call `model("comment").exists(where="postid=##post.id##")` internally) --->
-		<cfset aPost = model("post").findByKey(params.postId)>
-		<cfset postHasComments = aPost.hasComments()>
-	'
-	categories="model-class,miscellaneous" chapters="reading-records,associations" functions="belongsTo,hasMany,hasOne">
-	<cfargument name="key" type="any" required="false" default="" hint="See documentation for @findByKey.">
-	<cfargument name="where" type="string" required="false" default="" hint="See documentation for @findAll.">
-	<cfargument name="reload" type="boolean" required="false" default="#application.wheels.functions.exists.reload#" hint="See documentation for @findAll.">
-	<cfargument name="parameterize" type="any" required="false" default="#application.wheels.functions.exists.parameterize#" hint="See documentation for @findAll.">
-	<cfscript>
-		var loc = {};
-		if (application.wheels.showErrorInformation)
-			if (Len(arguments.key) && Len(arguments.where))
-				$throw(type="Wheels.IncorrectArguments", message="You cannot pass in both `key` and `where`.");
-		if (Len(arguments.where))
-			loc.returnValue = findOne(where=arguments.where, reload=arguments.reload, returnAs="query").recordCount gte 1;
-		else if (Len(arguments.key))
-			loc.returnValue = findByKey(key=arguments.key, reload=arguments.reload, returnAs="query").recordCount == 1;
-		else
-			loc.returnValue = false;
-	</cfscript>
-	<cfreturn loc.returnValue>
-</cffunction>
-
-<!--- PUBLIC MODEL OBJECT METHODS --->
-
-<!--- crud --->
-
-<cffunction name="delete" returntype="boolean" access="public" output="false" hint="Deletes the object, which means the row is deleted from the database (unless prevented by a `beforeDelete` callback). Returns `true` on successful deletion of the row, `false` otherwise."
-	examples=
-	'
-		<!--- Get a post object and then delete it from the database --->
-		<cfset aPost = model("post").findByKey(33)>
-		<cfset aPost.delete()>
-
-		<!--- If you have a `hasMany` association setup from `post` to `comment` you can do a scoped call (the `deleteComment` method below will call `aComment.delete()` internally) --->
-		<cfset aPost = model("post").findByKey(params.postId)>
-		<cfset aComment = model("comment").findByKey(params.commentId)>
-		<cfset aPost.deleteComment(aComment)>
-	'
-	categories="model-object,crud" chapters="deleting-recordsm,associations" functions="deleteAll,deleteByKey,deleteOne,hasMany">
-	<cfargument name="parameterize" type="any" required="false" default="#application.wheels.functions.delete.parameterize#" hint="See documentation for @findAll.">
-	<cfscript>
-		var loc = {};
-		loc.returnValue = false;
-		if ($callback("beforeDelete"))
-		{
-        	loc.sql = [];
-        	loc.sql = $addDeleteClause(sql=loc.sql);
-            loc.sql = $addKeyWhereClause(sql=loc.sql);
-            loc.del = variables.wheels.class.adapter.$query(sql=loc.sql, parameterize=arguments.parameterize);
-            if (loc.del.result.recordCount == 1)
-            {
-            	loc.returnValue = true;
-            	$callback("afterDelete");
-			}
-		}
-	</cfscript>
-	<cfreturn loc.returnValue>
-</cffunction>
-
-<cffunction name="reload" returntype="void" access="public" output="false" hint="Reloads the property values of this object from the database."
-	examples=
-	'
-		<!--- Get an object, call a method on it that could potentially change values and then reload the values from the database --->
-		<cfset anEmployee = model("employee").findByKey(params.key)>
-		<cfset anEmployee.someCallThatChangesValuesInTheDatabase()>
-		<cfset anEmployee.reload()>
-	'
-	categories="model-object,miscellaneous" chapters="reading-records" functions="">
-	<cfscript>
-		var loc = {};
-		loc.query = findByKey(key=key(), reload=true, returnAs="query");
-		loc.properties = propertyNames();
-		loc.iEnd = ListLen(loc.properties);
-		for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
-		{
-			loc.property = ListGetAt(loc.properties, loc.i);
-			this[loc.property] = loc.query[loc.property][1];
-		}
-	</cfscript>
-</cffunction>
-
-<cffunction name="save" returntype="boolean" access="public" output="false" hint="Saves the object if it passes validation and callbacks. Returns `true` if the object was saved successfully to the database, `false` if not."
+<cffunction name="save" returntype="boolean" access="public" output="false"
+	hint="Saves the object if it passes validation and callbacks. Returns `true` if the object was saved successfully to the database, `false` if not."
 	examples=
 	'
 		<!--- Save the user object to the database (will automatically do an `INSERT` or `UPDATE` statement depending on if the record is new or already exists --->
@@ -705,10 +588,9 @@
 			<cfset renderPage(action="userEdit")
 		</cfif>
 	'
-	categories="model-object,crud" chapters="creating-records" functions="">
+	categories="model-object" chapters="creating-records" functions="">
 	<cfargument name="parameterize" type="any" required="false" default="#application.wheels.functions.save.parameterize#" hint="See documentation for @findAll.">
 	<cfargument name="defaults" type="boolean" required="false" default="#application.wheels.functions.save.defaults#" hint="Whether or not to set default values for properties.">
-	<cfargument name="validate" type="boolean" required="false" default="true" hint="Whether or not to run validations when saving">
 	<cfscript>
 		var returnValue = false;
 		clearErrors();
@@ -716,27 +598,27 @@
 		{
 			if (isNew())
 			{
-				if ($callback("beforeValidationOnCreate") && $validate("onSave", arguments.validate) && $validate("onCreate", arguments.validate) && $callback("afterValidation") && $callback("afterValidationOnCreate") && $callback("beforeSave") && $callback("beforeCreate"))
+				if ($callback("beforeValidationOnCreate") && $validate("onSave") && $validate("onCreate") && $callback("afterValidation") && $callback("afterValidationOnCreate") && $callback("beforeSave") && $callback("beforeCreate"))
 				{
 					$create(parameterize=arguments.parameterize);
 					if (arguments.defaults)
 						$setDefaultValues();
+					$updatePersistedProperties();
 					if ($callback("afterCreate"))
 						returnValue = $callback("afterSave");
-					$updatePersistedProperties();
 				}
 			}
 			else
 			{
-				if ($callback("beforeValidationOnUpdate") && $validate("onSave", arguments.validate) && $validate("onUpdate", arguments.validate) && $callback("afterValidation") && $callback("afterValidationOnUpdate") && $callback("beforeSave") && $callback("beforeUpdate"))
+				if ($callback("beforeValidationOnUpdate") && $validate("onSave") && $validate("onUpdate") && $callback("afterValidation") && $callback("afterValidationOnUpdate") && $callback("beforeSave") && $callback("beforeUpdate"))
 				{
 					if (hasChanged())
 					{
 						$update(parameterize=arguments.parameterize);
+						$updatePersistedProperties();
 					}
 					if ($callback("afterUpdate"))
 						returnValue = $callback("afterSave");
-					$updatePersistedProperties();
 				}
 			}
 		}
@@ -744,7 +626,8 @@
 	<cfreturn returnValue>
 </cffunction>
 
-<cffunction name="update" returntype="boolean" access="public" output="false" hint="Updates the object with the supplied properties and saves it to the database. Returns `true` if the object was saved successfully to the database and `false` otherwise."
+<cffunction name="update" returntype="boolean" access="public" output="false"
+	hint="Updates the object with the supplied properties and saves it to the database. Returns `true` if the object was saved successfully to the database and `false` otherwise."
 	examples=
 	'
 		<!--- Get a post object and then update its title in the database --->
@@ -770,16 +653,228 @@
 		<cfset aComment = model("comment").findByKey(params.commentId)>
 		<cfset aPost.removeComment(aComment)>
 	'
-	categories="model-object,crud" chapters="updating-records,associations" functions="hasMany,hasOne,updateAll,updateByKey,updateOne">
+	categories="model-object" chapters="updating-records,associations" functions="hasMany,hasOne,updateAll,updateByKey,updateOne">
 	<cfargument name="properties" type="struct" required="false" default="#StructNew()#" hint="See documentation for @new.">
 	<cfargument name="parameterize" type="any" required="false" default="#application.wheels.functions.update.parameterize#" hint="See documentation for @findAll.">
-	<cfset $setProperties(argumentCollection=arguments, filterList="parameterize,properties") />
-	<cfreturn save(parameterize=arguments.parameterize)>
+	<cfscript>
+		var loc = {};
+		for (loc.key in arguments)
+			if (loc.key != "properties" && loc.key != "parameterize")
+				arguments.properties[loc.key] = arguments[loc.key];
+		for (loc.key in arguments.properties)
+			this[loc.key] = arguments.properties[loc.key];
+		loc.returnValue = save(parameterize=arguments.parameterize);
+	</cfscript>
+	<cfreturn loc.returnValue>
 </cffunction>
 
-<!--- other --->
+<cffunction name="delete" returntype="boolean" access="public" output="false"
+	hint="Deletes the object, which means the row is deleted from the database (unless prevented by a `beforeDelete` callback). Returns `true` on successful deletion of the row, `false` otherwise."
+	examples=
+	'
+		<!--- Get a post object and then delete it from the database --->
+		<cfset aPost = model("post").findByKey(33)>
+		<cfset aPost.delete()>
 
-<cffunction name="isNew" returntype="boolean" access="public" output="false" hint="Returns `true` if this object hasn't been saved yet (in other words no record exists in the database yet). Returns `false` if a record exists."
+		<!--- If you have a `hasMany` association setup from `post` to `comment` you can do a scoped call (the `deleteComment` method below will call `aComment.delete()` internally) --->
+		<cfset aPost = model("post").findByKey(params.postId)>
+		<cfset aComment = model("comment").findByKey(params.commentId)>
+		<cfset aPost.deleteComment(aComment)>
+	'
+	categories="model-object" chapters="deleting-recordsm,associations" functions="deleteAll,deleteByKey,deleteOne,hasMany">
+	<cfargument name="parameterize" type="any" required="false" default="#application.wheels.functions.delete.parameterize#" hint="See documentation for @findAll.">
+	<cfscript>
+		var loc = {};
+		loc.returnValue = false;
+		if ($callback("beforeDelete"))
+		{
+        	loc.sql = [];
+        	loc.sql = $addDeleteClause(sql=loc.sql);
+            loc.sql = $addKeyWhereClause(sql=loc.sql);
+            loc.del = variables.wheels.class.adapter.$query(sql=loc.sql, parameterize=arguments.parameterize);
+            if (loc.del.result.recordCount == 1)
+            {
+            	loc.returnValue = true;
+            	$callback("afterDelete");
+			}
+		}
+	</cfscript>
+	<cfreturn loc.returnValue>
+</cffunction>
+
+<cffunction name="new" returntype="any" access="public" output="false"
+	hint="Creates a new object based on supplied properties and returns it. The object is not saved to the database, it only exists in memory. Property names and values can be passed in either using named arguments or as a struct to the `properties` argument."
+	examples=
+	'
+		<!--- Create a new author in memory (not saved to the database) --->
+		<cfset newAuthor = model("author").new()>
+
+		<!--- Create a new author based on properties in a struct --->
+		<cfset newAuthor = model("author").new(params.authorStruct)>
+
+		<!--- Create a new author by passing in named arguments --->
+		<cfset newAuthor = model("author").new(firstName="John", lastName="Doe")>
+
+		<!--- If you have a `hasOne` or `hasMany` association setup from `customer` to `order` you can do a scoped call (the `newOrder` method below will call `model("order").new(customerId=aCustomer.id)` internally) --->
+		<cfset aCustomer = model("customer").findByKey(params.customerId)>
+		<cfset anOrder = aCustomer.newOrder(shipping=params.shipping)>
+	'
+	categories="model-class" chapters="creating-records,associations" functions="create,hasMany,hasOne">
+	<cfargument name="properties" type="struct" required="false" default="#StructNew()#" hint="The properties you want to set on the object (can also be passed in as named arguments instead).">
+	<cfargument name="defaults" type="boolean" required="false" default="#application.wheels.functions.new.defaults#" hint="See documentation for @save.">
+	<cfscript>
+		var loc = {};
+		for (loc.key in arguments)
+			if (loc.key != "properties" && loc.key != "defaults")
+				arguments.properties[loc.key] = arguments[loc.key];
+		loc.returnValue = $createInstance(properties=arguments.properties, persisted=false);
+		if (arguments.defaults)
+			loc.returnValue.$setDefaultValues();
+	</cfscript>
+	<cfreturn loc.returnValue>
+</cffunction>
+
+<cffunction name="create" returntype="any" access="public" output="false"
+	hint="Creates a new object, saves it to the database (if the validation permits it) and returns it. If the validation fails, the unsaved object (with errors added to it) is still returned. Property names and values can be passed in either using named arguments or as a struct to the `properties` argument."
+	examples=
+	'
+		<!--- Create a new author and save it to the database --->
+		<cfset newAuthor = model("author").create(params.author)>
+		
+		<!--- Same as above using named arguments --->
+		<cfset newAuthor = model("author").create(firstName="John", lastName="Doe")>	
+			
+		<!--- Same as above using both named arguments and a struct --->
+		<cfset newAuthor = model("author").create(active=1, properties=params.author)>
+
+		<!--- If you have a `hasOne` or `hasMany` association setup from `customer` to `order` you can do a scoped call (the `createOrder` method below will call `model("order").create(customerId=aCustomer.id, shipping=params.shipping)` internally) --->
+		<cfset aCustomer = model("customer").findByKey(params.customerId)>
+		<cfset anOrder = aCustomer.createOrder(shipping=params.shipping)>
+	'
+	categories="model-class" chapters="creating-records,associations" functions="hasOne,hasMany,new">
+	<cfargument name="properties" type="struct" required="false" default="#StructNew()#" hint="See documentation for @new.">
+	<cfargument name="defaults" type="boolean" required="false" default="#application.wheels.functions.create.defaults#" hint="See documentation for @save.">
+	<cfargument name="parameterize" type="any" required="false" default="#application.wheels.functions.create.parameterize#" hint="See documentation for @save.">
+	<cfscript>
+		var loc = {};
+		loc.parameterize = arguments.parameterize;
+		StructDelete(arguments, "parameterize");
+		loc.returnValue = new(argumentCollection=arguments);
+		loc.returnValue.save(parameterize=loc.parameterize, defaults=arguments.defaults);
+	</cfscript>
+	<cfreturn loc.returnValue>
+</cffunction>
+
+<cffunction name="changedProperties" returntype="string" access="public" output="false"
+	hint="Returns a list of the object properties that have been changed but not yet saved to the database."
+	examples=
+	'
+		<!--- Get an object, change it and then ask for its changes (will return a list of the property names that have changed, not the values themselves) --->
+		<cfset member = model("member").findByKey(params.memberId)>
+		<cfset member.firstName = params.newFirstName>
+		<cfset member.email = params.newEmail>
+		<cfset changes = member.changedProperties()>
+	'
+	categories="model-object" chapters="" functions="allChanges,changedFrom,hasChanged">
+	<cfscript>
+		var loc = {};
+		loc.returnValue = "";
+		for (loc.key in variables.wheels.class.properties)
+			if (hasChanged(loc.key))
+				loc.returnValue = ListAppend(loc.returnValue, loc.key);
+	</cfscript>
+	<cfreturn loc.returnValue>
+</cffunction>
+
+<cffunction name="allChanges" returntype="struct" access="public" output="false"
+	hint="Returns a struct detailing all changes that have been made on the object but not yet saved to the database."
+	examples=
+	'
+		<!--- Get an object, change it and then ask for its changes (will return a struct containing the changes, both property names and their values) --->
+		<cfset member = model("member").findByKey(params.memberId)>
+		<cfset member.firstName = params.newFirstName>
+		<cfset member.email = params.newEmail>
+		<cfset allChangesAsStruct = member.allChanges()>
+	'
+	categories="model-object" chapters="" functions="changedFrom,changedProperties,hasChanged">
+	<cfscript>
+		var loc = {};
+		loc.returnValue = {};
+		if (hasChanged())
+		{
+			loc.changedProperties = changedProperties();
+			loc.iEnd = ListLen(loc.changedProperties);
+			for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
+			{
+				loc.item = ListGetAt(loc.changedProperties, loc.i);
+				loc.returnValue[loc.item] = {};
+				loc.returnValue[loc.item].changedFrom = changedFrom(loc.item);
+				if (StructKeyExists(this, loc.item))
+					loc.returnValue[loc.item].changedTo = this[loc.item];
+				else
+					loc.returnValue[loc.item].changedTo = "";
+			}
+		}
+	</cfscript>
+	<cfreturn loc.returnValue>
+</cffunction>
+
+<cffunction name="hasChanged" returntype="boolean" access="public" output="false"
+	hint="Returns `true` if the specified object property (or any if none was passed in) have been changed but not yet saved to the database. Will also return `true` if the object is new and no record for it exists in the database."
+	examples=
+	'
+		<!--- Get a member object and change the `email` property on it --->
+		<cfset member = model("member").findByKey(params.memberId)>
+		<cfset member.email = params.newEmail>
+
+		<!--- Check if the `email` property has changed --->
+		<cfif member.hasChanged(property="email")>
+			<!--- Do something... --->
+		</cfif>
+
+		<!--- The above can also be done using a dynamic function like this --->
+		<cfif member.emailHasChanged()>
+			<!--- Do something... --->
+		</cfif>
+	'
+	categories="model-object" chapters="" functions="allChanges,changedFrom,changedProperties">
+	<cfargument name="property" type="string" required="false" default="" hint="Name of property to check for change.">
+	<cfscript>
+		var loc = {};
+		loc.returnValue = false;
+		for (loc.key in variables.wheels.class.properties)
+			if (!StructKeyExists(variables, "$persistedProperties") || (StructKeyExists(this, loc.key) && StructKeyExists(variables.$persistedProperties, loc.key) && Compare(this[loc.key], variables.$persistedProperties[loc.key])) && (!Len(arguments.property) || loc.key == arguments.property))
+				loc.returnValue = true;
+	</cfscript>
+	<cfreturn loc.returnValue>
+</cffunction>
+
+<cffunction name="changedFrom" returntype="string" access="public" output="false"
+	hint="Returns the previous value of a property that has changed. Returns an empty string if no previous value exists. Wheels will keep a note of the previous property value until the object is saved to the database."
+	examples=
+	'
+		<!--- Get a member object and change the `email` property on it --->
+		<cfset member = model("member").findByKey(params.memberId)>
+		<cfset member.email = params.newEmail>
+
+		<!---Get the previous value (what the `email` property was before it was changed)--->
+		<cfset oldValue = member.changedFrom(property="email")>
+
+		<!--- The above can also be done using a dynamic function like this --->
+		<cfset oldValue = member.emailChangedFrom()>
+	'
+	categories="model-object" chapters="" functions="allChanges,changedProperties,hasChanged">
+	<cfargument name="property" type="string" required="true" hint="Name of property to get the previous value for.">
+	<cfscript>
+		var returnValue = "";
+		if (StructKeyExists(variables, "$persistedProperties") && StructKeyExists(variables.$persistedProperties, arguments.property))
+			returnValue = variables.$persistedProperties[arguments.property];
+	</cfscript>
+	<cfreturn returnValue>
+</cffunction>
+
+<cffunction name="isNew" returntype="boolean" access="public" output="false"
+	hint="Returns `true` if this object hasn't been saved yet (in other words no record exists in the database yet). Returns `false` if a record exists."
 	examples=
 	'
 		<!--- Create a new object and then check if it is new (yes, this example is ridiculous. It makes more sense in the context of callbacks for example) --->
@@ -788,7 +883,7 @@
 			<!--- Do something... --->
 		</cfif>
 	'
-	categories="model-object,miscellaneous" chapters="" functions="">
+	categories="model-object" chapters="" functions="">
 	<cfscript>
 		var loc = {};
 		// if no values have ever been saved to the database this object is new
@@ -800,73 +895,407 @@
 	<cfreturn loc.returnValue>
 </cffunction>
 
-<!--- PRIVATE MODEL CLASS METHODS --->
-
-<!--- sql builders --->
-
-<cffunction name="$addDeleteClause" returntype="array" access="public" output="false">
-	<cfargument name="sql" type="array" required="true">
+<cffunction name="reload" returntype="void" access="public" output="false"
+	hint="Reloads the property values of this object from the database."
+	examples=
+	'
+		<!--- Get an object, call a method on it that could potentially change values and then reload the values from the database --->
+		<cfset anEmployee = model("employee").findByKey(params.key)>
+		<cfset anEmployee.someCallThatChangesValuesInTheDatabase()>
+		<cfset anEmployee.reload()>
+	'
+	categories="model-object" chapters="reading-records" functions="">
 	<cfscript>
 		var loc = {};
-		if (variables.wheels.class.softDeletion)
+		loc.query = findByKey(key=key(), reload=true, returnAs="query");
+		loc.properties = propertyNames();		
+		loc.iEnd = ListLen(loc.properties);
+		for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
 		{
-			ArrayAppend(arguments.sql, "UPDATE #variables.wheels.class.tableName# SET #variables.wheels.class.softDeleteColumn# = ");
-			loc.param = {value=Now(), type="cf_sql_timestamp"};
-			ArrayAppend(arguments.sql, loc.param);
+			loc.property = ListGetAt(loc.properties, loc.i);
+			this[loc.property] = loc.query[loc.property][1];
+		}
+	</cfscript>
+</cffunction>
+
+<cffunction name="key" returntype="string" access="public" output="false"
+	hint="Returns the value of the primary key for the object. If you have a single primary key named `id` then `someObject.key()` is functionally equivalent to `someObject.id`. This method is more useful when you do dynamic programming and don't know the name of the primary key or when you use composite keys (in which case it's convenient to use this method to get a list of both key values returned)."
+	examples=
+	'
+		<!--- Get an object and then get the primary key value(s) --->
+		<cfset anEmployee = model("employee").findByKey(params.key)>
+		<cfset val = anEmployee.key()>
+	'
+	categories="model-object" chapters="object-relational-mapping" functions="">
+	<cfargument name="$persisted" type="boolean" required="false" default="false">
+	<cfscript>
+		var loc = {};
+		loc.returnValue = "";
+		loc.iEnd = ListLen(variables.wheels.class.keys);
+		for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
+		{
+			loc.property = ListGetAt(variables.wheels.class.keys, loc.i);
+			if (StructKeyExists(this, loc.property))
+			{
+				if (arguments.$persisted && hasChanged(loc.property))
+					loc.returnValue = ListAppend(loc.returnValue, changedFrom(loc.property));
+				else
+					loc.returnValue = ListAppend(loc.returnValue, this[loc.property]);
+			}
+		}
+		</cfscript>
+	<cfreturn loc.returnValue>
+</cffunction>
+
+<cffunction name="primaryKey" returntype="string" access="public" output="false"
+	hint="Returns the name of the primary key for this model's table. This is determined through database introspection. If composite primary keys have been used they will both be returned in a list."
+	examples=
+	'
+		<!--- Get the name of the primary key of the table mapped to the `employee` model (the `employees` table by default) --->
+		<cfset theKeyName = model("employee").primaryKey()>
+	'
+	categories="model-object" chapters="object-relational-mapping" functions="">
+	<cfreturn variables.wheels.class.keys>
+</cffunction>
+
+<cffunction name="$addSelectClause" returntype="array" access="public" output="false">
+	<cfargument name="sql" type="array" required="true">
+	<cfargument name="select" type="string" required="true">
+	<cfargument name="include" type="string" required="true">
+	<cfargument name="distinct" type="boolean" required="true">
+	<cfscript>
+		var loc = {};
+		
+		// setup an array containing class info for current class and all the ones that should be included
+		loc.classes = [];
+		if (Len(arguments.include))
+			loc.classes = $expandedAssociations(include=arguments.include);
+		ArrayPrepend(loc.classes, variables.wheels.class);
+
+		// add properties to select if the developer did not specify any
+		if (!Len(arguments.select))
+		{
+			loc.iEnd = ArrayLen(loc.classes);
+			for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
+			{
+				loc.classData = loc.classes[loc.i];
+				arguments.select = ListAppend(arguments.select, loc.classData.propertyList);
+				if (Len(loc.classData.calculatedPropertyList))
+					arguments.select = ListAppend(arguments.select, loc.classData.calculatedPropertyList);
+			}
+		}
+
+		// go through the properties and map them to the database unless the developer passed in a table name or an alias in which case we assume they know what they're doing and leave the select clause as is
+		if (arguments.select Does Not Contain "." AND arguments.select Does Not Contain " AS ")
+		{
+			loc.select = "";
+			loc.addedProperties = "";
+			loc.addedPropertiesByModel = {};
+			loc.iEnd = ListLen(arguments.select);
+			for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
+			{
+				loc.iItem = Trim(ListGetAt(arguments.select, loc.i));
+				
+				// look for duplicates
+				loc.duplicateCount = ListValueCountNoCase(loc.addedProperties, loc.iItem);
+				loc.addedProperties = ListAppend(loc.addedProperties, loc.iItem);
+	
+				// loop through all classes (current and all included ones)
+				loc.jEnd = ArrayLen(loc.classes);
+				for (loc.j=1; loc.j <= loc.jEnd; loc.j++)
+				{
+					loc.toAppend = "";
+					loc.classData = loc.classes[loc.j];
+	
+					// get the class name (the variable it is stored in differs depending on if it's taken from the current class or the association info)
+					if (StructKeyExists(loc.classData, "class"))
+						loc.modelName = loc.classData.class;
+					else if (StructKeyExists(loc.classData, "name"))
+						loc.modelName = loc.classData.name;
+	
+					// create a struct for this model unless it already exists
+					if (!StructKeyExists(loc.addedPropertiesByModel, loc.modelName))
+						loc.addedPropertiesByModel[loc.modelName] = "";
+	
+					// if we find the property in this model and it's not already added we go ahead and add it to the select clause
+					if ((ListFindNoCase(loc.classData.propertyList, loc.iItem) || ListFindNoCase(loc.classData.calculatedPropertyList, loc.iItem)) && !ListFindNoCase(loc.addedPropertiesByModel[loc.modelName], loc.iItem))
+					{
+						if (loc.duplicateCount)
+							loc.toAppend = loc.toAppend & "[[duplicate]]" & loc.j;
+						if (ListFindNoCase(loc.classData.propertyList, loc.iItem))
+						{
+							loc.toAppend = loc.toAppend & loc.classData.tableName & ".";
+							if (ListFindNoCase(loc.classData.columnList, loc.iItem))
+								loc.toAppend = loc.toAppend & loc.iItem;
+							else
+								loc.toAppend = loc.toAppend & loc.classData.properties[loc.iItem].column & " AS " & loc.iItem;
+						}
+						else if (ListFindNoCase(loc.classData.calculatedPropertyList, loc.iItem))
+						{
+							loc.toAppend = loc.toAppend & "(" & Replace(loc.classData.calculatedProperties[loc.iItem].sql, ",", "[[comma]]", "all") & ") AS " & loc.iItem;
+						}
+						loc.addedPropertiesByModel[loc.modelName] = ListAppend(loc.addedPropertiesByModel[loc.modelName], loc.iItem);
+						break;
+					}
+				}
+				if (Len(loc.toAppend))
+					loc.select = ListAppend(loc.select, loc.toAppend);
+				else if (application.wheels.showErrorInformation)
+					$throw(type="Wheels.ColumnNotFound", message="Wheels looked for the column mapped to the `#loc.iItem#` property but couldn't find it in the database table.", extendedInfo="Verify the `select` argument and/or your property to column mappings done with the `property` method inside the model's `init` method to make sure everything is correct.");
+			}
+
+			// let's replace eventual duplicates in the clause by prepending the class name		
+			if (Len(arguments.include))
+			{
+				loc.newSelect = "";
+				loc.addedProperties = "";
+				loc.iEnd = ListLen(loc.select);
+				for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
+				{
+					loc.iItem = ListGetAt(loc.select, loc.i);
+
+					// get the property part, done by taking everytyhing from the end of the string to a . or a space (which would be found when using " AS ")
+					loc.property = Reverse(SpanExcluding(Reverse(loc.iItem), ". "));
+					
+					// check if this one has been flagged as a duplicate, we get the number of classes to skip and also remove the flagged info from the item
+					loc.duplicateCount = 0;
+					if (Left(loc.iItem, 13) == "[[duplicate]]")
+					{
+						loc.duplicateCount = Mid(loc.iItem, 14, 1);
+						loc.iItem = Mid(loc.iItem, 15, Len(loc.iItem)-14);
+					}
+					
+					if (!loc.duplicateCount)
+					{
+						// this is not a duplicate so we can just insert it as is
+						loc.newItem = loc.iItem;
+						loc.newProperty = loc.property;
+					}
+					else
+					{
+						// this is a duplicate so we prepend the class name and then insert it unless a property with the resulting name already exist
+						loc.classData = loc.classes[loc.duplicateCount];
+						if (StructKeyExists(loc.classData, "class"))
+							loc.modelName = loc.classData.class;
+						else if (StructKeyExists(loc.classData, "name"))
+							loc.modelName = loc.classData.name;
+
+						// prepend class name to the property
+						loc.newProperty = loc.modelName & loc.property;
+
+						if (loc.iItem Contains " AS ")
+							loc.newItem = ReplaceNoCase(loc.iItem, " AS " & loc.property, " AS " & loc.newProperty);
+						else
+							loc.newItem = loc.iItem & " AS " & loc.newProperty;
+					}
+					if (!ListFindNoCase(loc.addedProperties, loc.newProperty))
+					{
+						loc.newSelect = ListAppend(loc.newSelect, loc.newItem);
+						loc.addedProperties = ListAppend(loc.addedProperties, loc.newProperty);
+					}
+				}
+				loc.select = loc.newSelect;
+			}
 		}
 		else
 		{
-			ArrayAppend(arguments.sql, "DELETE FROM #variables.wheels.class.tableName#");
+			loc.select = arguments.select;
 		}
+		if (arguments.distinct)
+			loc.select = "DISTINCT " & loc.select;		
+		loc.select = "SELECT " & loc.select;		
+		ArrayAppend(arguments.sql, loc.select);
 	</cfscript>
 	<cfreturn arguments.sql>
 </cffunction>
 
-<cffunction name="$fromClause" returntype="string" access="public" output="false">
-	<cfargument name="include" type="string" required="false" default="">
+<cffunction name="$addFromClause" returntype="array" access="public" output="false">
+	<cfargument name="sql" type="array" required="true">
+	<cfargument name="include" type="string" required="true">
 	<cfscript>
 		var loc = {};
-
-		// start the from statement with the SQL keyword and the table name for the current model
-		loc.returnValue = "FROM " & tableName();
-
-		// add join statements if associations have been specified through the include argument
+		loc.from = "FROM " & variables.wheels.class.tableName;
 		if (Len(arguments.include))
 		{
-			// get info for all associations
-			loc.associations = $expandedAssociations(include=arguments.include);
-
-			// add join statement for each include separated by space
-			loc.iEnd = ArrayLen(loc.associations);
+			// setup an array containing class info for current class and all the ones that should be included
+			loc.classes = [];
+			if (Len(arguments.include))
+				loc.classes = $expandedAssociations(include=arguments.include);
+			ArrayPrepend(loc.classes, variables.wheels.class);
+			loc.iEnd = ArrayLen(loc.classes);
 			for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
-				loc.returnValue = ListAppend(loc.returnValue, loc.associations[loc.i].join, " ");
+			{
+				loc.classData = loc.classes[loc.i];
+				if (StructKeyExists(loc.classData, "join"))
+					loc.from = ListAppend(loc.from, loc.classData.join, " ");
+			}
 		}
+		ArrayAppend(arguments.sql, loc.from);
 	</cfscript>
-	<cfreturn loc.returnValue>
+	<cfreturn arguments.sql>
 </cffunction>
 
-<cffunction name="$addKeyWhereClause" returntype="array" access="public" output="false">
+<cffunction name="$addWhereClause" returntype="array" access="public" output="false">
 	<cfargument name="sql" type="array" required="true">
+	<cfargument name="where" type="string" required="true">
+	<cfargument name="include" type="string" required="true">
+	<cfargument name="$softDeleteCheck" type="boolean" required="true">
 	<cfscript>
 		var loc = {};
-		ArrayAppend(arguments.sql, " WHERE ");
-		loc.iEnd = ListLen(variables.wheels.class.keys);
-		for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
+		if (Len(arguments.where))
 		{
-			loc.key = ListGetAt(variables.wheels.class.keys, loc.i);
-			ArrayAppend(arguments.sql, "#variables.wheels.class.properties[loc.key].column# = ");
-			if (hasChanged(loc.key))
-				loc.value = changedFrom(loc.key);
-			else
-				loc.value = this[loc.key];
-			if (Len(loc.value))
-				loc.null = false;
-			else
-				loc.null = true;
-			loc.param = {value=loc.value, type=variables.wheels.class.properties[loc.key].type, scale=variables.wheels.class.properties[loc.key].scale, null=loc.null};
-			ArrayAppend(arguments.sql, loc.param);
-			if (loc.i < loc.iEnd)
-				ArrayAppend(arguments.sql, " AND ");
+			// setup an array containing class info for current class and all the ones that should be included
+			loc.classes = [];
+			if (Len(arguments.include))
+				loc.classes = $expandedAssociations(include=arguments.include);
+			ArrayPrepend(loc.classes, variables.wheels.class);
+			ArrayAppend(arguments.sql, "WHERE");
+			loc.wherePos = ArrayLen(arguments.sql) + 1;
+			loc.params = ArrayNew(1);
+			loc.where = ReplaceList(REReplace(arguments.where, variables.wheels.class.RESQLWhere, "\1?\8" , "all"), "AND,OR", "#chr(7)#AND,#chr(7)#OR");
+			for (loc.i=1; loc.i <= ListLen(loc.where, Chr(7)); loc.i++)
+			{
+				loc.param = {};
+				loc.element = Replace(ListGetAt(loc.where, loc.i, Chr(7)), Chr(7), "", "one");
+				if (Find("(", loc.element) && Find(")", loc.element))
+					loc.elementDataPart = SpanExcluding(Reverse(SpanExcluding(Reverse(loc.element), "(")), ")");
+				else if (Find("(", loc.element))
+					loc.elementDataPart = Reverse(SpanExcluding(Reverse(loc.element), "("));
+				else if (Find(")", loc.element))
+					loc.elementDataPart = SpanExcluding(loc.element, ")");
+				else
+					loc.elementDataPart = loc.element;
+				loc.elementDataPart = Trim(ReplaceList(loc.elementDataPart, "AND,OR", ""));
+				loc.temp = REFind("^([a-zA-Z0-9-_\.]*) ?#variables.wheels.class.RESQLOperators#", loc.elementDataPart, 1, true);
+				if (ArrayLen(loc.temp.len) > 1)
+				{
+					loc.where = Replace(loc.where, loc.element, Replace(loc.element, loc.elementDataPart, "?", "one"));
+					loc.param.property = Mid(loc.elementDataPart, loc.temp.pos[2], loc.temp.len[2]);
+					loc.jEnd = ArrayLen(loc.classes);
+					for (loc.j=1; loc.j <= loc.jEnd; loc.j++)
+					{
+						loc.classData = loc.classes[loc.j];
+						if (loc.param.property Does Not Contain "." || ListFirst(loc.param.property, ".") == loc.classData.tableName)
+						{
+							if (ListFindNoCase(loc.classData.propertyList, ListLast(loc.param.property, ".")))
+							{
+								loc.param.type = loc.classData.properties[ListLast(loc.param.property, ".")].type;
+								loc.param.scale = loc.classData.properties[ListLast(loc.param.property, ".")].scale;
+								loc.param.column = loc.classData.tableName & "." & loc.classData.properties[ListLast(loc.param.property, ".")].column;
+								break;
+							}
+							else if (ListFindNoCase(loc.classData.calculatedPropertyList, ListLast(loc.param.property, ".")))
+							{
+								loc.param.type = "CF_SQL_CHAR";
+								loc.param.scale = 0;
+								loc.param.column = loc.classData.calculatedProperties[ListLast(loc.param.property, ".")].sql;
+								break;
+							}
+						}
+					}
+					if (application.wheels.showErrorInformation && !StructKeyExists(loc.param, "column"))
+						$throw(type="Wheels.ColumnNotFound", message="Wheels looked for the column mapped to the `#loc.param.property#` property but couldn't find it in the database table.", extendedInfo="Verify the `where` argument and/or your property to column mappings done with the `property` method inside the model's `init` method to make sure everything is correct.");
+					loc.temp = REFind("^[a-zA-Z0-9-_\.]* ?#variables.wheels.class.RESQLOperators#", loc.elementDataPart, 1, true);
+					loc.param.operator = Trim(Mid(loc.elementDataPart, loc.temp.pos[2], loc.temp.len[2]));
+					ArrayAppend(loc.params, loc.param);
+				}
+			}
+			loc.where = ReplaceList(loc.where, "#Chr(7)#AND,#Chr(7)#OR", "AND,OR");
+
+			// add to sql array
+			loc.where = " #loc.where# ";
+			loc.iEnd = ListLen(loc.where, "?");
+			for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
+			{
+				loc.item = ListGetAt(loc.where, loc.i, "?");
+				if (Len(Trim(loc.item)))
+					ArrayAppend(arguments.sql, loc.item);
+				if (loc.i < ListLen(loc.where, "?"))
+				{
+					loc.column = loc.params[loc.i].column;
+					ArrayAppend(arguments.sql, "#loc.column# #loc.params[loc.i].operator#");
+					loc.param = {type=loc.params[loc.i].type, scale=loc.params[loc.i].scale};
+					ArrayAppend(arguments.sql, loc.param);
+				}
+			}
+		}
+
+		if (arguments.$softDeleteCheck)
+		{
+			/// add soft delete sql
+			loc.classes = [];
+			if (Len(arguments.include))
+				loc.classes = $expandedAssociations(include=arguments.include);
+			ArrayPrepend(loc.classes, variables.wheels.class);
+			loc.models = "";
+			loc.iEnd = ArrayLen(loc.classes);
+			for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
+			{
+				if (StructKeyExists(loc.classes[loc.i], "class"))
+					loc.models = ListAppend(loc.models, loc.classes[loc.i].class);
+				else if (StructKeyExists(loc.classes[loc.i], "name"))
+					loc.models = ListAppend(loc.models, loc.classes[loc.i].name);
+			}
+			loc.addToWhere = "";
+			loc.iEnd = ListLen(loc.models);
+			for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
+			{
+				loc.model = ListGetAt(loc.models, loc.i);
+				if (model(loc.model).$softDeletion())
+					loc.addToWhere = ListAppend(loc.addToWhere, model(loc.model).tableName() & "." & model(loc.model).$softDeleteColumn() & " IS NULL");
+			}
+			loc.addToWhere = Replace(loc.addToWhere, ",", " AND ", "all");
+			if (Len(loc.addToWhere))
+			{
+				if (Len(arguments.where))
+				{
+					ArrayInsertAt(arguments.sql, loc.wherePos, " (");
+					ArrayAppend(arguments.sql, ") AND (");
+					ArrayAppend(arguments.sql, loc.addToWhere);
+					ArrayAppend(arguments.sql, ")");
+				}
+				else
+				{
+					ArrayAppend(arguments.sql, "WHERE ");
+					ArrayAppend(arguments.sql, loc.addToWhere);
+				}
+			}
+		}		
+	</cfscript>
+	<cfreturn arguments.sql>
+</cffunction>
+
+<cffunction name="$addWhereClauseParameters" returntype="array" access="public" output="false">
+	<cfargument name="sql" type="array" required="true">
+	<cfargument name="where" type="string" required="true">
+	<cfscript>
+		var loc = {};
+		if (Len(arguments.where))
+		{
+			loc.start = 1;
+			loc.originalValues = [];
+			while (!StructKeyExists(loc, "temp") || ArrayLen(loc.temp.len) > 1)
+			{
+				loc.temp = REFind(variables.wheels.class.RESQLWhere, arguments.where, loc.start, true);
+				if (ArrayLen(loc.temp.len) > 1)
+				{
+					loc.start = loc.temp.pos[4] + loc.temp.len[4];
+					ArrayAppend(loc.originalValues, ReplaceList(Chr(7) & Mid(arguments.where, loc.temp.pos[4], loc.temp.len[4]) & Chr(7), "#Chr(7)#(,)#Chr(7)#,#Chr(7)#','#Chr(7)#,#Chr(7)#"",""#Chr(7)#,#Chr(7)#", ",,,,,,"));
+				}
+			}
+
+			loc.pos = ArrayLen(loc.originalValues);
+			loc.iEnd = ArrayLen(arguments.sql);
+			for (loc.i=loc.iEnd; loc.i > 0; loc.i--)
+			{
+				if (IsStruct(arguments.sql[loc.i]) && loc.pos > 0)
+				{
+					arguments.sql[loc.i].value = loc.originalValues[loc.pos];
+					if (loc.originalValues[loc.pos] == "")
+						arguments.sql[loc.i].null = true;
+					loc.pos--;
+				}
+			}
 		}
 	</cfscript>
 	<cfreturn arguments.sql>
@@ -939,388 +1368,6 @@
 	<cfreturn arguments.sql>
 </cffunction>
 
-<cffunction name="$addGroupByClause" returntype="array" access="public" output="false">
-	<cfargument name="sql" type="array" required="true">
-	<cfargument name="select" type="string" required="true">
-	<cfargument name="include" type="string" required="true">
-	<cfargument name="group" type="string" required="true">
-	<cfargument name="distinct" type="boolean" required="true">
-	<cfscript>
-		var loc = { group = "" };
-		// if we want a distinct statement, we can do it grouping every field in the select
-		if (arguments.distinct)
-		{
-			loc.group = $createSQLFieldList(list=arguments.select, include=arguments.include, renameFields=false, addCalculatedProperties=false);
-		}
-		else if (Len(arguments.group))
-		{
-			loc.group = $createSQLFieldList(list=arguments.group, include=arguments.include, renameFields=false, addCalculatedProperties=false);
-		}
-		if (Len(loc.group))
-		{
-			loc.group = "GROUP BY " & loc.group;
-			ArrayAppend(arguments.sql, loc.group);
-		}
-	</cfscript>
-	<cfreturn arguments.sql>
-</cffunction>
-
-<cffunction name="$addSelectClause" returntype="array" access="public" output="false">
-	<cfargument name="sql" type="array" required="true">
-	<cfargument name="select" type="string" required="true">
-	<cfargument name="include" type="string" required="true">
-	<cfscript>
-		var loc = {};
-		loc.select = $createSQLFieldList(list=arguments.select, include=arguments.include);
-		loc.select = "SELECT " & loc.select;
-		ArrayAppend(arguments.sql, loc.select);
-	</cfscript>
-	<cfreturn arguments.sql>
-</cffunction>
-
-<cffunction name="$createSQLFieldList" returntype="string" access="public" output="false">
-	<cfargument name="list" type="string" required="true">
-	<cfargument name="include" type="string" required="true">
-	<cfargument name="renameFields" type="boolean" required="false" default="true">
-	<cfargument name="addCalculatedProperties" type="boolean" required="false" default="true">
-	<cfscript>
-		var loc = {};
-		// setup an array containing class info for current class and all the ones that should be included
-		loc.classes = [];
-		if (Len(arguments.include))
-			loc.classes = $expandedAssociations(include=arguments.include);
-		ArrayPrepend(loc.classes, variables.wheels.class);
-
-		// if the develop passes in tablename.*, translate it into the list of fields for the developer
-		// this is so we don't get *'s in the group by
-		if (Find(".*", arguments.list))
-			arguments.list = $expandProperties(list=arguments.list, classes=loc.classes);
-
-		// add properties to select if the developer did not specify any
-		if (!Len(arguments.list))
-		{
-			loc.iEnd = ArrayLen(loc.classes);
-			for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
-			{
-				loc.classData = loc.classes[loc.i];
-				arguments.list = ListAppend(arguments.list, loc.classData.propertyList);
-				if (Len(loc.classData.calculatedPropertyList))
-					arguments.list = ListAppend(arguments.list, loc.classData.calculatedPropertyList);
-			}
-		}
-
-		// go through the properties and map them to the database unless the developer passed in a table name or an alias in which case we assume they know what they're doing and leave the select clause as is
-		if (arguments.list Does Not Contain "." AND arguments.list Does Not Contain " AS ")
-		{
-			loc.list = "";
-			loc.addedProperties = "";
-			loc.addedPropertiesByModel = {};
-			loc.iEnd = ListLen(arguments.list);
-			for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
-			{
-				loc.iItem = Trim(ListGetAt(arguments.list, loc.i));
-
-				// look for duplicates
-				loc.duplicateCount = ListValueCountNoCase(loc.addedProperties, loc.iItem);
-				loc.addedProperties = ListAppend(loc.addedProperties, loc.iItem);
-
-				// loop through all classes (current and all included ones)
-				loc.jEnd = ArrayLen(loc.classes);
-				for (loc.j=1; loc.j <= loc.jEnd; loc.j++)
-				{
-					loc.toAppend = "";
-					loc.classData = loc.classes[loc.j];
-
-					// create a struct for this model unless it already exists
-					if (!StructKeyExists(loc.addedPropertiesByModel, loc.classData.modelName))
-						loc.addedPropertiesByModel[loc.classData.modelName] = "";
-
-					// if we find the property in this model and it's not already added we go ahead and add it to the select clause
-					if ((ListFindNoCase(loc.classData.propertyList, loc.iItem) || ListFindNoCase(loc.classData.calculatedPropertyList, loc.iItem)) && !ListFindNoCase(loc.addedPropertiesByModel[loc.classData.modelName], loc.iItem))
-					{
-						if (loc.duplicateCount && arguments.renameFields)
-							loc.toAppend = loc.toAppend & "[[duplicate]]" & loc.j;
-						if (ListFindNoCase(loc.classData.propertyList, loc.iItem))
-						{
-							loc.toAppend = loc.toAppend & loc.classData.tableName & ".";
-							if (ListFindNoCase(loc.classData.columnList, loc.iItem))
-							{
-								loc.toAppend = loc.toAppend & loc.iItem;
-							}
-							else
-							{
-								loc.toAppend = loc.toAppend & loc.classData.properties[loc.iItem].column;
-								if (arguments.renameFields)
-									loc.toAppend = loc.toAppend & " AS " & loc.iItem;
-							}
-						}
-						else if (ListFindNoCase(loc.classData.calculatedPropertyList, loc.iItem) && arguments.addCalculatedProperties)
-						{
-							loc.toAppend = loc.toAppend & "(" & Replace(loc.classData.calculatedProperties[loc.iItem].sql, ",", "[[comma]]", "all") & ") AS " & loc.iItem;
-						}
-						loc.addedPropertiesByModel[loc.classData.modelName] = ListAppend(loc.addedPropertiesByModel[loc.classData.modelName], loc.iItem);
-						break;
-					}
-				}
-				if (Len(loc.toAppend))
-					loc.list = ListAppend(loc.list, loc.toAppend);
-				else if (application.wheels.showErrorInformation && (not arguments.addCalculatedProperties && not ListFindNoCase(loc.classData.calculatedPropertyList, loc.iItem)))
-					$throw(type="Wheels.ColumnNotFound", message="Wheels looked for the column mapped to the `#loc.iItem#` property but couldn't find it in the database table.", extendedInfo="Verify the `select` argument and/or your property to column mappings done with the `property` method inside the model's `init` method to make sure everything is correct.");
-			}
-
-			// let's replace eventual duplicates in the clause by prepending the class name
-			if (Len(arguments.include) && arguments.renameFields)
-			{
-				loc.newSelect = "";
-				loc.addedProperties = "";
-				loc.iEnd = ListLen(loc.list);
-				for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
-				{
-					loc.iItem = ListGetAt(loc.list, loc.i);
-
-					// get the property part, done by taking everytyhing from the end of the string to a . or a space (which would be found when using " AS ")
-					loc.property = Reverse(SpanExcluding(Reverse(loc.iItem), ". "));
-
-					// check if this one has been flagged as a duplicate, we get the number of classes to skip and also remove the flagged info from the item
-					loc.duplicateCount = 0;
-					if (Left(loc.iItem, 13) == "[[duplicate]]")
-					{
-						loc.duplicateCount = Mid(loc.iItem, 14, 1);
-						loc.iItem = Mid(loc.iItem, 15, Len(loc.iItem)-14);
-					}
-
-					if (!loc.duplicateCount)
-					{
-						// this is not a duplicate so we can just insert it as is
-						loc.newItem = loc.iItem;
-						loc.newProperty = loc.property;
-					}
-					else
-					{
-						// this is a duplicate so we prepend the class name and then insert it unless a property with the resulting name already exist
-						loc.classData = loc.classes[loc.duplicateCount];
-
-						// prepend class name to the property
-						loc.newProperty = loc.classData.modelName & loc.property;
-
-						if (loc.iItem Contains " AS ")
-							loc.newItem = ReplaceNoCase(loc.iItem, " AS " & loc.property, " AS " & loc.newProperty);
-						else
-							loc.newItem = loc.iItem & " AS " & loc.newProperty;
-					}
-					if (!ListFindNoCase(loc.addedProperties, loc.newProperty))
-					{
-						loc.newSelect = ListAppend(loc.newSelect, loc.newItem);
-						loc.addedProperties = ListAppend(loc.addedProperties, loc.newProperty);
-					}
-				}
-				loc.list = loc.newSelect;
-			}
-		}
-		else
-		{
-			loc.list = arguments.list;
-			if (!arguments.renameFields && Find(" AS ", loc.list))
-				loc.list = REReplace(loc.list, variables.wheels.class.RESQLAs, "", "all");
-		}
-	</cfscript>
-	<cfreturn loc.list />
-</cffunction>
-
-<cffunction name="$addWhereClause" returntype="array" access="public" output="false">
-	<cfargument name="sql" type="array" required="true">
-	<cfargument name="where" type="string" required="true">
-	<cfargument name="include" type="string" required="true">
-	<cfargument name="$softDeleteCheck" type="boolean" required="true">
-	<cfscript>
-		var loc = {};
-		if (Len(arguments.where))
-		{
-			// setup an array containing class info for current class and all the ones that should be included
-			loc.classes = [];
-			if (Len(arguments.include))
-				loc.classes = $expandedAssociations(include=arguments.include);
-			ArrayPrepend(loc.classes, variables.wheels.class);
-			ArrayAppend(arguments.sql, "WHERE");
-			loc.wherePos = ArrayLen(arguments.sql) + 1;
-			loc.params = ArrayNew(1);
-			loc.where = ReplaceList(REReplace(arguments.where, variables.wheels.class.RESQLWhere, "\1?\8" , "all"), "AND,OR", "#chr(7)#AND,#chr(7)#OR");
-			for (loc.i=1; loc.i <= ListLen(loc.where, Chr(7)); loc.i++)
-			{
-				loc.param = {};
-				loc.element = Replace(ListGetAt(loc.where, loc.i, Chr(7)), Chr(7), "", "one");
-				if (Find("(", loc.element) && Find(")", loc.element))
-					loc.elementDataPart = SpanExcluding(Reverse(SpanExcluding(Reverse(loc.element), "(")), ")");
-				else if (Find("(", loc.element))
-					loc.elementDataPart = Reverse(SpanExcluding(Reverse(loc.element), "("));
-				else if (Find(")", loc.element))
-					loc.elementDataPart = SpanExcluding(loc.element, ")");
-				else
-					loc.elementDataPart = loc.element;
-				loc.elementDataPart = Trim(ReplaceList(loc.elementDataPart, "AND,OR", ""));
-				loc.temp = REFind("^([a-zA-Z0-9-_\.]*)#variables.wheels.class.RESQLOperators#", loc.elementDataPart, 1, true);
-				if (ArrayLen(loc.temp.len) gt 1)
-				{
-					loc.where = Replace(loc.where, loc.element, Replace(loc.element, loc.elementDataPart, "?", "one"));
-					loc.param.property = Mid(loc.elementDataPart, loc.temp.pos[2], loc.temp.len[2]);
-					loc.jEnd = ArrayLen(loc.classes);
-					for (loc.j=1; loc.j <= loc.jEnd; loc.j++)
-					{
-						loc.classData = loc.classes[loc.j];
-						if (loc.param.property Does Not Contain "." || ListFirst(loc.param.property, ".") == loc.classData.tableName)
-						{
-							if (ListFindNoCase(loc.classData.propertyList, ListLast(loc.param.property, ".")))
-							{
-								loc.param.type = loc.classData.properties[ListLast(loc.param.property, ".")].type;
-								loc.param.scale = loc.classData.properties[ListLast(loc.param.property, ".")].scale;
-								loc.param.column = loc.classData.tableName & "." & loc.classData.properties[ListLast(loc.param.property, ".")].column;
-								break;
-							}
-							else if (ListFindNoCase(loc.classData.calculatedPropertyList, ListLast(loc.param.property, ".")))
-							{
-								loc.param.type = "CF_SQL_CHAR";
-								loc.param.scale = 0;
-								loc.param.column = loc.classData.calculatedProperties[ListLast(loc.param.property, ".")].sql;
-								break;
-							}
-						}
-					}
-					if (application.wheels.showErrorInformation && !StructKeyExists(loc.param, "column"))
-						$throw(type="Wheels.ColumnNotFound", message="Wheels looked for the column mapped to the `#loc.param.property#` property but couldn't find it in the database table.", extendedInfo="Verify the `where` argument and/or your property to column mappings done with the `property` method inside the model's `init` method to make sure everything is correct.");
-					loc.temp = REFind("^[a-zA-Z0-9-_\.]*#variables.wheels.class.RESQLOperators#", loc.elementDataPart, 1, true);
-					loc.param.operator = Trim(Mid(loc.elementDataPart, loc.temp.pos[2], loc.temp.len[2]));
-					ArrayAppend(loc.params, loc.param);
-				}
-			}
-			loc.where = ReplaceList(loc.where, "#Chr(7)#AND,#Chr(7)#OR", "AND,OR");
-
-			// add to sql array
-			loc.where = " #loc.where# ";
-			loc.iEnd = ListLen(loc.where, "?");
-			for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
-			{
-				loc.item = ListGetAt(loc.where, loc.i, "?");
-				if (Len(Trim(loc.item)))
-					ArrayAppend(arguments.sql, loc.item);
-				if (loc.i < ListLen(loc.where, "?"))
-				{
-					loc.column = loc.params[loc.i].column;
-					ArrayAppend(arguments.sql, "#loc.column# #loc.params[loc.i].operator#");
-					loc.param = {type=loc.params[loc.i].type, scale=loc.params[loc.i].scale};
-					ArrayAppend(arguments.sql, loc.param);
-				}
-			}
-		}
-
-		if (arguments.$softDeleteCheck)
-		{
-			/// add soft delete sql
-			loc.classes = [];
-			if (Len(arguments.include))
-				loc.classes = $expandedAssociations(include=arguments.include);
-			ArrayPrepend(loc.classes, variables.wheels.class);
-			loc.models = "";
-			loc.iEnd = ArrayLen(loc.classes);
-			for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
-				loc.models = ListAppend(loc.models, loc.classes[loc.i].modelName);
-			loc.addToWhere = "";
-			loc.iEnd = ListLen(loc.models);
-			for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
-			{
-				loc.model = ListGetAt(loc.models, loc.i);
-				if (model(loc.model).$softDeletion())
-					loc.addToWhere = ListAppend(loc.addToWhere, model(loc.model).tableName() & "." & model(loc.model).$softDeleteColumn() & " IS NULL");
-			}
-			loc.addToWhere = Replace(loc.addToWhere, ",", " AND ", "all");
-			if (Len(loc.addToWhere))
-			{
-				if (Len(arguments.where))
-				{
-					ArrayInsertAt(arguments.sql, loc.wherePos, " (");
-					ArrayAppend(arguments.sql, ") AND (");
-					ArrayAppend(arguments.sql, loc.addToWhere);
-					ArrayAppend(arguments.sql, ")");
-				}
-				else
-				{
-					ArrayAppend(arguments.sql, "WHERE ");
-					ArrayAppend(arguments.sql, loc.addToWhere);
-				}
-			}
-		}
-	</cfscript>
-	<cfreturn arguments.sql>
-</cffunction>
-
-<cffunction name="$addWhereClauseParameters" returntype="array" access="public" output="false">
-	<cfargument name="sql" type="array" required="true">
-	<cfargument name="where" type="string" required="true">
-	<cfscript>
-		var loc = {};
-		if (Len(arguments.where))
-		{
-			loc.start = 1;
-			loc.originalValues = [];
-			while (!StructKeyExists(loc, "temp") || ArrayLen(loc.temp.len) gt 1)
-			{
-				loc.temp = REFind(variables.wheels.class.RESQLWhere, arguments.where, loc.start, true);
-				if (ArrayLen(loc.temp.len) gt 1)
-				{
-					loc.start = loc.temp.pos[4] + loc.temp.len[4];
-					ArrayAppend(loc.originalValues, ReplaceList(Chr(7) & Mid(arguments.where, loc.temp.pos[4], loc.temp.len[4]) & Chr(7), "#Chr(7)#(,)#Chr(7)#,#Chr(7)#','#Chr(7)#,#Chr(7)#"",""#Chr(7)#,#Chr(7)#", ",,,,,,"));
-				}
-			}
-
-			loc.pos = ArrayLen(loc.originalValues);
-			loc.iEnd = ArrayLen(arguments.sql);
-			for (loc.i=loc.iEnd; loc.i gt 0; loc.i--)
-			{
-				if (IsStruct(arguments.sql[loc.i]) && loc.pos gt 0)
-				{
-					arguments.sql[loc.i].value = loc.originalValues[loc.pos];
-					if (loc.originalValues[loc.pos] == "")
-						arguments.sql[loc.i].null = true;
-					loc.pos--;
-				}
-			}
-		}
-	</cfscript>
-	<cfreturn arguments.sql>
-</cffunction>
-
-<cffunction name="$expandProperties" returntype="string" access="public" output="false">
-	<cfargument name="list" type="string" required="true">
-	<cfargument name="classes" type="array" required="true">
-	<cfscript>
-		var loc = {};
-		loc.matches = REMatch("[A-Za-z1-9]+\.\*", arguments.list);
-		loc.iEnd = ArrayLen(loc.matches);
-		for (loc.i = 1; loc.i lte loc.iEnd; loc.i++)
-		{
-			loc.match = loc.matches[loc.i];
-			loc.fields = "";
-			loc.tableName = ListGetAt(loc.match, 1, ".");
-			loc.jEnd = ArrayLen(arguments.classes);
-			for (loc.j = 1; loc.j lte loc.jEnd; loc.j++)
-			{
-				loc.class = arguments.classes[loc.j];
-				if (loc.class.tableName == loc.tableName)
-				{
-					for (loc.item in loc.class.properties)
-						loc.fields = ListAppend(loc.fields, "#loc.class.tableName#.#loc.item#");
-					break;
-				}
-			}
-
-			if (Len(loc.fields))
-				arguments.list = Replace(arguments.list, loc.match, loc.fields, "all");
-			else if (application.wheels.showErrorInformation)
-				$throw(type="Wheels.ModelNotFound", message="Wheels looked for the model mapped to table name `#loc.tableName#` but couldn't find it.", extendedInfo="Verify the `select` argument and/or your model association mappings are correct.");
-		}
-	</cfscript>
-	<cfreturn arguments.list />
-</cffunction>
-
 <cffunction name="$expandedAssociations" returntype="array" access="public" output="false">
 	<cfargument name="include" type="string" required="true">
 	<cfscript>
@@ -1328,7 +1375,7 @@
 		loc.returnValue = [];
 
 		// add the current class name so that the levels list start at the lowest level
-		loc.levels = variables.wheels.class.modelName;
+		loc.levels = variables.wheels.class.name;
 
 		// count the included associations
 		loc.iEnd = ListLen(Replace(arguments.include, "(", ",", "all"));
@@ -1355,18 +1402,26 @@
 			if (application.wheels.showErrorInformation && !StructKeyExists(loc.classAssociations, loc.name))
 				$throw(type="Wheels.AssociationNotFound", message="An association named `#loc.name#` could not be found on the `#ListLast(loc.levels)#` model.", extendedInfo="Setup an association in the `init` method of the `models/#capitalize(ListLast(loc.levels))#.cfc` file and name it `#loc.name#`. You can use the `belongsTo`, `hasOne` or `hasMany` method to set it up.");
 
+			// infer class name and foreign key from association name unless developer specified it already
+			if (!Len(loc.classAssociations[loc.name].class))
+			{
+				loc.classAssociations[loc.name].class = loc.name;
+				if (loc.classAssociations[loc.name].type == "hasMany")
+					loc.classAssociations[loc.name].class = singularize(loc.classAssociations[loc.name].class);
+			}
+
 			// create a reference to the associated class
-			loc.associatedClass = model(loc.classAssociations[loc.name].modelName);
+			loc.associatedClass = model(loc.classAssociations[loc.name].class);
 
 			if (!Len(loc.classAssociations[loc.name].foreignKey))
 			{
 				if (loc.classAssociations[loc.name].type == "belongsTo")
 				{
-					loc.classAssociations[loc.name].foreignKey = loc.associatedClass.$classData().modelName & Replace(loc.associatedClass.$classData().keys, ",", ",#loc.associatedClass.$classData().modelName#", "all");
+					loc.classAssociations[loc.name].foreignKey = loc.associatedClass.$classData().name & Replace(loc.associatedClass.$classData().keys, ",", ",#loc.associatedClass.$classData().name#", "all");
 				}
 				else
 				{
-					loc.classAssociations[loc.name].foreignKey = loc.class.$classData().modelName & Replace(loc.class.$classData().keys, ",", ",#loc.class.$classData().modelName#", "all");
+					loc.classAssociations[loc.name].foreignKey = loc.class.$classData().name & Replace(loc.class.$classData().keys, ",", ",#loc.class.$classData().name#", "all");
 				}
 			}
 
@@ -1382,40 +1437,25 @@
 			loc.classAssociations[loc.name].join = UCase(loc.joinType) & " JOIN #loc.classAssociations[loc.name].tableName# ON ";
 			loc.toAppend = "";
 			loc.jEnd = ListLen(loc.classAssociations[loc.name].foreignKey);
-
 			for (loc.j=1; loc.j <= loc.jEnd; loc.j++)
 			{
-				loc.key1 = ListGetAt(loc.classAssociations[loc.name].foreignKey, loc.j);
 				if (loc.classAssociations[loc.name].type == "belongsTo")
 				{
-					loc.key2 = ListFindNoCase(loc.associatedClass.$classData().keys, loc.key1);
-					if (loc.key2)
-						loc.key2 = ListGetAt(loc.associatedClass.$classData().keys, loc.key2);
-					else
-						loc.key2 = ListGetAt(loc.associatedClass.$classData().keys, loc.j);
-
-					loc.first = loc.key1;
-					loc.second = loc.key2;
+					loc.first = loc.classAssociations[loc.name].foreignKey;
+					loc.second = loc.associatedClass.$classData().keys;
 				}
 				else
 				{
-					loc.key2 = ListFindNoCase(loc.class.$classData().keys, loc.key1);
-					if (loc.key2)
-						loc.key2 = ListGetAt(loc.class.$classData().keys, loc.key2);
-					else
-						loc.key2 = ListGetAt(loc.class.$classData().keys, loc.j);
-
-					loc.first = loc.key2;
-					loc.second = loc.key1;
+					loc.first = loc.class.$classData().keys;
+					loc.second = loc.classAssociations[loc.name].foreignKey;
 				}
-
-				loc.toAppend = ListAppend(loc.toAppend, "#loc.class.$classData().tableName#.#loc.class.$classData().properties[loc.first].column# = #loc.classAssociations[loc.name].tableName#.#loc.associatedClass.$classData().properties[loc.second].column#");
+				loc.toAppend = ListAppend(loc.toAppend, "#loc.class.$classData().tableName#.#loc.class.$classData().properties[ListGetAt(loc.first, loc.j)].column# = #loc.classAssociations[loc.name].tableName#.#loc.associatedClass.$classData().properties[ListGetAt(loc.second, loc.j)].column#");
 			}
 			loc.classAssociations[loc.name].join = loc.classAssociations[loc.name].join & Replace(loc.toAppend, ",", " AND ", "all");
 
 			// go up or down one level in the association tree
 			if (loc.delimChar == "(")
-				loc.levels = ListAppend(loc.levels, loc.classAssociations[loc.name].modelName);
+				loc.levels = ListAppend(loc.levels, loc.classAssociations[loc.name].class);
 			else if (loc.delimChar == ")")
 				loc.levels = ListDeleteAt(loc.levels, ListLen(loc.levels));
 
@@ -1426,37 +1466,12 @@
 		<cfreturn loc.returnValue>
 </cffunction>
 
-<!--- other --->
-
-<cffunction name="$createInstance" returntype="any" access="public" output="false">
-	<cfargument name="properties" type="any" required="true">
-	<cfargument name="persisted" type="boolean" required="true">
-	<cfargument name="row" type="numeric" required="false" default="1">
-	<cfscript>
-		var loc = {};
-		loc.fileName = capitalize(variables.wheels.class.modelName);
-		if (!ListFindNoCase(application.wheels.existingModelFiles, variables.wheels.class.modelName))
-			loc.fileName = "Model";
-		loc.returnValue = $createObjectFromRoot(path=application.wheels.modelComponentPath, fileName=loc.fileName, method="$initModelObject", name=variables.wheels.class.modelName, properties=arguments.properties, persisted=arguments.persisted, row=arguments.row);
-		// if this method is called with a struct we're creating a new object and then we call the afterNew callback. If called with a query we call the afterFind callback instead. If the called method does not return false we proceed and run the afterInitialize callback.
-		if ((IsQuery(arguments.properties) && loc.returnValue.$callback("afterFind")) || (IsStruct(arguments.properties) && loc.returnValue.$callback("afterNew")))
-			loc.returnValue.$callback("afterInitialization");
-	</cfscript>
-	<cfreturn loc.returnValue>
-</cffunction>
-
-<!--- PRIVATE MODEL OBJECT METHODS --->
-
-<!--- crud --->
-
 <cffunction name="$create" returntype="boolean" access="public" output="false">
 	<cfargument name="parameterize" type="any" required="true">
 	<cfscript>
 		var loc = {};
 		if (variables.wheels.class.timeStampingOnCreate)
-			$timestampProperty(property=variables.wheels.class.timeStampOnCreateProperty);
-		if (application.wheels.setUpdatedAtOnCreate && variables.wheels.class.timeStampingOnUpdate)
-			$timestampProperty(property=variables.wheels.class.timeStampOnUpdateProperty);
+			this[variables.wheels.class.timeStampOnCreateProperty] = Now();
 		loc.sql = [];
 		loc.sql2 = [];
 		ArrayAppend(loc.sql, "INSERT INTO #variables.wheels.class.tableName# (");
@@ -1492,7 +1507,7 @@
 	<cfscript>
 		var loc = {};
 		if (variables.wheels.class.timeStampingOnUpdate)
-			$timestampProperty(property=variables.wheels.class.timeStampOnUpdateProperty);
+			this[variables.wheels.class.timeStampOnUpdateProperty] = Now();
 		loc.sql = [];
 		ArrayAppend(loc.sql, "UPDATE #variables.wheels.class.tableName# SET ");
 		for (loc.key in variables.wheels.class.properties)
@@ -1512,16 +1527,112 @@
 	<cfreturn true>
 </cffunction>
 
-<!--- other --->
-
-<!---
-	developers can now override this method for localizing dates if they perfer.
---->
-<cffunction name="$timestampProperty" returntype="void" access="public" output="false">
-	<cfargument name="property" type="string" required="true" />
+<cffunction name="$createInstance" returntype="any" access="public" output="false">
+	<cfargument name="properties" type="any" required="true">
+	<cfargument name="persisted" type="boolean" required="true">
+	<cfargument name="row" type="numeric" required="false" default="1">
 	<cfscript>
-		this[arguments.property] = Now();
+		var loc = {};
+		loc.fileName = capitalize(variables.wheels.class.name);
+		if (!ListFindNoCase(application.wheels.existingModelFiles, variables.wheels.class.name))
+			loc.fileName = "Model";
+		loc.returnValue = $createObjectFromRoot(path=application.wheels.modelComponentPath, fileName=loc.fileName, method="$initModelObject", name=variables.wheels.class.name, properties=arguments.properties, persisted=arguments.persisted, row=arguments.row);
+		// if this method is called with a struct we're creating a new object and then we call the afterNew callback. If called with a query we call the afterFind callback instead. If the called method does not return false we proceed and run the afterInitialize callback.
+		if ((IsQuery(arguments.properties) && loc.returnValue.$callback("afterFind")) || (IsStruct(arguments.properties) && loc.returnValue.$callback("afterNew")))
+			loc.returnValue.$callback("afterInitialization");
 	</cfscript>
+	<cfreturn loc.returnValue>
+</cffunction>
+
+<cffunction name="$initModelObject" returntype="any" access="public" output="false">
+	<cfargument name="name" type="string" required="true">
+	<cfargument name="properties" type="any" required="true">
+	<cfargument name="persisted" type="boolean" required="true">
+	<cfargument name="row" type="numeric" required="false" default="1">
+	<cfscript>
+		var loc = {};
+		variables.wheels = {};
+		variables.wheels.errors = [];
+		// copy class variables from the object in the application scope
+		variables.wheels.class = $namedReadLock(name="classLock", object=application.wheels.models[arguments.name], method="$classData");
+		// setup object properties in the this scope
+		if (IsQuery(arguments.properties) && arguments.properties.recordCount != 0)
+		{
+			loc.allProperties = ListAppend(variables.wheels.class.propertyList, variables.wheels.class.calculatedPropertyList);
+			loc.iEnd = ListLen(loc.allProperties);
+			for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
+			{
+				loc.iItem = ListGetAt(loc.allProperties, loc.i);
+				if (ListFindNoCase(arguments.properties.columnList, arguments.name & loc.iItem))
+					this[loc.iItem] = arguments.properties[arguments.name & loc.iItem][arguments.row];
+				else if (ListFindNoCase(arguments.properties.columnList, loc.iItem))
+					this[loc.iItem] = arguments.properties[loc.iItem][arguments.row];
+			}
+		}
+		else if (IsStruct(arguments.properties) && !StructIsEmpty(arguments.properties))
+		{
+			for (loc.key in arguments.properties)
+				this[loc.key] = arguments.properties[loc.key];
+		}
+		if (arguments.persisted)
+			$updatePersistedProperties();
+	</cfscript>
+	<cfreturn this>
+</cffunction>
+
+<cffunction name="$updatePersistedProperties" returntype="void" access="public" output="false">
+	<cfscript>
+		var loc = {};
+		variables.$persistedProperties = {};
+		for (loc.key in variables.wheels.class.properties)
+			if (StructKeyExists(this, loc.key))
+				variables.$persistedProperties[loc.key] = this[loc.key];
+	</cfscript>
+</cffunction>
+
+<cffunction name="$addDeleteClause" returntype="array" access="public" output="false">
+	<cfargument name="sql" type="array" required="true">
+	<cfscript>
+		var loc = {};
+		if (variables.wheels.class.softDeletion)
+		{
+			ArrayAppend(arguments.sql, "UPDATE #variables.wheels.class.tableName# SET #variables.wheels.class.softDeleteColumn# = ");
+			loc.param = {value=Now(), type="cf_sql_timestamp"};
+			ArrayAppend(arguments.sql, loc.param);
+		}
+		else
+		{
+			ArrayAppend(arguments.sql, "DELETE FROM #variables.wheels.class.tableName#");
+		}
+	</cfscript>
+	<cfreturn arguments.sql>
+</cffunction>
+
+<cffunction name="$addKeyWhereClause" returntype="array" access="public" output="false">
+	<cfargument name="sql" type="array" required="true">
+	<cfscript>
+		var loc = {};
+		ArrayAppend(arguments.sql, " WHERE ");
+		loc.iEnd = ListLen(variables.wheels.class.keys);
+		for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
+		{
+			loc.key = ListGetAt(variables.wheels.class.keys, loc.i);
+			ArrayAppend(arguments.sql, "#variables.wheels.class.properties[loc.key].column# = ");
+			if (hasChanged(loc.key))
+				loc.value = changedFrom(loc.key);
+			else
+				loc.value = this[loc.key];
+			if (Len(loc.value))
+				loc.null = false;
+			else
+				loc.null = true;
+			loc.param = {value=loc.value, type=variables.wheels.class.properties[loc.key].type, scale=variables.wheels.class.properties[loc.key].scale, null=loc.null};
+			ArrayAppend(arguments.sql, loc.param);
+			if (loc.i < loc.iEnd)
+				ArrayAppend(arguments.sql, " AND ");
+		}
+	</cfscript>
+	<cfreturn arguments.sql>
 </cffunction>
 
 <cffunction name="$keyWhereString" returntype="string" access="public" output="false">
