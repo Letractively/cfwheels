@@ -132,7 +132,7 @@ _Figure 4: Hello World with the current date and time._
 
 This simple example showed that any dynamic content created in a controller action is available to the corresponding view file. In our application, we created a `time` variable in the `say/hello` controller action and display that variable in our `say/hello.cfm` view file.
 
-===Adding a Second Controller: Goodbye===
+===Adding a Second Action: Goodbye===
 
 Now we will expand the functionality of our application once again by adding a second action to our `say` controller. If you feel adventurous, go ahead and add a `goodbye` action to the `say` controller on your own, then create a `goodbye.cfm` view file that displays a "Goodbye" message to the user. If you're not feeling that adventurous, we'll quickly go step by step.
 
