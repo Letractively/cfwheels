@@ -1,34 +1,32 @@
-<!--- PUBLIC CONTROLLER INITIALIZATION FUNCTIONS --->
-
-<cffunction name="caches" returntype="void" access="public" output="false" hint="Tells Wheels to cache one or more actions."
+<cffunction name="caches" returntype="void" access="public" output="false"
+	hint="Tells Wheels to cache one or more actions."
 	examples=
 	'
 		<cfset caches(actions="browseByUser,browseByTitle", time=30)>
 	'
 	categories="controller-initialization" chapters="caching" functions="">
-	<cfargument name="actions" type="string" required="false" default="" hint="Action(s) to cache (can also be called with the `action` argument).">
-	<cfargument name="time" type="numeric" required="false" hint="Minutes to cache the action(s) for.">
-	<cfargument name="static" type="boolean" required="false" hint="Set to `true` to tell Wheels that this is a static page and that it can skip running the controller filters (before and after filters set on actions) and application events (onSessionStart, onRequestStart etc).">
+	<cfargument name="actions" type="string" required="false" default="" hint="Action(s) to cache (can also be called with the `action` argument)">
+	<cfargument name="time" type="numeric" required="false" default="#application.wheels.functions.caches.time#" hint="Minutes to cache the action(s) for">
 	<cfscript>
 		var loc = {};
-		$insertDefaults(name="caches", input=arguments);
-		arguments = $combineArguments(args=arguments, combine="actions,action", required=false);
-		if (!Len(arguments.actions))
+		if (StructKeyExists(arguments, "action"))
+			arguments.actions = arguments.action;
+
+		if (application.wheels.showErrorInformation)
 		{
-			// since no actions were passed in we assume that all actions should be cachable and indicate this with a *
-			arguments.actions = "*";
+			if (!StructKeyExists(arguments, "action") && !Len(arguments.actions))
+				$throw(type="Wheels.IncorrectArguments", message="The `action` or `actions` argument is required but was not passed in.");
 		}
+
 		loc.iEnd = ListLen(arguments.actions);
 		for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
 		{
 			loc.item = Trim(ListGetAt(arguments.actions, loc.i));
-			loc.action = {action=loc.item, time=arguments.time, static=arguments.static};
-			ArrayAppend(variables.wheels.cachableActions, loc.action);
+			loc.thisAction = {action=loc.item, time=arguments.time};
+			ArrayAppend(variables.wheels.cachableActions, loc.thisAction);
 		}
 	</cfscript>
 </cffunction>
-
-<!--- PRIVATE FUNCTIONS --->
 
 <cffunction name="$getCachableActions" returntype="array" access="public" output="false">
 	<cfreturn variables.wheels.cachableActions>

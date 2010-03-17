@@ -39,10 +39,6 @@
 		if (!StructKeyExists(request, "cgi"))
 			request.cgi = $cgiScope();
 
-		// inject methods from plugins directly to Application.cfc
-		if (!StructIsEmpty(application.wheels.mixins))
-			$include(template="wheels/plugins/injection.cfm");
-
 		if (application.wheels.environment == "maintenance")
 		{
 			if (StructKeyExists(URL, "except"))
@@ -60,6 +56,10 @@
 			StructDelete(variables, "onRequest");
 		}
 
+		// inject methods from plugins directly to Application.cfc
+		if (!StructIsEmpty(application.wheels.mixins))
+			$include(template="wheels/plugins/injection.cfm");
+
 		request.wheels.params = {};
 		request.wheels.cache = {};
 
@@ -68,7 +68,12 @@
 		if (!application.wheels.cacheControllerInitialization)
 			StructClear(application.wheels.controllers);
 		if (!application.wheels.cacheRoutes)
-			$loadRoutes();
+		{
+			ArrayClear(application.wheels.routes);
+			StructClear(application.wheels.namedRoutePositions);
+			$include(template="#application.wheels.configPath#/routes.cfm");
+			$include(template="wheels/events/onapplicationstart/routes.cfm");
+		}
 		if (!application.wheels.cacheDatabaseSchema)
 			$clearCache("sql");
 		if (!application.wheels.cacheFileChecking)

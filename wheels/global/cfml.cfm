@@ -66,10 +66,6 @@
 	</cfzip>
 </cffunction>
 
-<cffunction name="$cache" returntype="any" access="public" output="false">
-	<cfcache attributeCollection="#arguments#">
-</cffunction>
-
 <cffunction name="$content" returntype="any" access="public" output="false">
 	<cfcontent attributeCollection="#arguments#">
 </cffunction>
@@ -129,11 +125,8 @@
 	<cfset arguments.returnVariable = "loc.returnValue">
 	<cfif StructKeyExists(arguments, "componentReference")>
 		<cfset arguments.component = arguments.componentReference>
-		<cfset StructDelete(arguments, "componentReference")>
-	<cfelseif NOT StructKeyExists(variables, arguments.method)>
-		<!--- this is done so that we can call dynamic methods via "onMissingMethod" on the object (we need to pass in the object for this so it can call methods on the "this" scope instead) --->
-		<cfset arguments.component = this>
 	</cfif>
+	<cfset StructDelete(arguments, "componentReference")>
 	<cfinvoke attributeCollection="#arguments#">
 	<cfif StructKeyExists(loc, "returnValue")>
 		<cfreturn loc.returnValue>
@@ -144,21 +137,15 @@
 	<cflocation attributeCollection="#arguments#">
 </cffunction>
 
-<cffunction name="$htmlhead" returntype="void" access="public" output="false">
-	<cfhtmlhead attributeCollection="#arguments#">
-</cffunction>
-
 <cffunction name="$dbinfo" returntype="any" access="public" output="false">
 	<cfset var loc = {}>
 	<cfset arguments.name = "loc.returnValue">
-	<cfif not Len(arguments.username)>
-		<cfset StructDelete(arguments, "username")>
+	<!--- we have to use this cfif here to get around a bug with railo --->
+	<cfif StructKeyExists(arguments, "table")>
+		<cfdbinfo datasource="#arguments.datasource#" name="#arguments.name#" type="#arguments.type#" username="#arguments.username#" password="#arguments.password#" table="#arguments.table#">
+	<cfelse>
+		<cfdbinfo datasource="#arguments.datasource#" name="#arguments.name#" type="#arguments.type#" username="#arguments.username#" password="#arguments.password#">
 	</cfif>
-	<cfif not Len(arguments.password)>
-		<cfset StructDelete(arguments, "password")>
-	</cfif>
-	<!--- note - railo requires that the `table` argument be passed into cfdbinfo --->
-	<cfdbinfo attributeCollection="#arguments#">
 	<cfreturn loc.returnValue>
 </cffunction>
 
@@ -169,20 +156,4 @@
 	<cfif arguments.abort>
 		<cfabort>
 	</cfif>
-</cffunction>
-
-<cffunction name="$listClean" returntype="any" access="public" output="false" hint="removes whitespace between list elements. optional argument to return the list as an array.">
-	<cfargument name="list" type="string" required="true">
-	<cfargument name="delim" type="string" required="false" default=",">
-	<cfargument name="returnAs" type="string" required="false" default="string">
-	<cfset var loc = {}>
-	<cfset loc.list = ListToArray(arguments.list, arguments.delim)>
-	<cfset loc.iEnd = ArrayLen(loc.list)>
-	<cfloop from="1" to="#loc.iEnd#" index="loc.i">
-		<cfset loc.list[loc.i] = trim(loc.list[loc.i])>
-	</cfloop>
-	<cfif arguments.returnAs eq "array">
-		<cfreturn loc.list>
-	</cfif>
-	<cfreturn ArrayToList(loc.list, arguments.delim)>
 </cffunction>

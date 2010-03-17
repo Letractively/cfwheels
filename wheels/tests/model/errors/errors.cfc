@@ -6,11 +6,13 @@
 	<cfset global.user.addErrorToBase(message="base error1")>
 	<cfset global.user.addErrorToBase(message="base name error1", name="base_errors")>
 	<cfset global.user.addErrorToBase(message="base name error2", name="base_errors")>
+
 	<cfset global.user.addError(property="firstname", message="firstname error1")>
 	<cfset global.user.addError(property="firstname", message="firstname error2")>
 	<cfset global.user.addError(property="firstname", message="firstname name error1", name="firstname_errors")>
 	<cfset global.user.addError(property="firstname", message="firstname name error2", name="firstname_errors")>
 	<cfset global.user.addError(property="firstname", message="firstname name error3", name="firstname_errors")>
+
 	<cfset global.user.addError(property="lastname", message="lastname error1")>
 	<cfset global.user.addError(property="lastname", message="lastname error2")>
 	<cfset global.user.addError(property="lastname", message="lastname error3")>
