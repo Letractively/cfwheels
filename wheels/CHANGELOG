@@ -1,29 +1,3 @@
-WHEELS BLEEDING EDGE (3848)
-
-Changes
-=======
-* Ability to skip validation when saving - [Tony Petruzzi]
-* Ability for years to display in descending order in date select form tags - [Tony Petruzzi]
-* Added "head" argument to styleSheetLinkTag and javaScriptIncludeTag - [Per Djurner]
-* Updated the request processing to not call the action if a before filter has rendered content - [James Gibson]
-* Removed differences in params structure for form / URL variables - #232 [Mike Henke, Tony Petruzzi]
-* Made the showDebugInformation argument on renderPage() part of the API - [Per Djurner]
-* Added directory and deleteFile arguments to sendFile() - #323 [Tony Petruzzi]
-
-Bug Fixes
-=========
-* Defaulted day to 1 and month to 1 when submitting forms - [Tony Petruzzi]
-* Callbacks shouldn't need to be pre-loaded - #388 [Andy Bellenie, Tony Petruzzi]
-* Select options are empty when option are an array of model objects - #411 [John C. Bland II, Tony Petruzzi]
-
-Other
-=====
-* Refactor to avoid polluting the Application.cfc's this scope with the rootDir variable - [Per Djurner]
-
-
-----------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
 WHEELS VERSION 1.0.3
 
 Bug Fixes

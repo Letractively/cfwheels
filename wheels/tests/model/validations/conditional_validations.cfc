@@ -1,6 +1,6 @@
 <cfcomponent extends="wheelsMapping.test">
 
-	<cfset global.user = createobject("component", "wheelsMapping.model").$initModelClass("Users")>
+	<cfset global.user = createobject("component", "wheelsMapping.model").$initModelClass("User")>
 	<cfset global.user.username = "TheLongestNameInTheWorld">
 	<cfset global.args = {}>
 	<cfset global.args.property = "username">
@@ -81,28 +81,28 @@
 		<cfset loc.user.validatesLengthOf(argumentCollection=loc.args)>
 		<cfset assert_test(loc.user, true)>
 	</cffunction>
-	
+
 	<cffunction name="test_both_validations_if_trigged_unless_not_trigged_valid">
 		<cfset loc.args.if="1 eq 1">
 		<cfset loc.args.unless="this.username eq 'TheLongestNameInTheWorld'">
 		<cfset loc.user.validatesLengthOf(argumentCollection=loc.args)>
 		<cfset assert_test(loc.user, true)>
 	</cffunction>
-	
+
 	<cffunction name="test_both_validations_if_trigged_unless_trigged_invalid">
 		<cfset loc.args.if="1 eq 1">
 		<cfset loc.args.unless="this.username eq ''">
 		<cfset loc.user.validatesLengthOf(argumentCollection=loc.args)>
 		<cfset assert_test(loc.user, false)>
 	</cffunction>
-	
+
 	<cffunction name="test_both_validations_if_not_trigged_unless_not_trigged_valid">
 		<cfset loc.args.if="1 eq 0">
 		<cfset loc.args.unless="this.username eq 'TheLongestNameInTheWorld'">
 		<cfset loc.user.validatesLengthOf(argumentCollection=loc.args)>
 		<cfset assert_test(loc.user, true)>
 	</cffunction>
-	
+
 	<cffunction name="test_both_validations_if_not_trigged_unless_trigged_valid">
 		<cfset loc.args.if="1 eq 0">
 		<cfset loc.args.unless="this.username eq ''">

@@ -1,86 +1,5 @@
-<cffunction name="$combineArguments" returntype="struct" access="public" output="false">
-	<cfargument name="args" type="struct" required="true">
-	<cfargument name="combine" type="string" required="true">
-	<cfargument name="required" type="boolean" required="false" default="false">
-	<cfscript>
-		var loc = {};
-		if (StructKeyExists(arguments.args, ListGetAt(arguments.combine, 2)))
-		{
-			arguments.args[ListGetAt(arguments.combine, 1)] = arguments.args[ListGetAt(arguments.combine, 2)];
-			StructDelete(arguments.args, ListGetAt(arguments.combine, 2));
-		}
-		if (arguments.required && application.wheels.showErrorInformation)
-		{
-			if (!StructKeyExists(arguments.args, ListGetAt(arguments.combine, 2)) && !Len(arguments.args[ListGetAt(arguments.combine, 1)]))
-			{
-				$throw(type="Wheels.IncorrectArguments", message="The `#ListGetAt(arguments.combine, 2)#` or `#ListGetAt(arguments.combine, 1)#` argument is required but was not passed in.");
-			}
-		}
-	</cfscript>
-	<cfreturn arguments.args>
-</cffunction>
-
-<!--- helper method to recursively map a structure to build mapping paths and retrieve its values so you can have your way with a deeply nested structure --->
-<cffunction name="$mapStruct" returntype="void" access="public" output="false" mixin="dispatch">
-	<cfargument name="map" type="struct" required="true" />
-	<cfargument name="struct" type="struct" required="true" />
-	<cfargument name="path" type="string" required="false" default="" />
-	<cfscript>
-		var loc = {};
-		for (loc.item in arguments.struct) 
-		{
-			if (IsStruct(arguments.struct[loc.item])) // go further down the rabit hole
-			{
-				$mapStruct(map=arguments.map, struct=arguments.struct[loc.item], path="#arguments.path#[#loc.item#]");
-			}
-			else // map our position and value
-			{
-				arguments.map["#arguments.path#[#loc.item#]"] = {};
-				arguments.map["#arguments.path#[#loc.item#]"].value = arguments.struct[loc.item];
-			}
-		}
-	</cfscript>
-</cffunction>
-
-<!--- convert an array to a structure --->
-<cffunction name="$arrayToStruct" returntype="struct" access="public" output="false">
-	<cfargument name="array" type="array" required="true" />
-	<cfscript>
-		var loc = {};
-		loc.struct = {};
-		loc.iEnd = ArrayLen(arguments.array);
-		for (loc.i = 1; loc.i lte loc.iEnd; loc.i++)
-			loc.struct[loc.i] = arguments.array[loc.i];
-	</cfscript>
-	<cfreturn loc.struct />
-</cffunction>
-
-<cffunction name="$structKeysExist" returntype="boolean" access="public" output="false" hint="Check to see if all keys in the list exist for the structure and have length.">
-	<cfargument name="struct" type="struct" required="true" />
-	<cfargument name="keys" type="string" required="false" default="" />
-	<cfscript>
-		var loc = {};
-		loc.returnValue = true;
-		loc.iEnd = ListLen(arguments.keys);
-		for (loc.i = 1; loc.i lte loc.iEnd; loc.i++)
-		{
-			if (!StructKeyExists(arguments.struct, ListGetAt(arguments.keys, loc.i)) || (IsSimpleValue(arguments.struct[ListGetAt(arguments.keys, loc.i)]) && !Len(arguments.struct[ListGetAt(arguments.keys, loc.i)])))
-			{
-				loc.returnValue = false;
-				break;
-			}
-		}
-	</cfscript>
-	<cfreturn loc.returnValue />
-</cffunction>
-
-<cffunction name="$hyphenize" returntype="string" access="public" output="false" hint="Converts camelcase strings to lowercase strings with hyphens instead. Example: `myVariable` becomes `my-variable`.">
-	<cfargument name="string" type="string" required="true" hint="The string to hyphenize.">
-	<cfreturn LCase(REReplace(REReplace(arguments.string, "([A-Z])", "-\l\1", "all"), "^-", "", "one"))>
-</cffunction>
-
 <cffunction name="$cgiScope" returntype="struct" access="public" output="false" hint="This copies all the variables Wheels needs from the CGI scope to the request scope.">
-	<cfargument name="keys" type="string" required="false" default="request_method,http_x_requested_with,http_referer,server_name,path_info,script_name,query_string,remote_addr,server_port,server_port_secure,server_protocol">
+	<cfargument name="keys" type="string" required="false" default="request_method,http_x_requested_with,http_referer,server_name,path_info,script_name,query_string,remote_addr,server_port,server_protocol">
 	<cfscript>
 		var loc = {};
 		loc.returnValue = {};
@@ -113,16 +32,12 @@
 		var applicationPath = Replace(GetCurrentTemplatePath(), "\", "/", "all");
 		var callingPath = Replace(GetBaseTemplatePath(), "\", "/", "all");
 		if (ListLen(callingPath, "/") GT ListLen(applicationPath, "/") || GetFileFromPath(callingPath) == "root.cfm")
-		{
-			$header(statusCode="404", statusText="Not Found");
-			$includeAndOutput(template="#application.wheels.eventPath#/onmissingtemplate.cfm");
 			$abort();
-		}
 	</cfscript>
 </cffunction>
 
 <cffunction name="$URLEncode" returntype="string" access="public" output="false">
-	<cfargument name="param" type="string" required="false" default="">
+	<cfargument name="param" type="string" required="true">
 	<cfscript>
 		var returnValue = "";
 		returnValue = URLEncodedFormat(arguments.param);
@@ -187,16 +102,15 @@
 </cffunction>
 
 <cffunction name="$constructParams" returntype="string" access="public" output="false">
-	<cfargument name="params" type="string" required="true">
-	<cfargument name="$URLRewriting" type="string" required="false" default="#application.wheels.URLRewriting#">
+	<cfargument name="params" type="any" required="true">
 	<cfscript>
 		var loc = {};
 		arguments.params = Replace(arguments.params, "&amp;", "&", "all"); // change to using ampersand so we can use it as a list delim below and so we don't "double replace" the ampersand below
 		// when rewriting is off we will already have "?controller=" etc in the url so we have to continue with an ampersand
-		if (arguments.$URLRewriting == "Off")
+		if (application.wheels.URLRewriting == "Off")
 			loc.delim = "&";
 		else
-			loc.delim = "?";		
+			loc.delim = "?";
 		loc.returnValue = "";
 		loc.iEnd = ListLen(arguments.params, "&");
 		for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
@@ -214,47 +128,6 @@
 		}
 	</cfscript>
 	<cfreturn loc.returnValue>
-</cffunction>
-
-<cffunction name="$args" returntype="void" access="public" output="false">
-	<cfargument name="name" type="string" required="true">
-	<cfargument name="args" type="struct" required="true">
-	<cfargument name="reserved" type="string" required="false" default="">
-	<cfargument name="combine" type="string" required="false" default="">
-	<cfscript>
-		var loc = {};
-		if (Len(arguments.combine))
-		{
-			loc.iEnd = ListLen(arguments.combine);
-			for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
-			{
-				loc.item = ListGetAt(arguments.combine, loc.i);
-				loc.first = ListGetAt(loc.item, 1, "/");
-				loc.second = ListGetAt(loc.item, 2, "/");
-				if (StructKeyExists(arguments.args, loc.second))
-					arguments.args[loc.first] = arguments.args[loc.second];
-				if (application.wheels.showErrorInformation && ListLen(loc.item, "/") > 2)
-				{
-					if (!StructKeyExists(arguments.args, loc.second) && !Len(arguments.args[loc.first]))
-						$throw(type="Wheels.IncorrectArguments", message="The `#loc.first#` or `#loc.second#` argument is required but was not passed in.");				
-				}
-			}
-		}
-		if (application.wheels.showErrorInformation)
-		{
-			if (ListLen(arguments.reserved))
-			{
-				loc.iEnd = ListLen(arguments.reserved);
-				for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
-				{
-					loc.item = ListGetAt(arguments.reserved, loc.i);
-					if (StructKeyExists(arguments.args, loc.item))
-						$throw(type="Wheels.IncorrectArguments", message="The `#loc.item#` argument cannot be passed in since it will be set automatically by Wheels.");
-				}
-			}
-		}
-		StructAppend(arguments.args, application.wheels.functions[arguments.name], false);
-	</cfscript>
 </cffunction>
 
 <cffunction name="$insertDefaults" returntype="void" access="public" output="false">
@@ -285,14 +158,14 @@
 	<cfargument name="fileName" type="string" required="true">
 	<cfargument name="method" type="string" required="true">
 	<cfscript>
-		var returnValue = "";
-		arguments.returnVariable = "returnValue";
+		var loc = {};
+		arguments.returnVariable = "loc.returnValue";
 		arguments.component = arguments.path & "." & arguments.fileName;
 		StructDelete(arguments, "path");
 		StructDelete(arguments, "fileName");
 	</cfscript>
 	<cfinclude template="../../root.cfm">
-	<cfreturn returnValue>
+	<cfreturn loc.returnValue>
 </cffunction>
 
 <cffunction name="$debugPoint" returntype="void" access="public" output="false">
@@ -315,11 +188,11 @@
 
 <cffunction name="$cachedControllerClassExists" returntype="any" access="public" output="false">
 	<cfargument name="name" type="string" required="true">
-		<cfscript>
-			var returnValue = false;
-			if (StructKeyExists(application.wheels.controllers, arguments.name))
-				returnValue = application.wheels.controllers[arguments.name];
-		</cfscript>
+	<cfscript>
+		var returnValue = false;
+		if (StructKeyExists(application.wheels.controllers, arguments.name))
+			returnValue = application.wheels.controllers[arguments.name];
+	</cfscript>
 	<cfreturn returnValue>
 </cffunction>
 
@@ -349,8 +222,7 @@
 
 		if (!ListFindNoCase(application.wheels.existingControllerFiles, arguments.name))
 			loc.fileName = "Controller";
-
-		application.wheels.controllers[arguments.name] = $createObjectFromRoot(path=application.wheels.controllerPath, fileName=loc.fileName, method="$initControllerClass", name=arguments.name);
+		application.wheels.controllers[arguments.name] = $createObjectFromRoot(path=application.wheels.controllerComponentPath, fileName=loc.fileName, method="$initControllerClass", name=arguments.name);
 		loc.returnValue = application.wheels.controllers[arguments.name];
 	</cfscript>
 	<cfreturn loc.returnValue>
@@ -359,10 +231,10 @@
 <cffunction name="$controller" returntype="any" access="public" output="false">
 	<cfargument name="name" type="string" required="true">
 	<cfscript>
-		var returnValue = "";
-		returnValue = $doubleCheckedLock(name="controllerLock", condition="$cachedControllerClassExists", execute="$createControllerClass", conditionArgs=arguments, executeArgs=arguments);
+		var loc = {};
+		loc.returnValue = $doubleCheckedLock(name="controllerLock", condition="$cachedControllerClassExists", execute="$createControllerClass", conditionArgs=arguments, executeArgs=arguments);
 	</cfscript>
-	<cfreturn returnValue>
+	<cfreturn loc.returnValue>
 </cffunction>
 
 <cffunction name="$hashStruct" returntype="string" access="public" output="false">
@@ -578,39 +450,4 @@ Should now call bar() instead and marking foo() as deprecated
 		<cfset arrayappend(request.wheels.deprecation, loc.ret)>
 	</cfif>
 	<cfreturn loc.ret>
-</cffunction>
-
-<cffunction name="$loadRoutes" returntype="void" access="public" output="false">
-	<cfscript>
-		// clear out the route info
-		ArrayClear(application.wheels.routes);
-		StructClear(application.wheels.namedRoutePositions);
-
-		// load developer routes first
-		$include(template="#application.wheels.configPath#/routes.cfm");
-
-		// add the wheels default routes at the end if requested
-		if (application.wheels.loadDefaultRoutes)
-			addDefaultRoutes();
-		
-		// set lookup info for the named routes
-		$setNamedRoutePositions();
-		</cfscript>
-</cffunction>
-
-<cffunction name="$setNamedRoutePositions" returntype="void" access="public" output="false">
-	<cfscript>
-		var loc = {};
-		loc.iEnd = ArrayLen(application.wheels.routes);
-		for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
-		{
-			loc.route = application.wheels.routes[loc.i];
-			if (StructKeyExists(loc.route, "name") && len(loc.route.name))
-			{
-				if (!StructKeyExists(application.wheels.namedRoutePositions, loc.route.name))
-					application.wheels.namedRoutePositions[loc.route.name] = "";
-				application.wheels.namedRoutePositions[loc.route.name] = ListAppend(application.wheels.namedRoutePositions[loc.route.name], loc.i);
-			}
-		}
-		</cfscript>
 </cffunction>
