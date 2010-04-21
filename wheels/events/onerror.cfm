@@ -3,7 +3,7 @@
 	<cfargument name="eventName" type="any" required="true">
 	<cfscript>
 		var returnValue = "";
-		returnValue = $simpleLock(execute="$runOnError", executeArgs=arguments, name="wheelsReloadLock", type="readOnly", timeout=180);
+		returnValue = $simpleLock(execute="$runOnError", executeArgs=arguments, name="wheelsReloadLock", type="readOnly");
 	</cfscript>
 	<cfoutput>
 		#returnValue#
@@ -23,7 +23,7 @@
 				loc.mailArgs = {};
 				loc.mailArgs.from = application.wheels.errorEmailAddress;
 				loc.mailArgs.to = application.wheels.errorEmailAddress;
-				loc.mailArgs.subject = application.wheels.errorEmailSubject;
+				loc.mailArgs.subject = "Error";
 				loc.mailArgs.type = "html";
 				loc.mailArgs.body = [$includeAndReturnOutput($template="wheels/events/onerror/cfmlerror.cfm", exception=arguments.exception)];
 				$insertDefaults(name="sendEmail", input=loc.mailArgs);

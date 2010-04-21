@@ -31,7 +31,7 @@
 		request.cgi = $cgiScope();
 		
 		// set up containers for routes, caches, settings etc
-		application.wheels.version = "1.1";
+		application.wheels.version = "1.0.4";
 		application.wheels.controllers = {};
 		application.wheels.models = {};
 		application.wheels.existingModelFiles = "";
@@ -41,6 +41,8 @@
 		application.wheels.nonExistingLayoutFiles = "";
 		application.wheels.existingHelperFiles = "";
 		application.wheels.nonExistingHelperFiles = "";
+		application.wheels.routes = [];
+		application.wheels.namedRoutePositions = {};
 		application.wheels.cache = {};
 		application.wheels.cache.sql = {};
 		application.wheels.cache.image = {};
@@ -57,6 +59,8 @@
 		application.wheels.rootcomponentPath = ListChangeDelims(application.wheels.webPath, ".", "/");
 		application.wheels.wheelsComponentPath = ListAppend(application.wheels.rootcomponentPath, "wheels", ".");
 		application.wheels.configPath = "config";
+		application.wheels.controllerPath = "controllers";
+		application.wheels.controllerComponentPath = "controllers";
 		application.wheels.eventPath = "events";
 		application.wheels.filePath = "files";
 		application.wheels.imagePath = "images";
@@ -78,7 +82,7 @@
 		$include(template="wheels/events/onapplicationstart/settings.cfm");
 
 		// set a default (can be overridden in developer settings below) for whether or not to show the links in the debug area to run tests
-		if (DirectoryExists(GetDirectoryFromPath(GetBaseTemplatePath()) & "wheels/tests"))
+		if (DirectoryExists(this.rootDir & "wheels/tests"))
 			application.wheels.enableTests = true;
 		else
 			application.wheels.enableTests = false; // the tests folder has been removed (as it will be for official Wheels releases until we support application tests) so we default to not show the links
@@ -90,30 +94,25 @@
 		// load plugins
 		application.wheels.plugins = {};
 		application.wheels.incompatiblePlugins = "";
-		application.wheels.mixableComponents = "application,dispatch,controller,model,microsoftsqlserver,mysql,oracle,postgresql,sqlite";
+		application.wheels.mixableComponents = "application,dispatch,controller,model,microsoftsqlserver,mysql,oracle,postgresql";
 		application.wheels.mixins = {};
 		application.wheels.dependantPlugins = "";
-		loc.pluginFolder = GetDirectoryFromPath(GetBaseTemplatePath()) & "plugins";
+		loc.pluginFolder = this.rootDir & "plugins";
 		// get a list of plugin files and folders
 		loc.pluginFolders = $directory(directory=loc.pluginFolder, type="dir");
 		loc.pluginFiles = $directory(directory=loc.pluginFolder, filter="*.zip", type="file", sort="name DESC");
-		
-		// delete plugin directories if no corresponding plugin zip file exists
-		if (application.wheels.deletePluginDirectories)
+		// delete plugin folders if no corresponding plugin file exist
+		loc.iEnd = loc.pluginFolders.recordCount;
+		for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
 		{
-			loc.iEnd = loc.pluginFolders.recordCount;
-			for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
+			loc.name = loc.pluginFolders["name"][loc.i];
+			loc.directory = loc.pluginFolders["directory"][loc.i];
+			if (Left(loc.name, 1) != "." && !ListContainsNoCase(ValueList(loc.pluginFiles.name), loc.name & "-"))
 			{
-				loc.name = loc.pluginFolders["name"][loc.i];
-				loc.directory = loc.pluginFolders["directory"][loc.i];
-				if (Left(loc.name, 1) != "." && !ListContainsNoCase(ValueList(loc.pluginFiles.name), loc.name & "-"))
-				{
-					loc.directory = loc.directory & "/" & loc.name;
-					$directory(action="delete", directory=loc.directory, recurse=true);
-				}
+				loc.directory = loc.directory & "/" & loc.name;
+				$directory(action="delete", directory=loc.directory, recurse=true);
 			}
 		}
-
 		// create directory and unzip code for the most recent version of each plugin
 		if (loc.pluginFiles.recordCount)
 		{
@@ -221,13 +220,13 @@
 		if (!StructIsEmpty(application.wheels.mixins))
 			$include(template="wheels/plugins/injection.cfm");
 
-		// load router
-		application.wheels.Router = $createObjectFromRoot(path="wheels", fileName="Router", method="init");
-		$loadRoutes();
+		// load developer routes and add wheels default ones at the end
+		$include(template="#application.wheels.configPath#/routes.cfm");
+		$include(template="wheels/events/onapplicationstart/routes.cfm");
 
 		// add all public controller / view methods to a list of methods that you should not be allowed to call as a controller action from the url
-		loc.allowedGlobalMethods = "get,set,addroute,addDefaultRoutes";
-		loc.protectedControllerMethods = StructKeyList($createObjectFromRoot(path=application.wheels.controllerPath, fileName="Wheels", method="$initControllerClass"));
+		loc.allowedGlobalMethods = "get,set,addroute";
+		loc.protectedControllerMethods = StructKeyList($createObjectFromRoot(path=application.wheels.controllerComponentPath, fileName="Wheels", method="$initControllerClass"));
 		application.wheels.protectedControllerMethods = "";
 		loc.iEnd = ListLen(loc.protectedControllerMethods);
 		for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
@@ -238,7 +237,7 @@
 		}
 
 		// create the dispatcher that will handle all incoming requests
-		application.wheels.dispatch = $createObjectFromRoot(path="wheels", fileName="Dispatch", method="$init");
+		application.wheels.dispatch = $createObjectFromRoot(path="wheels", fileName="Dispatch", method="$returnDispatcher");
 		
 		// run the developer's on application start code
 		$include(template="#application.wheels.eventPath#/onapplicationstart.cfm");

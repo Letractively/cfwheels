@@ -1,11 +1,10 @@
-<!--- PRIVATE FUNCTIONS --->
-
 <cffunction name="$initControllerClass" returntype="any" access="public" output="false">
 	<cfargument name="name" type="string" required="false" default="">
 	<cfscript>
 		variables.wheels.name = arguments.name;
 		variables.wheels.verifications = [];
-		variables.wheels.filters = [];
+		variables.wheels.beforeFilters = [];
+		variables.wheels.afterFilters = [];
 		variables.wheels.cachableActions = [];
 		if (StructKeyExists(variables, "init"))
 			init();
@@ -17,13 +16,10 @@
 	<cfargument name="params" type="struct" required="true">
 	<cfscript>
 		var loc = {};
-		// if the controller file exists we instantiate it, otherwise we instantiate the parent controller
-		// this is done so that an action's view page can be rendered without having an actual controller file for it
-		if (ListFindNoCase(application.wheels.existingControllerFiles, variables.wheels.name))
-			loc.fileName = capitalize(variables.wheels.name);
-		else
+		loc.fileName = capitalize(variables.wheels.name);
+		if (!ListFindNoCase(application.wheels.existingControllerFiles, variables.wheels.name))
 			loc.fileName = "Controller";
-		loc.returnValue = $createObjectFromRoot(path=application.wheels.controllerPath, fileName=loc.fileName, method="$initControllerObject", name=variables.wheels.name, params=arguments.params);
+		loc.returnValue = $createObjectFromRoot(path=application.wheels.controllerComponentPath, fileName=loc.fileName, method="$initControllerObject", name=variables.wheels.name, params=arguments.params);
 	</cfscript>
 	<cfreturn loc.returnValue>
 </cffunction>
@@ -39,10 +35,10 @@
 	<cfargument name="params" type="struct" required="true">
 	<cfscript>
 		var loc = {};
-
+		
 		// include controller specific helper files if they exist
 		if (ListFindNoCase(application.wheels.existingHelperFiles, arguments.params.controller))
-			$include(template="#application.wheels.viewPath#/#arguments.name#/helpers.cfm");
+			$include(template="#application.wheels.viewPath#/#arguments.params.controller#/helpers.cfm");
 		
 		loc.executeArgs = {};
 		loc.executeArgs.name = arguments.name;

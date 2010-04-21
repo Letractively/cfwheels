@@ -11,11 +11,11 @@
 		if (StructKeyExists(URL, "reload") && (!StructKeyExists(application, "wheels") || !StructKeyExists(application.wheels, "reloadPassword") || !Len(application.wheels.reloadPassword) || (StructKeyExists(URL, "password") && URL.password == application.wheels.reloadPassword)))
 		{
 			$debugPoint("total,reload");
-			$simpleLock(execute="onApplicationStart", name="wheelsReloadLock", type="exclusive", timeout=180);
+			$simpleLock(execute="onApplicationStart", name="wheelsReloadLock", type="exclusive");
 		}
 
 		// run the rest of the request start code
-		$simpleLock(execute="$runOnRequestStart", executeArgs=arguments, name="wheelsReloadLock", type="readOnly", timeout=180);
+		$simpleLock(execute="$runOnRequestStart", executeArgs=arguments, name="wheelsReloadLock", type="readOnly");
 	</cfscript>
 </cffunction>
 
@@ -39,10 +39,6 @@
 		if (!StructKeyExists(request, "cgi"))
 			request.cgi = $cgiScope();
 
-		// inject methods from plugins directly to Application.cfc
-		if (!StructIsEmpty(application.wheels.mixins))
-			$include(template="wheels/plugins/injection.cfm");
-
 		if (application.wheels.environment == "maintenance")
 		{
 			if (StructKeyExists(URL, "except"))
@@ -60,19 +56,24 @@
 			StructDelete(variables, "onRequest");
 		}
 
+		// inject methods from plugins directly to Application.cfc
+		if (!StructIsEmpty(application.wheels.mixins))
+			$include(template="wheels/plugins/injection.cfm");
+
 		request.wheels.params = {};
 		request.wheels.cache = {};
-		
-		// create a structure to track the transaction status for all adapters
-		request.wheels.transactions = {};
 
 		if (!application.wheels.cacheModelInitialization)
 			StructClear(application.wheels.models);
 		if (!application.wheels.cacheControllerInitialization)
 			StructClear(application.wheels.controllers);
 		if (!application.wheels.cacheRoutes)
-			application.wheels.Router.$reload();
-			$loadRoutes();
+		{
+			ArrayClear(application.wheels.routes);
+			StructClear(application.wheels.namedRoutePositions);
+			$include(template="#application.wheels.configPath#/routes.cfm");
+			$include(template="wheels/events/onapplicationstart/routes.cfm");
+		}
 		if (!application.wheels.cacheDatabaseSchema)
 			$clearCache("sql");
 		if (!application.wheels.cacheFileChecking)
