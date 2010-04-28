@@ -215,6 +215,15 @@
 	</cfscript>
 </cffunction>
 
+<cffunction name="$clearCallbacks" returntype="void" access="public" output="false">
+	<cfargument name="type" type="string" required="false" default="">
+	<cfscript>
+		for (loc.key in variables.wheels.class.callbacks)
+			if (!Len(arguments.type) || arguments.type == loc.key)
+				ArrayClear(variables.wheels.class.callbacks[loc.key]);
+	</cfscript>
+</cffunction>
+
 <cffunction name="$callback" returntype="boolean" access="public" output="false">
 	<cfargument name="type" type="string" required="true">
 	<cfargument name="collection" type="any" required="false" default="">
