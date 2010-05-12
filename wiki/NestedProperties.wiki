@@ -1,0 +1,6 @@
+#summary Manipulate associated model objects in the same database transaction by setting them as nested properties.
+#labels chapter,draft,1.1
+
+When you're starting out as a Wheels developer, you are probably amazed at how simple and powerful calls to a model's `save()`, `create()`, `update()`, and `delete()` are. But then it all gets quite a bit more complex when you need to update multiple database tables in a single transaction.
+
+_Nested properties_ come to the rescue. With some simple configurations to your models and with calls to related view helpers, you can simplify complex database transactions to a few lines of code.
