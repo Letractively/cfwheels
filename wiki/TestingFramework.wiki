@@ -19,13 +19,13 @@ Like everything else in Wheels, the testing framework is very simple yet powerfu
 
 All testing code *MUST* reside in the `tests` directory off the root of your Wheels application or within a subdirectory thereof. If you do not have a `tests` directory, simply create one. When you run the tests for your application Wheels recursively scans your application's `tests` directory and looks for any available valid tests to run, so feel free to organize the subdirectories and place whatever files needed to run your tests under the `tests` directory any way you like.
 
-Any components that will contain tests *MUST* extend the *_wheels.test_* component:
+Any components that will contain tests *MUST* extend the *_wheelsMapping.test_* component:
 
 {{{
 <cfcomponent extends="wheels.test">
 }}}
 
-If the testing engine sees that a component *DOES NOT* extend *_wheels.test_*, that component skipped. This let's you create and store any _mock_ components you might want to use in your `tests` directory and keep everything together.
+If the testing engine sees that a component *DOES NOT* extend *_wheelsMapping.test_*, that component skipped. This let's you create and store any _mock_ components you might want to use in your `tests` directory and keep everything together.
 
 Any methods that will be used as tests must begin their name with *_test_*:
 
@@ -37,14 +37,6 @@ If a method *DOES NOT* begin with *_test_* it is *NOT* considered a test and is 
 
 *<font color="red">DO NOT VAR ANY VARIABLES</font>* used in your tests. In order for the testing framework to get access to the variables within the tests that you're writing, all variables need to be within the components *variables scope*. The easy way to do this is to just not "var" variables within your tests and ColdFusion will automatically assign these variables into the variables scope of the component for you. The only gotcha is that this could cause some variables to overwrite each other and gets kinda of confusing of what's being thrown into the variables scope.
 
-Because of this, we've taken the liberty to create for you two scopes that you can use to store variables when writing your tests:
-
-*global:* Place any variables that will be used within *THROUGH OUT* a group of tests in here.
-
-*loc*: Place any variables that will be used within a *SINGLE* test in here. This scope is recreated for each test to make sure that variables created during tests don't overwrite each other.
-
-*<font color="red">NOTE:</font>* Any variables that you have declared within your global scope will be automatically duplicated and available to you within your loc scope. We do this so that you only need to worry about accessing the loc scope when writing your tests.
-
 ===Commands===
 
 *assert():* This is the main command that you will be using when developing tests. To use, all you have to do is provide a quoted expression. The power of this is that *ANY* expression can be used.
@@ -53,9 +45,9 @@ An example test that checks that two values equal each other:
 
 {{{
 <cffunction name="test_a_equals_b">
-  <cfset loc.a = 1>
-  <cfset loc.b = 1>
-  <cfset assert("loc.a eq loc.b")>
+	<cfset loc.a = 1>
+	<cfset loc.b = 1>
+	<cfset assert("loc.a eq loc.b")>
 </cffunction>
 }}}
 
@@ -63,9 +55,9 @@ An example test that checks that the first value is less then the second value:
 
 {{{
 <cffunction name="test_a_is_less_than_b">
-  <cfset loc.a = 1>
-  <cfset loc.b = 5>
-  <cfset assert("loc.a lt loc.b")>
+	<cfset loc.a = 1>
+	<cfset loc.b = 5>
+	<cfset assert("loc.a lt loc.b")>
 </cffunction>
 }}}
 
@@ -75,9 +67,9 @@ An example test that checks that a key exists in a structure:
 
 {{{
 <cffunction name="test_key_exists_in_structure">
-  <cfset loc.a = {a=1, b=2, c=3}>
-  <cfset loc.b = "d">
-  <cfset assert("structkeyexists(loc.a, loc.b)")>
+	<cfset loc.a = {a=1, b=2, c=3}>
+	<cfset loc.b = "d">
+	<cfset assert("structkeyexists(loc.a, loc.b)")>
 </cffunction>
 }}}
 
@@ -87,10 +79,10 @@ An example of raising the Wheels.TableNotFound error when you specify an invalid
 
 {{{
 <cffunction name="test_table_not_found">
-  <cfset loc.controller = createobject("component", "wheels.tests.ControllerBlank")>
-  <cfset loc.e = raised("loc.controller.model('InvalidModel')")>
-  <cfset loc.r = "Wheels.TableNotFound">
-  <cfset assert("loc.e eq loc.r")>
+	<cfset loc.e = raised("model('table_not_found')")>
+	<cfset halt(false, "loc.e")>
+	<cfset loc.r = "Wheels.TableNotFound">
+	<cfset assert("loc.e eq loc.r")>
 </cffunction>
 }}}
 
@@ -102,10 +94,10 @@ An example of halting the testing process and dumping an expression to the scree
 
 {{{
 <cffunction name="test_key_exists_in_structure">
-  <cfset loc.a = {a=1, b=2, c=3}>
-  <cfset loc.b = "d">
-  <cfset halt(true, "loc.a")>
-  <cfset assert("structkeyexists(loc.a, loc.b)")>
+	<cfset loc.a = {a=1, b=2, c=3}>
+	<cfset loc.b = "d">
+	<cfset halt(true, "loc.a")>
+	<cfset assert("structkeyexists(loc.a, loc.b)")>
 </cffunction>
 }}}
 
@@ -113,20 +105,16 @@ An example of keeping halt in a test for future reference:
 
 {{{
 <cffunction name="test_key_exists_in_structure">
-  <cfset loc.a = {a=1, b=2, c=3}>
-  <cfset loc.b = "d">
-  <cfset halt(false, "loc.a")>
-  <cfset assert("structkeyexists(loc.a, loc.b)")>
+	<cfset loc.a = {a=1, b=2, c=3}>
+	<cfset loc.b = "d">
+	<cfset halt(false, "loc.a")>
+	<cfset assert("structkeyexists(loc.a, loc.b)")>
 </cffunction>
 }}}
 
 ===Methods===
 
-There are four reserved methods that Wheels's testing framework provides for you:
-
-*`_`setup():* This method is run *ONCE* for each test component *BEFORE ANY TESTS* have been ran. You can use this for setting up any variables that will be used through all the tests in that component.
-
-*`_`teardown():* This method is ran *ONCE* for each test component *AFTER ALL TESTS* have been ran. You can use this for cleaning up any variables that you might have set within the _setup() method.
+There are two reserved methods that testing framework provides for you:
 
 *setup():* Used to initialize or override any variables or execute any code that needs to be run *BEFORE EACH* test.
 
@@ -137,13 +125,15 @@ Remember that you don't have to use these methods when creating your tests, howe
 Example:
 
 {{{
-<cfcomponent extends="wheels.test">
+<cfcomponent extends="wheelsMapping.test">
 
-	<cfset global.controller = createobject("component", "wheels.Controller")>
-	<cfset global.f = global.controller.distanceOfTimeInWords>
-	<cfset global.args = {}>
-	<cfset global.args.fromTime = now()>
-	<cfset global.args.includeSeconds = true>
+	<cffunction name="setup">
+		<cfset loc.controller = $controller(name="dummy")>
+		<cfset loc.f = loc.controller.distanceOfTimeInWords>
+		<cfset loc.args = {}>
+		<cfset loc.args.fromTime = now()>
+		<cfset loc.args.includeSeconds = true>
+	</cffunction>
 
 	<cffunction name="test_with_seconds_below_5_seconds">
 		<cfset loc.c = 5 - 1>
