@@ -38,6 +38,7 @@
  * [DynamicFinders Dynamic Finders]
  * [GettingPaginatedData Getting Paginated Data]
  * [Associations Associations]
+ * [NestedProperties Nested Properties]
  * [ObjectValidation Object Validation]
  * [ObjectCallbacks Object Callbacks]
  * [CalculatedProperties Calculated Properties]
