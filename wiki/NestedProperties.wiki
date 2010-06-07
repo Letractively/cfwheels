@@ -59,7 +59,7 @@ Using the `customer` model from the example above, let's say that we want to all
     </cffunction>
 
 </cfcomponent>
-}}
+}}}
 
 With this set of nested properties defined, the `customer` model now has some extra behaviors enabled:
  * `customer` will now accept one or many values for a property called `subscriptions`.
