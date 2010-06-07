@@ -37,7 +37,7 @@ Consider the many-to-many associations related to `customer`s, `publication`s, a
 </cfcomponent>
 }}}
 
-When it's time to save `customer`s' subscriptions in the `subscriptions` join table, one approach is to loop through data submitted by `checkBoxTag()`s, populate `subscription` model objects with the data, and call `save()`. This approach is valid, but there is now a simpler way.
+When it's time to save `customer`s' subscriptions in the `subscriptions` join table, one approach is to loop through data submitted by `checkBoxTag()`s, populate `subscription` model objects with the data, and call `save()`. This approach is valid, but there is a simpler way.
 
 _Nested properties_ come to the rescue. With some simple model configurations and form helpers, you can simplify complex database transactions to a few lines of code and let Wheels do the rest!
 
