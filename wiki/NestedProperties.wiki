@@ -41,11 +41,11 @@ When it's time to save `customer`s' subscriptions in the `subscriptions` join ta
 
 _Nested properties_ come to the rescue. With some simple model configurations and form helpers, you can simplify complex database transactions to a few lines of code and let Wheels do the rest!
 
-== Setting up a Nested Property ==
+== Setting up Nested Properties in Your Model ==
 
-The first step in setting up nested properties is to define them in your model's `init()` method with the `nestedProperties()` method. The `nestedProperties()` method helps you define associations that contain children models and rules for how your Wheels application can interact with that association in an automated fashion.
+The first step in setting up nested properties is to define them in your model's `init()` method with the `nestedProperties()` method. The `nestedProperties()` method helps you define properties that contain associated models and rules for how the model can interact with those properties in an automated fashion.
 
-Using the `customer` model from the example above, let's say that we want to allow our Wheels application to automatically save and delete related `subscription` objects based on form submissions. We would set it up in `init()` like so:
+Using the `customer` model from the example above, let's say that we want to allow our Wheels application to automatically save and delete related `subscription` objects based on form submissions (more on the form part later). We would set it up in `init()` like so:
 
 {{{
 <!--- Customer.cfc --->
@@ -60,3 +60,98 @@ Using the `customer` model from the example above, let's say that we want to all
 
 </cfcomponent>
 }}
+
+With this set of nested properties defined, the `customer` model now has some extra behaviors enabled:
+ * `customer` will now accept one or many values for a property called `subscriptions`.
+ * `customer` will automatically save the value(s) when there are changes.
+ * `customer` will automatically delete the value(s) marked for deletion.
+
+== Building a Form with Nested Properties ==
+
+With the nested properties configured in the model, we can now build a series of check boxes that will allow the end user to associate many `subscriptions` with the `customer`.
+
+First, let's define the data needed in an `edit` action in the controller at `controllers/Customers.cfc`. For the view, we need to pull the `customer` with its associated `subscriptions` included with the `include` argument. We also need all of the publications in the system for the user to choose from.
+
+{{{
+<cffunction name="edit">
+
+    <cfset customer = model("customer").findByKey(key=params.key, include="subscriptions")>
+    <cfset publications = model("publication").findAll(order="title")>
+
+</cffunction>
+}}}
+
+Now the view template at `views/customers/edit.cfm` is where the magic happens. In this view, we will have a form for editing the `customer` and check boxes for selecting the `customer`'s `subscription`s.
+
+{{{
+<cfparam name="customer">
+<cfparam name="publications" type="query">
+
+<cfoutput>
+
+#errorMessagesFor("customer")#
+
+#startFormTag(action="update")#
+
+<fieldset>
+    <legend>Customer</legend>
+
+    #textField(label="First Name", objectName="customer", property="firstName")#
+    #textField(label="Last Name", objectName="customer", property="lastName")#
+    #textField(label="Address 1", objectName="customer", property="address1")#
+    #textField(label="Address 2", objectName="customer", property="address2")#
+    #textField(label="City", objectName="customer", property="city")#
+    #textField(label="State", objectName="customer", property="state")#
+    #textField(label="Zip", objectName="customer", property="zip")#
+</fieldset>
+
+<fieldset>
+    <legend>Subscriptions</legend>
+
+    <cfloop query="publications">
+        #hasManyCheckBox(label=publications.title, objectName="customer", association="subscriptions", keys="#customer.id#,#publications.id#")#
+    </cfloop>
+</fieldset>
+
+<div>
+    #hiddenField(objectName="customer", value="id")#
+    #submitTag()#
+</div>
+
+#endFormTag()#
+
+</cfoutput>
+}}}
+
+The main point of interest in this example is the `<fieldset>` for Subscriptions, which loops through the query of `publications` and uses the `hasManyCheckBox()` form helper. This helper is similar to `checkBox()` and `checkBoxTag()`, but it is specifically designed for building form data related to associations.
+
+Notice that the `objectName` argument passed to `hasManyCheckBox()` is the containing `customer` object and the `associations` argument contains the name of the related association. This will allow Wheels to build a form variable named in a way that it automatically binds the value to the `customer` object and the model related through the `subscriptions` association.
+
+The `keys` argument accepts the foreign keys that should be associated together in the `subscriptions` join table. Note that these keys should be listed in the order that they appear in the related database table. In this example, the `subscriptions` table contains composite primary key columns called `customerid` and `publicationid`, in that order.
+
+== How the Form Submission Works ==
+
+Handling the form submission is the most powerful part of the process, yet it involves no extra effort on your part. You'll notice that this example `update` action is fairly standard for a Wheels application:
+
+{{{
+<cffunction name="update">
+
+    <!--- Load customer object --->
+    <cfset customer = model("customer").findByKey(params.customer.id)>
+    <!--- If update is successful, generate success message and redirect back to edit screen --->
+    <cfif customer.update(params.customer)>
+        <cfset flashInsert(success="#customer.firstName# #customer.lastName# record updated successfully.")>
+        <cfset redirectTo(action="edit", key=customer.id)>
+    <!--- If update fails, show form with errors --->
+    <cfelse>
+        <cfset renderPage(action="edit")>
+    </cfif>
+
+</cffunction>
+}}}
+
+In fact, there is nothing special about this! But with the nested properties defined in the model, Wheels handles a lot when you call `customer.update()`:
+ * Wheels will update the `customers` table with any changes submitted in the Customers `<fieldset>`.
+ * Wheels will add and remove records in the `subscriptions` table depending on which check boxes are selected by the user in the Subscriptions `<fieldset>`.
+ * All of these database queries will be wrapped in a [Transactions transaction]. If any of the above updates don't pass your models' validation rules or if the database queries fail, the transaction will roll back.
+ * The `customer` object will collect validation errors related to any and all validation rules that fail for the whole transaction. All of these errors will be shown by the `errorMessagesFor()` view helper on the form.
