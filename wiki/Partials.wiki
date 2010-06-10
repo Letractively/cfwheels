@@ -90,7 +90,7 @@ Because it's quite common to use partials in conjunction with objects and querie
 <cfoutput>#includePartial(cust)#</cfoutput>
 }}}
 
-That code will figure out that the `cust` variable contains a `customer` model object. It will then try to include a partial named `_customer.cfm` and pass in the object's properties as arguments to the partial. There will also be a `object` variable available in the `arguments` struct if you prefer to reference the object directly.
+That code will figure out that the `cust` variable contains a `customer` model object. It will then try to include a partial named `_customer.cfm` and pass in the object's properties as arguments to the partial. There will also be an `object` variable available in the `arguments` struct if you prefer to reference the object directly.
 
 Try that code and `<cfdump>` the `arguments` struct inside the partial file, and you'll see what's going on. Pretty cool stuff, huh?
 
