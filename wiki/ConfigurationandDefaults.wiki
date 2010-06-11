@@ -158,9 +158,9 @@ Now your `post` model will map to the `blog_posts` table, `comment` model will m
 || `softDeleteProperty` || `string` || `deletedAt` || Name of database column that Wheels will look for in order to enforce soft deletes. ||
 || `timeStampOnCreateProperty` || `string` || `createdAt` || Name of database column that Wheels will look for in order to automatically store a "created at" time stamp when records are created. ||
 || `timeStampOnUpdateProperty` || `string` || `updatedAt` || Name of the database column that Wheels will look for in order to automatically store an "updated at" time stamp when records are updated. ||
-|| `setDefaultValidations` || `boolean` || `true` || TODO: Fill this in. ||
+|| `automaticValidations` || `boolean` || `true` || Set to `false` to stop Wheels from automatically running object validations based on column settings in your database. ||
 || `setUpdatedAtOnCreate` || `boolean` || `true` || Set to `false` to stop Wheels from populating the `updatedAt` timestamp with the `createdAt` timestamp's value. ||
-|| `useExpandedColumnAliases` || `boolean` || `true` || TODO: Fill this in ||
+|| `useExpandedColumnAliases` || `boolean` || `true` || When set to `true`, Wheels will always prepend children objects' names to columns in tables included via `findAll()`'s `include` argument, even if there are no naming conflicts. For example, `model("post").findAll(include="comment")` in a fictitious blog application will yield these column names: `id`, `title`, `authorId`, `body`, `createdAt`, `commentID`, `commentName`, `commentBody`, `commentCreatedAt`, `commentDeletedAt`. When set to `false`, the returned column list will look like this: `id`, `title`, `authorId`, `body`, `createdAt`, `commentID`, `name`, `commentBody`, `commentCreatedAt`, `deletedAt` ||
 || `transactionMode` || `string` || `commit` || Use `commit`, `rollback` or `none` to set default transaction handling for creates, updates and deletes. ||
 
 ===Miscellaneous Settings===
@@ -185,7 +185,7 @@ This will prevent others from being able to reload your application or change en
 || `deletePluginDirectories` || `boolean` || `true` || TODO: Fill this in. ||
 || `loadIncompatiblePlugins` || `boolean` || `true` || Set to `false` to stop Wheels from loading plugins whose supported versions do not match your current version of Wheels. ||
 || `loadDefaultRoutes` || `boolean` || `true` || Set to false to disable Wheels's default route patterns for `controller/action/key`, etc. ||
-|| `assetQueryString` || `boolean` || `false` || Set to `true` to append a unique query string to JavaScript, CSSm and image files included with the media view helpers. This helps force local browser caches to refresh when there is an update to your assets. This query string is updated when reloading your Wheels application. ||
+|| `assetQueryString` || `boolean` || `false` || Set to `true` to append a unique query string to !JavaScript, CSS, and image files included with the media view helpers. This helps force local browser caches to refresh when there is an update to your assets. This query string is updated when reloading your Wheels application. ||
 || `assetPaths` || `struct` || `false` || Pass `false` or a struct with up to 2 different keys to autopopulate the domains of your assets: `http` (required) and `https`. For example: `{http="asset0.domain1.com,asset2.domain1.com,asset3.domain1.com", https="secure.domain1.com"}` ||
 || `mimeTypes` || `string` || || Append additional MIME types to this list for Wheels to evaluate for file processing functions like `sendFile()`. ||
 
