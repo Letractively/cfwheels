@@ -109,7 +109,7 @@ Now the view template at `views/customers/edit.cfm` is where the magic happens. 
     <legend>Subscriptions</legend>
 
     <cfloop query="publications">
-        #hasManyCheckBox(label=publications.title, objectName="customer", association="subscriptions", keys="#customer.id#,#publications.id#")#
+        #hasManyCheckBox(label=publications.title, objectName="customer", association="subscriptions", keys="#customer.key()#,#publications.id#")#
     </cfloop>
 </fieldset>
 
