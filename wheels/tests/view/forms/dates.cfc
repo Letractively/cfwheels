@@ -1,10 +1,9 @@
 <cfcomponent extends="wheelsMapping.test">
 
 	<cffunction name="setup">
-		<cfset loc.controller = $controller(name="ControllerWithModel")>
+		<cfset loc.controller = createobject("component", "wheelsMapping.tests._assets.controllers.ControllerWithModel")>
 		<cfset loc.args= {}>
 		<cfset loc.args.objectName = "user">
-		<cfset loc.args.label = false>
 	</cffunction>
 
 	<cffunction name="test_dateselect_parsing_and_passed_month">

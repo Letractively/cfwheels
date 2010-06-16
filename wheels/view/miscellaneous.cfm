@@ -1,47 +1,5 @@
-<cffunction name="contentForLayout" returntype="string" access="public" output="false" hint="Used inside a layout file to output the HTML created in the view."
-	examples=
-	'
-		<!--- views/layout.cfm --->
-		<html>
-		<head>
-		    <title>My Site</title>
-		</head>
-		<body>
-
-		<cfoutput>
-		##contentForLayout()##
-		</cfoutput>
-
-		</body>
-		</html>
-	'
-	categories="view-helper,miscellaneous" chapters="using-layouts">
-	<cfreturn request.wheels.contentForLayout>
-</cffunction>
-
-<cffunction name="includePartial" returntype="string" access="public" output="false" hint="Includes the specified file in the view. Similar to using `cfinclude` but with the ability to cache the result and using Wheels specific file look-up. By default, Wheels will look for the file in the current controller's view folder. To include a file relative from the `views` folder, you can start the path supplied to `name` with a forward slash."
-	examples=
-	'
-		<cfoutput>##includePartial("login")##</cfoutput>
-		-> If we''re in the "admin" controller, Wheels will include the file "views/admin/_login.cfm".
-
-		<cfoutput>##includePartial(partial="misc/doc", cache=30)##</cfoutput>
-		-> If we''re in the "admin" controller, Wheels will include the file "views/admin/misc/_doc.cfm" and cache it for 30 minutes.
-
-		<cfoutput>##includePartial(partial="/shared/button")##</cfoutput>
-		-> Wheels will include the file "views/shared/_button.cfm".
-	'
-	categories="view-helper,miscellaneous" chapters="pages,partials" functions="renderPartial">
-	<cfargument name="partial" type="any" required="true" hint="See documentation for @renderPartial.">
-	<cfargument name="group" type="string" required="false" default="" hint="Field to group the query by. A new query will be passed into the partial template for you to iterate over.">
-	<cfargument name="cache" type="any" required="false" default="" hint="See documentation for @renderPartial.">
-	<cfargument name="layout" type="string" required="false" hint="See documentation for @renderPartial.">
-	<cfargument name="spacer" type="string" required="false" hint="HTML or string to place between partials when called using a query.">
-	<cfset $insertDefaults(name="includePartial", input=arguments)>
-	<cfreturn $includeOrRenderPartial(argumentCollection=$dollarify(arguments, "partial,group,cache,layout,spacer"))>
-</cffunction>
-
-<cffunction name="cycle" returntype="string" access="public" output="false" hint="Cycles through list values every time it is called."
+<cffunction name="cycle" returntype="string" access="public" output="false"
+	hint="Cycles through list values every time it is called."
 	examples=
 	'
 		<!--- alternating table row colors --->
@@ -71,9 +29,9 @@
 			</div>
 		</cfoutput>
 	'
-	categories="view-helper,miscellaneous" functions="resetCycle">
-	<cfargument name="values" type="string" required="true" hint="List of values to cycle through.">
-	<cfargument name="name" type="string" required="false" default="default" hint="Name to give the cycle. Useful when you use multiple cycles on a page.">
+	categories="view-helper" functions="resetCycle">
+	<cfargument name="values" type="string" required="true" hint="List of values to cycle through">
+	<cfargument name="name" type="string" required="false" default="default" hint="Name to give the cycle. Useful when you use multiple cycles on a page">
 	<cfscript>
 		var loc = {};
 		if (!StructKeyExists(request.wheels, "cycle"))
@@ -94,7 +52,8 @@
 	<cfreturn loc.returnValue>
 </cffunction>
 
-<cffunction name="resetCycle" returntype="void" access="public" output="false" hint="Resets a cycle so that it starts from the first list value the next time it is called."
+<cffunction name="resetCycle" returntype="void" access="public" output="false"
+	hint="Resets a cycle so that it starts from the first list value the next time it is called."
 	examples=
 	'
 		<!--- alternating row colors and shrinking emphasis --->
@@ -110,9 +69,9 @@
 			</div>
 		</cfoutput>
 	'
-	categories="view-helper,miscellaneous" functions="cycle"
+	categories="view-helper" functions="cycle"
 	>
-	<cfargument name="name" type="string" required="false" default="default" hint="The name of the cycle to reset.">
+	<cfargument name="name" type="string" required="false" default="default" hint="The name of the cycle to reset">
 	<cfscript>
 		if (StructKeyExists(request.wheels, "cycle") && StructKeyExists(request.wheels.cycle, arguments.name))
 			StructDelete(request.wheels.cycle, arguments.name);
@@ -180,7 +139,6 @@
 <cffunction name="$tagId" returntype="string" access="public" output="false">
 	<cfargument name="objectName" type="any" required="true">
 	<cfargument name="property" type="string" required="true">
-	<cfargument name="valueToAppend" type="string" default="">
 	<cfscript>
 		var loc = {};
 		if (IsSimpleValue(arguments.objectName))
@@ -188,22 +146,21 @@
 			// form element for object(s)
 			loc.returnValue = ListLast(arguments.objectName, ".");
 			if (Find("[", loc.returnValue))
-				loc.returnValue = $swapArrayPositionsForIds(objectName=loc.returnValue);
-			if (Find("($", arguments.property))
-				arguments.property = ReplaceList(arguments.property, "($,)", "-,");
-			if (Find("[", arguments.property))
-				loc.returnValue = REReplace(REReplace(loc.returnValue & arguments.property, "[,\[]", "-", "all"), "[""'\]]", "", "all");
-			else
-				loc.returnValue = REReplace(REReplace(loc.returnValue & "-" & arguments.property, "[,\[]", "-", "all"), "[""'\]]", "", "all");
-			if (Find("--", loc.returnValue)) // we have a new object and we don't want to repeat ids
-				loc.returnValue = Replace(loc.returnValue, "--", "-new-" & $getNewObjectCount(loc.returnValue) & "-", "all");
+			{
+				// this is a form element for an array of objects so we replace the array position with the primary key value of the object (unless the object is new and has no primary key set)
+				loc.key = $getObject(arguments.objectName).key();
+				if (Len(loc.key))
+					loc.returnValue = ListFirst(loc.returnValue, "[") & "-" & $getObject(arguments.objectName).key();
+				else
+					loc.returnValue = ReplaceList(loc.returnValue, "[,]", "-,");
+			}
+			loc.returnValue = loc.returnValue & "-" & arguments.property;
 		}
 		else
 		{
-			loc.returnValue = ReplaceList(arguments.property, "[,($,],',"",)", "-,-,");
+			// this is a non object form element
+			loc.returnValue = ReplaceList(arguments.property, "[,]", "-,");
 		}
-		if (Len(arguments.valueToAppend))
-			loc.returnValue = loc.returnValue & "-" & arguments.valueToAppend;
 	</cfscript>
 	<cfreturn loc.returnValue>
 </cffunction>
@@ -217,11 +174,12 @@
 		{
 			loc.returnValue = ListLast(arguments.objectName, ".");
 			if (Find("[", loc.returnValue))
-				loc.returnValue = $swapArrayPositionsForIds(objectName=loc.returnValue);
-			if (Find("[", arguments.property))
-				loc.returnValue = ReplaceList(loc.returnValue & arguments.property, "',""", "");
-			else
-				loc.returnValue = ReplaceList(loc.returnValue & "[" & arguments.property & "]", "',""", "");
+			{
+				loc.key = $getObject(arguments.objectName).key();
+				if (Len(loc.key))
+					loc.returnValue = ListFirst(loc.returnValue, "[") & "[" & loc.key & "]";
+			}
+			loc.returnValue = loc.returnValue & "[" & arguments.property & "]";
 		}
 		else
 		{
@@ -229,31 +187,6 @@
 		}
 	</cfscript>
 	<cfreturn loc.returnValue>
-</cffunction>
-
-<cffunction name="$swapArrayPositionsForIds" returntype="string" access="public" output="false">
-	<cfargument name="objectName" type="any" required="true" />
-	<cfscript>
-		var loc = {};
-		loc.returnValue = arguments.objectName;
-		
-		// we could have multiple nested arrays so we need to traverse the objectName to find where we have array positions and
-		// swap all of the out for object ids
-		loc.array = ListToArray(ReplaceList(loc.returnValue, "],'", ""), "[", true);
-		loc.iEnd = ArrayLen(loc.array);
-		for (loc.i = 1; loc.i lte loc.iEnd; loc.i++)
-		{
-			if (REFind("\d", loc.array[loc.i])) // if we find a digit, we need to replace it with an id
-			{
-				// build our object reference
-				loc.objectReference = "";
-				for (loc.j = 1; loc.j lte loc.i; loc.j++)
-					loc.objectReference = ListAppend(loc.objectReference, ListGetAt(arguments.objectName, loc.j, "["), "[");
-				loc.returnValue = ListSetAt(loc.returnValue, loc.i, $getObject(loc.objectReference).key() & "]", "[");
-			}
-		}
-	</cfscript>
-	<cfreturn loc.returnValue />
 </cffunction>
 
 <cffunction name="$addToJavaScriptAttribute" returntype="string" access="public" output="false">
@@ -280,37 +213,11 @@
 <cffunction name="$getObject" returntype="any" access="public" output="false" hint="Returns the object referenced by the variable name passed in. If the scope is included it gets it from there, otherwise it gets it from the variables scope.">
 	<cfargument name="objectName" type="string" required="true">
 	<cfscript>
-		var loc = {};
-		loc.returnValue = "";
-		
-		if (Find(".", arguments.objectName) or Find("[", arguments.objectName)) // we can't directly invoke objects in structure or arrays of objects so we must evaluate
-		{
-			if (ReFind("\[\]", arguments.objectName)) // we have an array object without a postion so create a new object to return
-			{
-				loc.array = ListToArray(ReplaceList(arguments.objectName, "],'", ""), "[", false);
-				loc.returnValue = $invoke(componentReference=model(singularize(loc.array[ArrayLen(loc.array)])), method="new");
-			}
-			else
-			{
-				loc.returnValue = Evaluate(arguments.objectName);
-			}
-		}
+		var returnValue = "";
+		if (Find(".", arguments.objectName) or Find("[", arguments.objectName))
+			returnValue = Evaluate(arguments.objectName);
 		else
-		{
-			loc.returnValue = variables[arguments.objectName];
-		}
+			returnValue = variables[arguments.objectName];
 	</cfscript>
-	<cfreturn loc.returnValue>
-</cffunction>
-
-<cffunction name="$getNewObjectCount" returntype="numeric" access="public" output="false">
-	<cfargument name="id" type="string" required="true" />
-	<cfscript>
-		if (!StructKeyExists(request.wheels, "counts"))
-			request.wheels.counts = {};
-		if (!StructKeyExists(request.wheels.counts, arguments.id))
-			request.wheels.counts[arguments.id] = 0;
-		request.wheels.counts[arguments.id]++;
-	</cfscript>
-	<cfreturn request.wheels.counts[arguments.id] />
+	<cfreturn returnValue>
 </cffunction>

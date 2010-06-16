@@ -1,9 +1,9 @@
 <cfcomponent extends="wheelsMapping.test">
 
 	<cffunction name="setup">
-		<cfset loc.controller = $controller(name="ControllerWithModelErrors")>
+		<cfset loc.controller = createobject("component", "wheelsMapping.tests._assets.controllers.ControllerWithModelErrors")>
 		<cfset loc.args = {}>
-		<cfset loc.args.objectName = "user">
+		<cfset loc.args.objectName = "ModelUsers">
 		<cfset loc.args.class = "errors-found">
 	</cffunction>
 
