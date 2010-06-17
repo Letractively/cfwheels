@@ -1,43 +1,46 @@
 <cfcomponent extends="wheelsMapping.test">
 
-	<cfset params = {controller="dummy", action="dummy"}>
-	<cfset controller = $controller(name="dummy").$createControllerObject(params)>
-
 	<cffunction name="setup">
-		<cfset session.flash = StructNew()>
-		<cfset session.flash.success = "Congrats!">
+		<cfset loc.controller = $controller(name="dummy")/>
+		<cfset session.flash = {} />
+		<cfset session.flash.success = "congrats!" />
 	</cffunction>
-	
+
 	<cffunction name="test_key_exists">
-		<cfset result = controller.flash("success")>
-		<cfset assert("result IS 'Congrats!'")>
+		<cfset loc.e = loc.controller.flash("success") />
+		<cfset loc.r = "congrats!">
+		<cfset assert("loc.e eq loc.r") />
 	</cffunction>
-	
-	<cffunction name="test_key_does_not_exist">
-		<cfset result = controller.flash("invalidkey")>
-		<cfset assert("result IS ''")>
+
+	<cffunction name="test_key_does_not_exists">
+		<cfset loc.e = loc.controller.flash("invalidkey") />
+		<cfset loc.r = "">
+		<cfset assert("loc.e eq loc.r") />
 	</cffunction>
-	
+
 	<cffunction name="test_key_is_blank">
-		<cfset result = controller.flash("")>
-		<cfset assert("result IS ''")>
-	</cffunction>	
-	
+		<cfset loc.e = loc.controller.flash("") />
+		<cfset loc.r = "">
+		<cfset assert("loc.e eq loc.r") />
+	</cffunction>
+
 	<cffunction name="test_key_provided_flash_empty">
-		<cfset StructClear(session.flash)>
-		<cfset result = controller.flash("invalidkey")>
-		<cfset assert("result IS ''")>
+		<cfset structclear(session.flash)>
+		<cfset loc.e = loc.controller.flash("invalidkey") />
+		<cfset loc.r = "">
+		<cfset assert("loc.e eq loc.r") />
 	</cffunction>
-	
+
 	<cffunction name="test_no_key_provided_flash_not_empty">
-		<cfset result = controller.flash()>
-		<cfset assert("IsStruct(result) AND StructKeyExists(result, 'success')")>
+		<cfset loc.e = loc.controller.$hashStruct(session.flash) />
+		<cfset loc.r = loc.controller.$hashStruct(loc.controller.flash()) />
+		<cfset assert("loc.e eq loc.r") />
 	</cffunction>
-	
+
 	<cffunction name="test_no_key_provided_flash_empty">
-		<cfset StructClear(session.flash)>
-		<cfset result = controller.flash()>
-		<cfset assert("IsStruct(result) AND StructIsEmpty(result)")>
+		<cfset structclear(session.flash)>
+		<cfset loc.r = loc.controller.flash() />
+		<cfset assert("isstruct(loc.r) and structisempty(loc.r)") />
 	</cffunction>
 
 </cfcomponent>

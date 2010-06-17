@@ -1,15 +1,15 @@
 <cfcomponent extends="wheelsMapping.test">
 
-	<cfset params = {controller="dummy", action="dummy"}>
-	<cfset controller = $controller(name="dummy").$createControllerObject(params)>
-
+	<cffunction name="setup">
+		<cfset loc.controller = $controller(name="dummy")/>
+	</cffunction>
+	
 	<cffunction name="test_flashCount_valid">
-		<cfset session.flash = {}>
-		<cfset session.flash.success = "Congrats!">
-		<cfset session.flash.anotherKey = "Test!">
-		<cfset result = controller.flashCount()>
-		<cfset compare = StructCount(session.flash)>
-		<cfset assert("result IS compare")>
+		<cfset session.flash = {} />
+		<cfset session.flash.success = "congrats!" />
+		<cfset loc.count = loc.controller.flashCount() />
+		<cfset loc.sessionCount = StructCount(session.flash) />
+		<cfset assert("loc.count eq loc.sessionCount") />
 	</cffunction>
 	
 </cfcomponent>

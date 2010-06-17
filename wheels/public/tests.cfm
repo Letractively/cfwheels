@@ -13,7 +13,6 @@
 table.testing {border:0;margin-bottom:15px;}
 table.testing td, table.testing th {padding:2px 20px 2px 2px;text-align:left;vertical-align:top;font-size:14px;}
 table.testing td.n {text-align:right;}
-table.testing tr.errRow {background-color:#FFDFDF;}
 </style>
 <cfoutput>
 <p><a href="#linkParams#">Run All Tests</a> | <a href="#linkParams#&reload=true">Reload Test Data</a></p>
@@ -29,7 +28,7 @@ table.testing tr.errRow {background-color:#FFDFDF;}
 <table class="testing">
 <tr><th>Package</th></th><th>Tests</th><th>Failures</th><th>Errors</th></tr>
 <cfloop from="1" to="#arrayLen(testresults.summary)#" index="testIndex">
-	<tr<cfif testresults.summary[testIndex].numFailures + testresults.summary[testIndex].numErrors gt 0> class="errRow"</cfif>>
+	<tr>
 		<td>
 			<cfset a = ListToArray(testresults.summary[testIndex].packageName, ".")>
 			<cfset b = createObject("java", "java.util.ArrayList").Init(a)>
