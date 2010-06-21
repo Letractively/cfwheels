@@ -72,7 +72,8 @@ Besides [flash flash()] and [flashInsert flashInsert()] that are used to read fr
   <div id="flash-messages">
     <cfif flashKeyExists("error")>
       <p class="error-message"><cfoutput>#flash("error")#</cfoutput></p>
-    <cfelseif flashKeyExists("success")>
+    </cfif>
+    <cfif flashKeyExists("success")>
       <p class="success-message"><cfoutput>#flash("success")#</cfoutput></p>
     </cfif>
   </div>
