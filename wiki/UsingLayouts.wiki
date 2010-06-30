@@ -24,11 +24,11 @@ In your Wheels installation, layout files are stored either directly in the root
 Let's say that you want to define one layout to be used by every view in your application. You would accomplish this by editing the default layout. The _default layout_ is the `views/layout.cfm` file, you'll notice that it only contains one line of code:
 
 {{{
-<cfoutput>#contentForLayout()#</cfoutput>
+<cfoutput>#yield()#</cfoutput>
 }}}
 
 
-The call to [contentForLayout contentForLayout()] represents the output of your page stored in your view files. Whatever code you put before this snippet will be run before the view. Similarly, whatever code you put after the snippet will be run afterward.
+The call to [yield yield()] represents the output of your page stored in your view files. Whatever code you put before this snippet will be run before the view. Similarly, whatever code you put after the snippet will be run afterward.
 
 ===Simple Example===
 
@@ -55,7 +55,7 @@ For most purposes, this means that you could write code for your page header bef
         </ul>
     </div>
     <div id="content">
-        <cfoutput>#contentForLayout()#</cfoutput>
+        <cfoutput>#yield()#</cfoutput>
     </div>
 </div>
 
@@ -94,7 +94,7 @@ character of the first line, or else we get Quirks Mode! --->
 
 <!--- View's Content --->
 <h1>#title#</h1>
-#contentForLayout()#
+#yield()#
 
 </body>
 </html>
@@ -154,7 +154,7 @@ If you don't want for a given template to be wrapped by a layout at all, you may
 
 Another alternative is to use the [renderPage renderPage()] function and set the `layout` argument to `false`. 
 
-You can of course also just create a layout that only contains the call to the [contentForLayout contentForLayout()] function in it and referencing it as described above in _Using a Different Layout_. This may end up a little ugly though if you start getting a lot of small identical files like this but the option is there for you at least.
+You can of course also just create a layout that only contains the call to the [yield yield()] function in it and referencing it as described above in _Using a Different Layout_. This may end up a little ugly though if you start getting a lot of small identical files like this but the option is there for you at least.
 
 Lastly, if your view needs to return XML code or other data for JavaScript calls, then you should reference the [renderNothing renderNothing()] and [renderText renderText()] functions to see which would be best used by your action.
 
