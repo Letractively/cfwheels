@@ -1,12 +1,74 @@
-#summary Manipulate multiple related model objects in the same database transaction by setting them as nested properties.
+#summary Save data in associated model objects through the parent.
 #labels chapter,draft,1.1
 
-When you're starting out as a Wheels developer, you are probably amazed at how simple and powerful calls to a model's `save()`, `create()`, `update()`, and `delete()` are. But then it all gets quite a bit more complex when you need to update multiple database tables in a single transaction.
+When you're starting out as a Wheels developer, you are probably amazed at the simplicity of a model's CRUD methods. But then it all gets quite a bit more complex when you need to update records in multiple database tables in a single transaction.
+
+_Nested properties_ in Wheels makes this scenario dead simple. With a configuration using `nestedProperties()` in your model, you can save changes to that model and associated models in a single call to `save()`, `create()`, and `update()`.
+
+== One-to-One Relationships with Nested Properties ==
+
+Consider a `user` model that has one `profile`:
+
+{{{
+<!--- models/User.cfc --->
+<cfcomponent extends="Model">
+
+    <cffunction name="init">
+        
+        <cfset hasOne("profile")>
+        <cfset nestedProperties(associations="profile", autoSave=true, allowDelete=true)>
+
+    </cffunction>
+
+</cfcomponent>
+}}}
+
+By adding the call to `nestedProperties()` in the above example, you can create both the `user` object and the `profile` object in one call to `create()`. Setting `autoSave` to `true` allows this functionality to happen.
+
+{{{
+<cfset params.user = {firstName="Russ", lastName="Johnson"}>
+<cfset params.user.profile = {twitterHandle="russ_johnson"}>
+<cfset user = model("user").create(params.user)>
+
+<cfoutput>
+    #user.profile.id# <!--- Outputs "2" --->
+    #user.profile.twitterHandle# <!--- Outputs "russ_johnson" --->
+</cfoutput>
+}}}
+
+You can also save changes to the child `profile` through the parent `user` object:
+
+{{{
+<cfset user = model("user").findByKey(key=45, include="profile")>
+<cfset user.profile.twitterHandle = "CFonWheels">
+<cfset user.save()>
+
+<cfoutput>
+    #user.profile.twitterHandle# <!--- Outputs "CFonWheels" --->
+</cfoutput>
+}}}
+
+By passing `allowDelete=true` to the `nestedProperties()` call above, you are also delete the `user`'s related `profile` by setting a property called `_delete`:
+
+{{{
+<cfset user.profile._delete = true>
+<cfset user.save()>
+
+<!--- Would output "0" --->
+<cfoutput>
+    #user.profile(returnAs="query").RecordCount#
+</cfoutput>
+}}}
+
+
+The `autoSave` and `allowDelete` arguments are both optional and default to `false`, so you must "opt in" to these capabilities when setting up your nested properties.
+
+== Many-to-Many Relationships with Nested Properties ==
 
 Consider the many-to-many associations related to `customer`s, `publication`s, and `subscription`s from the [Associations] chapter.
 
 {{{
-<!--- Customer.cfc --->
+<!--- models/Customer.cfc --->
 <cfcomponent extends="Model">
 
     <cffunction name="init">
@@ -16,7 +78,7 @@ Consider the many-to-many associations related to `customer`s, `publication`s, a
 </cfcomponent>
 }}}
 {{{
-<!--- Publication.cfc --->
+<!--- models/Publication.cfc --->
 <cfcomponent extends="Model">
 
     <cffunction name="init">
@@ -26,7 +88,7 @@ Consider the many-to-many associations related to `customer`s, `publication`s, a
 </cfcomponent>
 }}}
 {{{
-<!--- Subscription.cfc --->
+<!--- models/Subscription.cfc --->
 <cfcomponent extends="Model">
 
     <cffunction name="init">
@@ -39,16 +101,16 @@ Consider the many-to-many associations related to `customer`s, `publication`s, a
 
 When it's time to save `customer`s' subscriptions in the `subscriptions` join table, one approach is to loop through data submitted by `checkBoxTag()`s, populate `subscription` model objects with the data, and call `save()`. This approach is valid, but there is a simpler way.
 
-_Nested properties_ come to the rescue. With some simple model configurations and form helpers, you can simplify complex database transactions to a few lines of code and let Wheels do the rest!
+With some simple model configurations and form helpers, you can simplify complex database transactions to a few lines of code and let Wheels do the rest!
 
 == Setting up Nested Properties in Your Model ==
 
-The first step in setting up nested properties is to define them in your model's `init()` method with the `nestedProperties()` method. The `nestedProperties()` method helps you define properties that contain associated models and rules for how the model can interact with those properties in an automated fashion.
+In this case, let's define the nested properties in your model's `init()` method with the `nestedProperties()` method. Using the `customer` model from the example above, let's say that we want to allow our Wheels application to automatically save and delete related `subscription` objects based on form submissions (more on the form part later).
 
-Using the `customer` model from the example above, let's say that we want to allow our Wheels application to automatically save and delete related `subscription` objects based on form submissions (more on the form part later). We would set it up in `init()` like so:
+We would set it up in `init()` like so:
 
 {{{
-<!--- Customer.cfc --->
+<!--- models/Customer.cfc --->
 <cfcomponent extends="Model">
 
     <cffunction name="init">
@@ -64,7 +126,7 @@ Using the `customer` model from the example above, let's say that we want to all
 With this set of nested properties defined, the `customer` model now has some extra behaviors enabled:
  * `customer` will now accept one or many values for a property called `subscriptions`.
  * `customer` will automatically save the value(s) when there are changes.
- * `customer` will automatically delete the value(s) marked for deletion.
+ * `customer` will automatically delete the value(s) marked for deletion through a key called `_delete`.
 
 == Building a Form with Nested Properties ==
 
@@ -123,11 +185,11 @@ Now the view template at `views/customers/edit.cfm` is where the magic happens. 
 </cfoutput>
 }}}
 
-The main point of interest in this example is the `<fieldset>` for Subscriptions, which loops through the query of `publications` and uses the `hasManyCheckBox()` form helper. This helper is similar to `checkBox()` and `checkBoxTag()`, but it is specifically designed for building form data related to associations.
+The main point of interest in this example is the `<fieldset>` for Subscriptions, which loops through the query of `publications` and uses the `hasManyCheckBox()` form helper. This helper is similar to `checkBox()` and `checkBoxTag()`, but it is specifically designed for building form data related by associations.
 
-Notice that the `objectName` argument passed to `hasManyCheckBox()` is the containing `customer` object and the `associations` argument contains the name of the related association. This will allow Wheels to build a form variable named in a way that it automatically binds the value to the `customer` object and the model related through the `subscriptions` association.
+Notice that the `objectName` argument passed to `hasManyCheckBox()` is the parent `customer` object and the `associations` argument contains the name of the related association. Wheels will build a form variable named in a way that the `customer` object is automatically bound to the `subscriptions` association.
 
-The `keys` argument accepts the foreign keys that should be associated together in the `subscriptions` join table. Note that these keys should be listed in the order that they appear in the related database table. In this example, the `subscriptions` table contains composite primary key columns called `customerid` and `publicationid`, in that order.
+The `keys` argument accepts the foreign keys that should be associated together in the `subscriptions` join table. Note that these keys should be listed in the order that they appear in the related database table. In this example, the `subscriptions` table in the database contains composite primary key columns called `customerid` and `publicationid`, in that order.
 
 == How the Form Submission Works ==
 
@@ -150,8 +212,8 @@ Handling the form submission is the most powerful part of the process, yet it in
 </cffunction>
 }}}
 
-In fact, there is nothing special about this! But with the nested properties defined in the model, Wheels handles a lot when you call `customer.update()`:
+In fact, there is nothing special about this. But with the nested properties defined in the model, Wheels handles quite a bit when you save the parent object:
  * Wheels will update the `customers` table with any changes submitted in the Customers `<fieldset>`.
  * Wheels will add and remove records in the `subscriptions` table depending on which check boxes are selected by the user in the Subscriptions `<fieldset>`.
- * All of these database queries will be wrapped in a [Transactions transaction]. If any of the above updates don't pass your models' validation rules or if the database queries fail, the transaction will roll back.
- * The `customer` object will collect validation errors related to any and all validation rules that fail for the whole transaction. All of these errors will be shown by the `errorMessagesFor()` view helper on the form.
+ * All of these database queries will be wrapped in a [Transactions transaction]. If any of the above updates don't pass validation or if the database queries fail, the transaction will roll back.
+ * The `customer` object will collect validation errors for the whole transaction. All of these errors will be shown by the `errorMessagesFor()` view helper on the form.
