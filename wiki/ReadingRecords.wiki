@@ -1,5 +1,5 @@
 #summary Returning records from your database tables as objects or queries.
-#labels chapter,1.0,published_prod
+#labels chapter,1.1,draft
 
 Reading records from your database typically involves using one of the 3 finder methods available in Wheels: [findByKey findByKey()], [findOne findOne()], and [findAll findAll()].
 
@@ -87,7 +87,7 @@ A tip is to turn on debugging when you're learning Wheels so you can get a good 
 
 This maps to the `WHERE` clause of the SQL statement. Wheels will also convert all your input to `cfqueryparam` tags for you automatically.
 
-There are some limitations to what you can use in the `where` argument, but the following SQL will work: `=`, `<>`, `<`, `<=`, `>`, `>=`, `LIKE`, `AND`, and `OR`. (Note that it's a requirement to write SQL keywords in upper case.) In addition to this, you can use parentheses to group conditional SQL statements together.
+There are some limitations to what you can use in the `where` argument, but the following SQL will work: `=`, `!=`, `<>`, `<`, `<=`, `>`, `>=`, `LIKE`, `NOT LIKE`, `IN`, `NOT IN`, `AND`, and `OR`. (Note that it's a requirement to write SQL keywords in upper case.) In addition to this, you can use parentheses to group conditional SQL statements together.
 
 ===`order` Argument===
 
