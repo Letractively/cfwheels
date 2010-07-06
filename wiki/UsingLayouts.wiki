@@ -21,14 +21,17 @@ Layouts to the rescue!
 
 In your Wheels installation, layout files are stored either directly in the root of the `views` folder or contained in one of the controller's view folders. Let's go over how layouts work, starting with the simplest way and then moving on to more complex setups.
 
-Let's say that you want to define one layout to be used by every view in your application. You would accomplish this by editing the default layout. The _default layout_ is the `views/layout.cfm` file, you'll notice that it only contains one line of code:
+Let's say that you want to define one layout to be used by every view in your application. You would accomplish this by editing the default layout. The _default layout_ is the `views/layout.cfm` file, you'll notice that it only contains a few lines of code:
 
 {{{
-<cfoutput>#yield()#</cfoutput>
+<html>
+  <body>
+    <cfoutput>#includeContent()#</cfoutput>
+  </body>
+</html>
 }}}
 
-
-The call to [yield yield()] represents the output of your page stored in your view files. Whatever code you put before this snippet will be run before the view. Similarly, whatever code you put after the snippet will be run afterward.
+The call to [includeContent includeContent()] represents the output of your page stored in your view files. Whatever code you put before this snippet will be run before the view. Similarly, whatever code you put after the snippet will be run afterward.
 
 ===Simple Example===
 
@@ -55,7 +58,7 @@ For most purposes, this means that you could write code for your page header bef
         </ul>
     </div>
     <div id="content">
-        <cfoutput>#yield()#</cfoutput>
+        <cfoutput>#includeContent()#</cfoutput>
     </div>
 </div>
 
@@ -94,7 +97,7 @@ character of the first line, or else we get Quirks Mode! --->
 
 <!--- View's Content --->
 <h1>#title#</h1>
-#yield()#
+#includeContent()#
 
 </body>
 </html>
@@ -104,6 +107,8 @@ character of the first line, or else we get Quirks Mode! --->
 <cfsetting enablecfoutputonly="false">
 }}}
 
+There's also a different way to set variables that goes hand in hand with the [includeContent includeContent()] function. It's the [contentFor contentFor()] function but we'll dig deeper into how that one works later in this chapter.
+
 ==The Default Layout==
 
 One layout file that is already created for you is `views/layout.cfm`. Think of it as the default layout to be used by any given controller.
@@ -112,11 +117,39 @@ If you're writing code for a controller called `press` and there is no layout cr
 
 If you implement a layout for the `press` controller, then that layout will be used instead of the default layout.
 
+So, how exactly do you implement a layout meant specifically for just one controller? Well, that's next...
+
 ==Overriding the Default Layout with a Controller-Specific Layout==
 
 Let's pretend that you want to create a layout to be used only in a controller called `blog`. To do this, you would simply create the layout and save it as `views/blog/layout.cfm`.
 
 As you can see, the convention is to place your layout file together with the other view files for the controller in question.
+
+However, if you don't like the name of the file or its location in the folder structure you can specify what layout file to use with the [usesLayout usesLayout()] function in the controller's `init` function instead.
+
+{{{
+<cffunction name="init">
+  <cfset usesLayout("blogLayoutOne")
+</cffunction>
+}}}
+
+With that code placed in the `controllers/Blog.cfc` file all actions will now wrap their contents with the `bloglayoutone.cfm` file instead of the `layout.cfm` file.
+
+The [usesLayout usesLayout()] function also takes an `except` and an `only` argument for further customization.
+
+{{{
+<cfset usesLayout(name="blogLayoutOne", except="home")
+}}}
+
+That code tells Wheels to apply the `blogLayoutOne` layout for any actions in this controller except for the `home` action for which it will fall back to the default behavior (i.e. using the `views/blog/layout.cfm` file).
+
+You can even instruct Wheels to run a specific function that will determine the layout handling.
+
+{{{
+<cfset usesLayout(resolveLayout)
+}}}
+
+It's worth repeating here that everything inside the controllers `init` function runs only once per application and controller. This is why you can't perform the logic that decides which layout to use directly inside the `init` function itself. Instead you tell Wheels to always run the `resolveLayout` function on each incoming request.
 
 ==Overriding the Default and Controller-Specific Layouts==
 
@@ -127,6 +160,8 @@ But there may be times that you won't want the action that your coding to use yo
 ===Using a Different Layout than the Default Layout===
 
 If you want to use a layout not named after your controller or the default layout, simply use the `layout` argument of the [renderPage renderPage()] function.
+
+Note that setting the layout argument on [renderPage renderPage()] will override any settings you have eventually made with the [usesLayout usesLayout()] function.
 
 Take a look at this example action, called `display`:
 
@@ -154,10 +189,56 @@ If you don't want for a given template to be wrapped by a layout at all, you may
 
 Another alternative is to use the [renderPage renderPage()] function and set the `layout` argument to `false`. 
 
-You can of course also just create a layout that only contains the call to the [yield yield()] function in it and referencing it as described above in _Using a Different Layout_. This may end up a little ugly though if you start getting a lot of small identical files like this but the option is there for you at least.
+You can of course also just create a layout that only contains the call to the [includeContent includeContent()] function in it and referencing it as described above in _Using a Different Layout_. This may end up a little ugly though if you start getting a lot of small identical files like this but the option is there for you at least.
 
 Lastly, if your view needs to return XML code or other data for JavaScript calls, then you should reference the [renderNothing renderNothing()] and [renderText renderText()] functions to see which would be best used by your action.
 
-==Email Layouts==
+===Nested / Inherited Layouts===
 
-For a discussion on using layouts in emails sent by Wheels, refer to the [SendingEmail Sending Email] chapter.
+A common feature in a lot of template languages is the ability to create layout files that can be "inherited" by other layout files. The end goal being to create a "parent" layout that has missing sections intended for its "child" layouts to fill in the content for.
+
+This is possible to achieve in Wheels as well (of course!). Our approach involves the use of [includeLayout includeLayout()] and the sister function to [includeContent includeContent()] namely [contentFor contentFor()] that we mentioned briefly earlier in this chapter.
+
+The [includeLayout includeLayout()] function simply includes another layout file. The common usage for this is to include a parent layout from a child layout.
+
+So what about the [contentFor contentFor()] function? Well, as you may recall the code in the default layout file in Wheels contains this:
+
+{{{
+<cfoutput>#includeContent()#</cfoutput>
+}}}
+
+The [includeLayout includeLayout()] function accepts a `name` argument. The reason we don't have to use it above is because it defaults to `body`. This `body` variable has been set internally in the Wheels framework code with the use of the [contentFor contentFor()] function.
+
+The point I'm trying to make here is that we can use this same functionality to set *any* type of content for, as an example, sections in our layout files. So, armed with this new knowledge, let's create some nested layout awesomeness.
+
+Say we have a global layout and want to fill out content in it from controller specific layouts, here's how we can do it.
+
+The child layout:
+
+{{{
+contentFor(pageTitle="My custom title")
+<cfoutput>#includeLayout("layout")#</cfoutput>
+}}}
+
+Note: If your parent file is one of the default ones named `layout.cfm` you can actually remove the "layout" string above since the default for [includeLayout includeLayout()] is `layout` anyway. We're just including it here for completeness and to show that you can of course achieve this regardless of what your parent layout file is named.
+
+The parent layout:
+
+{{{
+<html>
+  <head>
+    <title><cfoutput>#includeContent("pageTitle")#</cfoutput></title>
+  </head>
+  <body>
+    <cfoutput>#includeContent("body")#</cfoutput>
+  </body>
+</html>
+}}}
+
+Similar to above you can remove "body" since that is the default on the [includeContent includeContent()] function.
+
+Alright, that was a fairly basic example of how you can achieve nested layouts in Wheels to `DRY` up your code. You can of course expand on this by having entire sections of HTML (like a sub menu for example) be created by the child layouts. Also, as a reminder, don't forget that you can use [includePartial includePartial()] from inside your layout files as well to further keep things `DRY`.
+
+===Layouts for Emails and Partials===
+
+Besides having layouts for view pages in Wheels you can also have them on emails that you send out and partial files that you include. We have chosen to speak about these in their respective chapters though: [SendingEmail Sending Email] and [UsingPartials Using Partials].
