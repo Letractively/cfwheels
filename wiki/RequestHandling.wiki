@@ -73,7 +73,7 @@ The [renderPage renderPage()] function is available to you because the `shop` co
 
 So, how does [renderPage renderPage()] work? Well, it accepts the arguments `controller` and `action` (among others), and, based on these, it will try to include a view file. In our case, the view file is stored at `views/shop/products.cfm`.
 
-You can read the chapter about [RenderingPages Rendering Pages] for more information about the `renderPage()` function.
+You can read the chapter about [Pages Rendering Pages] for more information about the `renderPage()` function.
 
 ==Wheels Conventions==
 
