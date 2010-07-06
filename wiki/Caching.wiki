@@ -1,5 +1,5 @@
 #summary How to speed up your website by caching content.
-#labels chapter,1.0,published_prod
+#labels chapter,1.1,draft
 
 If your website doesn't get a whole lot of traffic, then you can probably skip this chapter completely. Just remember that it's here, waiting for your triumphant return.
 
@@ -19,6 +19,7 @@ Here are the global caching parameters you can set, their default values, and a 
 <cfset set(maximumItemsToCache=5000)>
 <cfset set(cacheCullPercentage=10)>
 <cfset set(cacheCullIntervalMinutes=5)>
+<cfset set(cacheDatePart="n")>
 <cfset set(defaultCacheTime=60)>
 }}}
 
@@ -39,6 +40,10 @@ If you set this to `100`, then all expired items will be deleted. Setting it to 
 ===`cacheCullInterval` Setting===
 
 This is the number of minutes between each culling action. The reason the cache is not culled during each request is to keep performance as high as possible.
+
+===`cacheDatePart` Setting===
+
+The measurement unit to use during caching. The default is minutes ("n") but you can set it to seconds ("s") for example if you want more precise control over when a cached item should expire. For the rest of this chapter we'll assume you've left it at the default setting.
 
 ===`defaultCacheTime` Setting===
 
