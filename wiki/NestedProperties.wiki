@@ -48,7 +48,7 @@ You can also save changes to the child `profile` through the parent `user` objec
 </cfoutput>
 }}}
 
-By passing `allowDelete=true` to the `nestedProperties()` call above, you are also delete the `user`'s related `profile` by setting a property called `_delete`:
+By passing `allowDelete=true` to the `nestedProperties()` call above, you can also delete the `user`'s related `profile` by setting a property called `_delete`:
 
 {{{
 <cfset user.profile._delete = true>
@@ -62,6 +62,26 @@ By passing `allowDelete=true` to the `nestedProperties()` call above, you are al
 
 
 The `autoSave` and `allowDelete` arguments are both optional and default to `false`, so you must "opt in" to these capabilities when setting up your nested properties.
+
+== One-to-Many Relationships with Nested Properties ==
+
+Nested properties work with one-to-many associations as well, except now the nested properties will contain many objects instead of a single one.
+
+Consider a `post` that has many `comments`:
+
+{{{
+<!--- models/Post.cfc --->
+<cfcomponent extends="Model">
+
+    <cffunction name="init">
+        <cfset hasMany("comments")>
+        <cfset nestedProperties(associations="comments", autoSave=true, allowDelete=true)>
+    </cffunction>
+
+</cfcomponent>
+}}}
+
+
 
 == Many-to-Many Relationships with Nested Properties ==
 
@@ -101,9 +121,7 @@ Consider the many-to-many associations related to `customer`s, `publication`s, a
 
 When it's time to save `customer`s' subscriptions in the `subscriptions` join table, one approach is to loop through data submitted by `checkBoxTag()`s, populate `subscription` model objects with the data, and call `save()`. This approach is valid, but there is a simpler way.
 
-With some simple model configurations and form helpers, you can simplify complex database transactions to a few lines of code and let Wheels do the rest!
-
-== Setting up Nested Properties in Your Model ==
+=== Setting up the Nested Properties in the Model ===
 
 In this case, let's define the nested properties in your model's `init()` method with the `nestedProperties()` method. Using the `customer` model from the example above, let's say that we want to allow our Wheels application to automatically save and delete related `subscription` objects based on form submissions (more on the form part later).
 
@@ -128,11 +146,11 @@ With this set of nested properties defined, the `customer` model now has some ex
  * `customer` will automatically save the value(s) when there are changes.
  * `customer` will automatically delete the value(s) marked for deletion through a key called `_delete`.
 
-== Building a Form with Nested Properties ==
+=== Building the Many-to-Many Form with Nested Properties ===
 
 With the nested properties configured in the model, we can now build a series of check boxes that will allow the end user to associate many `subscriptions` with the `customer`.
 
-First, let's define the data needed in an `edit` action in the controller at `controllers/Customers.cfc`. For the view, we need to pull the `customer` with its associated `subscriptions` included with the `include` argument. We also need all of the publications in the system for the user to choose from.
+First, let's define the data needed in an `edit` action in the controller at `controllers/Customers.cfc`. For the view, we need to pull the `customer` with its associated `subscriptions` included with the `include` argument. We also need all of the `publication`s in the system for the user to choose from.
 
 {{{
 <cffunction name="edit">
@@ -160,11 +178,6 @@ Now the view template at `views/customers/edit.cfm` is where the magic happens. 
 
     #textField(label="First Name", objectName="customer", property="firstName")#
     #textField(label="Last Name", objectName="customer", property="lastName")#
-    #textField(label="Address 1", objectName="customer", property="address1")#
-    #textField(label="Address 2", objectName="customer", property="address2")#
-    #textField(label="City", objectName="customer", property="city")#
-    #textField(label="State", objectName="customer", property="state")#
-    #textField(label="Zip", objectName="customer", property="zip")#
 </fieldset>
 
 <fieldset>
@@ -212,7 +225,7 @@ Handling the form submission is the most powerful part of the process, yet it in
 </cffunction>
 }}}
 
-In fact, there is nothing special about this. But with the nested properties defined in the model, Wheels handles quite a bit when you save the parent object:
+In fact, there is nothing special about this. But with the nested properties defined in the model, Wheels handles quite a bit when you save the parent `customer` object:
  * Wheels will update the `customers` table with any changes submitted in the Customers `<fieldset>`.
  * Wheels will add and remove records in the `subscriptions` table depending on which check boxes are selected by the user in the Subscriptions `<fieldset>`.
  * All of these database queries will be wrapped in a [Transactions transaction]. If any of the above updates don't pass validation or if the database queries fail, the transaction will roll back.
