@@ -42,9 +42,7 @@ For most purposes, this means that you could write code for your page header bef
 <head>
   <title><cfoutput>#title#</cfoutput></title>
 </head>
-
 <body>
-
 <div id="container">
     <div id="navigation">
         <ul>
@@ -59,7 +57,6 @@ For most purposes, this means that you could write code for your page header bef
         <cfoutput>#includeContent()#</cfoutput>
     </div>
 </div>
-
 </body>
 </html>
 }}}
@@ -80,20 +77,19 @@ Here's an example:
 <!--- Title is required --->
 <cfparam name="title" type="string">
 
+<cfoutput>
 <html>
 <head>
   <title>#title#</title>
 </head>
 
 <body>
-
 <!--- View's Content --->
 <h1>#title#</h1>
 #includeContent()#
-
 </body>
-</html>
 
+</html>
 </cfoutput>
 }}}
 
