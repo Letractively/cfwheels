@@ -23,6 +23,7 @@ Here are the global caching parameters you can set, their default values, and a 
 <cfset set(defaultCacheTime=60)>
 <cfset set(cacheQueriesDuringRequest=true)>
 <cfset set(clearQueryCacheOnReload=true)>
+<cfset set(cachePlugins=true)>
 }}}
 
 ===The `maximumItemsToCache` Setting===
@@ -58,6 +59,10 @@ When set to `true` caches identical queries during a request. See the section ti
 ===The `clearQueryCacheOnReload` Setting===
 
 When set to `true` this will clear out all cached queries when doing a `reload=true` request. This is usually a good idea but if you want to avoid hitting the database too hard on application reloads you can set this to `false` to keep queries cached and ease the load for the database a little.
+
+===The `cachePlugins` Setting===
+
+If you set this to `false` all plugins will reload on each request (as opposed to during `reload=true` requests only). Setting this is only recommended if you are developing a plugin yourself and need to see the impact of your changes as you develop it on a per request basis. 
 
 ==Environment-Level Caching==
 
