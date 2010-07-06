@@ -176,3 +176,5 @@ So there you have it: 4 easy ways to speed up your website!
 When working with objects in Wheels, you'll likely find yourself using all of the convenient association functions Wheels makes available to you.
 
 For example, if you have set up a `belongsTo` association from `article` to `author`, then you will likely write a lot of `article.author().name()` calls. In this case, Wheels is smart enough to only call the database once per request if the queries are identical. So don't worry about adding performance hits when making multiple calls like that in your code.
+
+You can turn of this functionality either by using the `reload` argument to [findAll findAll()] (or any of the dynamic methods that end up calling [findAll findAll()] behind the scenes) or globally by adding `set(cacheQueriesDuringRequest=false)` to your configuration files.
