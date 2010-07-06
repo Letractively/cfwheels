@@ -1,5 +1,5 @@
 #summary How Wheels handles an incoming request.
-#labels chapter,1.0,published_prod
+#labels chapter,1.1,draft
 
 Wheels is quite simple when it comes to figuring out how incoming requests map to code in your application. Let's look at a URL for an e-commerce website and dissect it a little. 
 
@@ -67,11 +67,13 @@ Let's show how the code for the `products` function could look to make it more c
 </cfcomponent>
 }}}
 
-The only thing this does is call a view page to render using the [renderPage renderPage()] function.
+The only thing this does is specify the view page to render using the [renderPage renderPage()] function.
 
 The [renderPage renderPage()] function is available to you because the `shop` controller extends the main Wheels `Controller` component. Don't forget to include that `extends` attribute in your `<cfcomponent>` tags as you build your controllers!
 
 So, how does [renderPage renderPage()] work? Well, it accepts the arguments `controller` and `action` (among others), and, based on these, it will try to include a view file. In our case, the view file is stored at `views/shop/products.cfm`.
+
+It's important to note that the [renderPage renderPage()] function does *not* cause any controller actions or functions to be executed. It just specifies what view files to get content from. Keep this in mind going forward since it's a common assumption that it does (especially when you want to include the view page for another action it's easy to jump to the incorrect conclusion that the code for that action would also get executed for example).
 
 You can read the chapter about [Pages Rendering Pages] for more information about the `renderPage()` function.
 
