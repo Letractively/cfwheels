@@ -5,7 +5,7 @@ Sending emails in Wheels is done from your controller files with the [sendEmail 
 
 Getting this to work in Wheels can be broken down in 3 steps. We'll walk you through them.
 
-==Step 1: Establishing Mail Server and Account Information==
+==Set Defaults for Mail Server Information==
 
 We recommend using Wheels ability to set global defaults for [sendEmail sendEmail()] so that you don't have to specify more arguments than necessary in your controller files. Because it's likely that you will use the same mail server across your application, this makes it worthwhile to set a global default for it. 
 
@@ -19,7 +19,7 @@ By specifying these values here, these arguments can be omitted from all [sendEm
 
 But you are not limited to setting only these 3 variables. In fact, you can set a global default for any optional argument to [sendEmail sendEmail()] and since it accepts the same arguments that `cfmail` does. That's quite a few.
 
-==Step 2: Create an Email Template==
+==Create an Email Template==
 
 An email template is required for [sendEmail sendEmail()] to work and forms the basis for the mail message content. Think of an email template as the content of your email.
 
@@ -44,7 +44,7 @@ Here's an example for `myemailtemplate.cfm`, which will contain HTML content.
 </cfoutput>
 }}}
 
-==Step 3: Sending the Email==
+==Sending the Email==
 
 As we've said before, [sendEmail sendEmail()] accepts all attribute of CFML's `<cfmail>` tag as arguments. But it also accepts any variables that you need to pass to the email template itself.
 
@@ -82,7 +82,7 @@ Like the `template` argument, the logic for which file to include follows the sa
 
 You can attach files to your emails as well by using the `file` argument (or `files` argument if you want multiple attachments). Simply pass in the name of a file that exists in the `files` folder (or a sub folder of it) of your application. 
 
-==Bonus Step: Email Layouts==
+==Using Email Layouts==
 
 Much like the layouts outlined in the [UsingLayouts Using Layouts] chapter, you can also create layouts for your emails.
 
