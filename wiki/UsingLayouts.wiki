@@ -38,11 +38,9 @@ The call to [includeContent includeContent()] represents the output of your page
 For most purposes, this means that you could write code for your page header before the snippet, and write code for the footer after. Here is a simple example of wrapping your view's content with a header and footer.
 
 {{{
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title><cfoutput>#title#</cfoutput></title>
+  <title><cfoutput>#title#</cfoutput></title>
 </head>
 
 <body>
@@ -74,23 +72,17 @@ Just like views in Wheels, any variable declared by your application's controlle
 
 Notice in the above code example that there is a variable called `title` being output in between the `<title>` tags. This would require that any controller or view using this particular layout would need to `<cfset>` a variable named `title`.
 
-To help document this, you should consider using `<cfparam>` tags at the top of your layout files. That way any developer using your layout in the future could easily see which variables need to be set by the controller.
+To help document this, you can use `<cfparam>` tags at the top of your layout files. That way any developer using your layout in the future could easily see which variables need to be set by the controller.
 
 Here's an example:
 
 {{{
-<cfsetting enablecfoutputonly="true">
-
 <!--- Title is required --->
 <cfparam name="title" type="string">
 
-<!--- Because this is XHTML, we need to output the DOCTYPE as the first
-character of the first line, or else we get Quirks Mode! --->
-<cfoutput><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>#title#</title>
+  <title>#title#</title>
 </head>
 
 <body>
@@ -103,11 +95,9 @@ character of the first line, or else we get Quirks Mode! --->
 </html>
 
 </cfoutput>
-
-<cfsetting enablecfoutputonly="false">
 }}}
 
-There's also a different way to set variables that goes hand in hand with the [includeContent includeContent()] function. It's the [contentFor contentFor()] function but we'll dig deeper into how that one works later in this chapter.
+There's also a different way to set variables that goes hand in hand with the [includeContent includeContent()] function that you may prefer. It's the [contentFor contentFor()] function but we'll dig deeper into how that one works later in this chapter.
 
 ==The Default Layout==
 
@@ -129,7 +119,7 @@ However, if you don't like the name of the file or its location in the folder st
 
 {{{
 <cffunction name="init">
-  <cfset usesLayout("blogLayoutOne")
+  <cfset usesLayout("blogLayoutOne")>
 </cffunction>
 }}}
 
@@ -138,7 +128,7 @@ With that code placed in the `controllers/Blog.cfc` file all actions will now wr
 The [usesLayout usesLayout()] function also takes an `except` and an `only` argument for further customization.
 
 {{{
-<cfset usesLayout(name="blogLayoutOne", except="home")
+<cfset usesLayout(name="blogLayoutOne", except="home")>
 }}}
 
 That code tells Wheels to apply the `blogLayoutOne` layout for any actions in this controller except for the `home` action for which it will fall back to the default behavior (i.e. using the `views/blog/layout.cfm` file).
@@ -146,7 +136,7 @@ That code tells Wheels to apply the `blogLayoutOne` layout for any actions in th
 You can even instruct Wheels to run a specific function that will determine the layout handling.
 
 {{{
-<cfset usesLayout(resolveLayout)
+<cfset usesLayout(resolveLayout)>
 }}}
 
 It's worth repeating here that everything inside the controllers `init` function runs only once per application and controller. This is why you can't perform the logic that decides which layout to use directly inside the `init` function itself. Instead you tell Wheels to always run the `resolveLayout` function on each incoming request.
@@ -216,7 +206,7 @@ Say we have a global layout and want to fill out content in it from controller s
 The child layout:
 
 {{{
-contentFor(pageTitle="My custom title")
+<cfset contentFor(pageTitle="My custom title")>
 <cfoutput>#includeLayout("layout")#</cfoutput>
 }}}
 
