@@ -1,5 +1,5 @@
 #summary Stop repeating yourself with the use of filters and verifications.
-#labels chapter,1.0,published_prod
+#labels chapter,1.1,draft
 
 If you find the need to run a piece of code before or after several controller actions, then you can use _filters_ to accomplish this without having to explicitly call the code inside each action in question.
 
@@ -128,13 +128,55 @@ The question then becomes, "Where do I place the `restrictAccess()` function so 
 
 If you actually want to set the same filters to be run for all controllers, you can go ahead and move it to the `Controller.cfc` file's `init()` method as well. Keep in mind that if you want to run the `init()` method in the individual controller *and* in `Controller.cfc`, you will need to call `super.init()` from the `init()` method of your individual controller.
 
+==Passing Arguments to Filter Functions==
+
+Sometimes it's useful to be able to pass through arguments to the filters (for one, it can help you reduce the amount of functions you need to write). Here's the easy way to pass through an argument:
+
+{{{
+<cfset filters(through="authorize", byIP=true)>
+}}}
+
+Now the `byIP` argument will be available in the `authorize` function.
+
+Hard-coded variables like that pose no issues but you have to remember that since the `init` function doesn't run on every request you can't start passing through `URL`, `form` or `request` scoped variables for example. What would happen is that it would only evaluate that variable once and then pass that same value through on all subsequent requests. Probably not what you wanted.
+
+There is a way around this limitation though and that is to delay the evaluation of the variable so it evaluates on each request instead of just once. here's how you can pull that off:
+
+{{{
+<cfset filters(through="authorize", byIP=true, region="##request.region##")>
+}}}
+
+Now, instead of evaluating `request.region` inside the `init` function it will be done as it gets passed through to the `authorize` function on each request instead.
+
+To avoid any clashing of variables Wheels also supports passing in the arguments in a struct as well:
+
+{{{
+<cfset args.byIP = true>
+<cfset args.through = true>
+<cfset filters(through="authorize", authorizeArguments=args)>
+}}}
+
 ==2 Types of Filters==
 
 The example with authentication showed a "before filter" in action. The other type of filter you can run is an "after filter." As you can tell from the name, an after filter executes code after the action has been completed.
 
 This can be used to make some last minute modifications to the HTML before it is sent to the browser (think translation, compression, etc.), for example.
 
-You specify if you want to run the filter function before or after the controller action with the `type` argument to the [filters filters()] function. It defaults to running it before the action.
+If you want to get a copy of the content that will be rendered to the browser from an after filter you can use the [response response()] function. So, let's say you want to quickly translate the content to Gibberish before sending it to your visitor you can do something like this:
+
+{{{
+<cffunction name="init">
+  <cfset filters(through="translate", type="after")>
+</cffunction>
+
+<cffunction name="translate">
+  <cfset response(gibberify(response()))>
+</cffunction>
+}}}
+
+Note: when you pass in an argument to [response response()] it knows that you want to set it rather than get it.
+
+As you can see, you specify if you want to run the filter function before or after the controller action with the `type` argument to the [filters filters()] function. It defaults to running it before the action.
 
 ==Including and Excluding Actions From Executing Filters==
 
