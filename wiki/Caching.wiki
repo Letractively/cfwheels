@@ -124,9 +124,7 @@ When Wheels receives the first request for this page, it will handle everything 
 
 Wheels creates an internal key for use in the cache as well. This key is created from the `controller`, `action`, `key`, and `params` variables. This means, for example, that paginated pages are all stored individually in the cache (because the URL variable for the page to display would be different on each request).
 
-When the second user requests the same page, Wheels will serve the HTML directly from the cache. Note that any filters set for the action are being run as normal. This means that if you do authentication in the filter (which is a common technique for sites with content where you have to login first to see it), you can still cache those pages safely using the [caches caches()] function.
-
-All subsequent requests now get the cached page until it expires.
+When the second user requests the same page, Wheels will serve the HTML directly from the cache. All subsequent requests now get the cached page until it expires.
 
 But there are 2 exceptions to this (which you can make good use of in your code to have the cache re-created at the right times). If the request is a `post` request (normally coming from a form submission) or if the Flash (you can read everything about the Flash in the [UsingtheFlash Using the Flash chapter]) is not empty, then the cache won't be used. Instead, a new fresh page will be created.
 
@@ -138,6 +136,10 @@ Here is some code that shows this technique with using the Flash to expire the c
 <cfset flashInsert(message="Your comment was added")>
 <cfset redirectTo(action="showArticle", key=params.key)>
 }}}
+
+Note that, by default, any filters set for the action are being run as normal. This means that if you do authentication in the filter (which is a common technique for sites with content where you have to login first to see it), you can still cache those pages safely using the [caches caches()] function.
+
+However, to achieve the fastest possible cache you can override this default and tell Wheels to cache the HTML and serve that exactly as it is to all subsequent requests without running any filters or application events (`onSessionStart`, `onRequestStart` etc). To do this, set the `static` argument on [caches caches()] to `true`. This will cache your content using the `cfcache` tag behind the scenes. This means that the Wheels framework won't even get involved with the subsequent requests (until they expire from the cache again of course).
 
 ===Page Caching===
 
