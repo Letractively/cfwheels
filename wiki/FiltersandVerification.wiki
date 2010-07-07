@@ -162,7 +162,7 @@ The example with authentication showed a "before filter" in action. The other ty
 
 This can be used to make some last minute modifications to the HTML before it is sent to the browser (think translation, compression, etc.), for example.
 
-If you want to get a copy of the content that will be rendered to the browser from an after filter you can use the [response response()] function. So, let's say you want to quickly translate the content to Gibberish before sending it to your visitor you can do something like this:
+If you want to get a copy of the content that will be rendered to the browser from an after filter you can use the [response response()] function. Let's say you want to quickly translate the content to Gibberish before sending it to your visitor you can do something like this:
 
 {{{
 <cffunction name="init">
@@ -170,13 +170,11 @@ If you want to get a copy of the content that will be rendered to the browser fr
 </cffunction>
 
 <cffunction name="translate">
-  <cfset response(gibberify(response()))>
+  <cfset setResponse(gibberify(response()))>
 </cffunction>
 }}}
 
-Note: when you pass in an argument to [response response()] it knows that you want to set it rather than get it.
-
-As you can see, you specify if you want to run the filter function before or after the controller action with the `type` argument to the [filters filters()] function. It defaults to running it before the action.
+You specify if you want to run the filter function before or after the controller action with the `type` argument to the [filters filters()] function. It defaults to running it before the action.
 
 ==Including and Excluding Actions From Executing Filters==
 
@@ -188,6 +186,10 @@ Here are some examples showing how to setup filtering in your controllers. Remem
 <cfset filters(through="isLoggedIn,checkIPAddress", except="home,login")>
 <cfset filters(through="translateText", only="termsOfUse", type="after")>
 }}}
+
+==Low Level Access==
+
+If you need to access your filters on a lower level so to speak you can do so by using the [filterChain filterChain()] and [setFilterChain setFilterChain()] functions. Typically you'll want to call [filterChain filterChain()] to return an array of all the filters set on the current controller and then make your desired changes and save it back using the [setFilterChain setFilterChain()] function.
 
 ==So What's Verification Then?==
 
