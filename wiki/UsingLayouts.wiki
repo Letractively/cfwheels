@@ -44,18 +44,18 @@ For most purposes, this means that you could write code for your page header bef
 </head>
 <body>
 <div id="container">
-    <div id="navigation">
-        <ul>
-            <cfoutput>
-            <li>#linkTo(text="Home", controller="main")#</li>
-            <li>#linkTo(text="About Us", controller="about")#</li>
-            <li>#linkTo(text="Contact Us", controller="contact")#</li>
-            </cfoutput>
-        </ul>
-    </div>
-    <div id="content">
-        <cfoutput>#includeContent()#</cfoutput>
-    </div>
+  <div id="navigation">
+    <ul>
+      <cfoutput>
+      <li>#linkTo(text="Home", controller="main")#</li>
+      <li>#linkTo(text="About Us", controller="about")#</li>
+      <li>#linkTo(text="Contact Us", controller="contact")#</li>
+      </cfoutput>
+    </ul>
+  </div>
+  <div id="content">
+    <cfoutput>#includeContent()#</cfoutput>
+  </div>
 </div>
 </body>
 </html>
@@ -121,18 +121,36 @@ However, if you don't like the name of the file or its location in the folder st
 
 With that code placed in the `controllers/Blog.cfc` file all actions will now wrap their contents with the `bloglayoutone.cfm` file instead of the `layout.cfm` file.
 
-The [usesLayout usesLayout()] function also takes an `except` and an `only` argument for further customization.
+The [usesLayout usesLayout()] function also takes an `except`, `only` and `useDefault` argument for further customization.
 
 {{{
-<cfset usesLayout(name="blogLayoutOne", except="home")>
+<cffunction name="init">
+  <cfset usesLayout(name="blogLayoutOne", except="home")>
+</cffunction>
 }}}
 
-That code tells Wheels to apply the `blogLayoutOne` layout for any actions in this controller except for the `home` action for which it will fall back to the default behavior (i.e. using the `views/blog/layout.cfm` file).
+That code tells Wheels to apply the `blogLayoutOne` layout for any actions in this controller except for the `home` action for which it will fall back to the default behavior (i.e. using the `views/blog/layout.cfm` file). If for some reason you do not want the default behavior to be used when conditions aren't met, you can set the `useDefault` argument to `false`.
+
+{{{
+<cffunction name="init">
+  <cfset usesLayout(name="blogLayoutOne", except="home", useDefault="false")>
+</cffunction>
+}}}
 
 You can even instruct Wheels to run a specific function that will determine the layout handling.
 
 {{{
-<cfset usesLayout(resolveLayout)>
+<cffunction name="init">
+  <cfset usesLayout("resolveLayout")>
+</cffunction>
+
+<cffunction name="resolveLayout">
+  <cfif params.action eq "index">
+    <cfreturn "index layout">
+  <cfelseif params.action eq "show">
+    <cfreturn "show_layout">
+  </cfif>
+</cffunction>
 }}}
 
 It's worth repeating here that everything inside the controllers `init` function runs only once per application and controller. This is why you can't perform the logic that decides which layout to use directly inside the `init` function itself. Instead you tell Wheels to always run the `resolveLayout` function on each incoming request.
@@ -153,7 +171,7 @@ Take a look at this example action, called `display`:
 
 {{{
 <cffunction name="display">
-    <cfset renderPage(layout="visitorLayout")>
+  <cfset renderPage(layout="visitorLayout")>
 </cffunction>
 }}}
 
@@ -165,7 +183,7 @@ If you want Wheels to locate the file in a different folder you can start the `l
 
 {{{
 <cffunction name="display">
-    <cfset renderPage(layout="/layouts/plain")>
+  <cfset renderPage(layout="/layouts/plain")>
 </cffunction>
 }}}
 
