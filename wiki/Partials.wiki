@@ -49,6 +49,15 @@ Now you can reference the title variable as `arguments.title` inside the `_login
 
 If you prefer, you can still access the view variables that are set outside of the partial. The advantage with specifically passing them in instead is that they are then scoped in the `arguments` struct (which means less chance of strange bugs occurring due to variable conflicts). It also makes for more readable and maintainable code. (You can see the intent of the partial better when you see what is passed in to it).
 
+There is an even more elegant way of passing data to a partial though. When you start using a partial on several pages on a site spread across multiple controllers it can get quite cumbersome to remember to first load the data in an appropriate function in the controller, setup a before filter for it, pass that data in to the partial and so on.
+
+Wheels can automate this process for you. The convention is that a partial will always check if a function exists on the controller with the same name as the partial itself (and that it's set to private and will return a struct) and if so will call it and add the
+output returned to its arguments struct.
+
+This way the partial can be called from anywhere and acts more like a black box. All communication with the model is kept in the controller as it should be for example.
+
+If you don't want to load the data from a function with the same name as the partial (perhaps due to it clashing with another function) you can specify the function to load data from with the `dataFunction` argument to [includePartial includePartial()] and [renderPartial renderPartial()].
+
 ==Partials with Layouts==
 
 Just like a regular page, Wheels partials also understand the concept of layouts. To use this feature, simply pass in the name of the layout file you want to wrap the partial in with the `layout` argument, like this:
