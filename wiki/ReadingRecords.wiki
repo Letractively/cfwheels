@@ -89,6 +89,20 @@ This maps to the `WHERE` clause of the SQL statement. Wheels will also convert a
 
 There are some limitations to what you can use in the `where` argument, but the following SQL will work: `=`, `!=`, `<>`, `<`, `<=`, `>`, `>=`, `LIKE`, `NOT LIKE`, `IN`, `NOT IN`, `IS NULL`, `IS NOT NULL`, `AND`, and `OR`. (Note that it's a requirement to write SQL keywords in upper case.) In addition to this, you can use parentheses to group conditional SQL statements together.
 
+It's worth mentioning that although wheels does not support the `BETWEEN` operator, you can get around this by using `>=` and `<=`.
+
+Example:
+
+{{{
+<cfset items = model("item").findAll(where="price >= 100 AND price <= 500")>
+}}}
+
+The same goes for `NOT BETWEEN`.
+
+{{{
+<cfset items = model("item").findAll(where="price <= 100 AND price >= 500")>
+}}}
+
 ===`order` Argument===
 
 This maps to the `ORDER` clause of the SQL statement. If you don't specify an order at all, none will be used (makes sense, eh?). So in those cases, the database engine will decide in what order to return the records.
