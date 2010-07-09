@@ -87,7 +87,7 @@ A tip is to turn on debugging when you're learning Wheels so you can get a good 
 
 This maps to the `WHERE` clause of the SQL statement. Wheels will also convert all your input to `cfqueryparam` tags for you automatically.
 
-There are some limitations to what you can use in the `where` argument, but the following SQL will work: `=`, `!=`, `<>`, `<`, `<=`, `>`, `>=`, `LIKE`, `NOT LIKE`, `IN`, `NOT IN`, `AND`, and `OR`. (Note that it's a requirement to write SQL keywords in upper case.) In addition to this, you can use parentheses to group conditional SQL statements together.
+There are some limitations to what you can use in the `where` argument, but the following SQL will work: `=`, `!=`, `<>`, `<`, `<=`, `>`, `>=`, `LIKE`, `NOT LIKE`, `IN`, `NOT IN`, `IS NULL`, `IS NOT NULL`, `AND`, and `OR`. (Note that it's a requirement to write SQL keywords in upper case.) In addition to this, you can use parentheses to group conditional SQL statements together.
 
 ===`order` Argument===
 
