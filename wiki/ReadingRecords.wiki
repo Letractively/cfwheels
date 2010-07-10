@@ -100,7 +100,7 @@ Example:
 The same goes for `NOT BETWEEN`.
 
 {{{
-<cfset items = model("item").findAll(where="price <= 100 AND price >= 500")>
+<cfset items = model("item").findAll(where="price <= 100 OR price >= 500")>
 }}}
 
 ===`order` Argument===
