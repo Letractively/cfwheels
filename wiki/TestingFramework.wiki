@@ -88,7 +88,7 @@ An example of raising the Wheels.TableNotFound error when you specify an invalid
 
 *halt():* Think of this as doing 'cfdump/cfabort` only having some control over it. Often times when testing you want to check the results of an expression so that you can write proper tests against it. The old way of doing this is creating a test.cfm template, writing the code you want to check in it, saving it and then finally running it. Tell me that doesn't slow you down. By using halt() you get that same benefit only you don't have to go through all that extra stuff.
 
-Halt() also takes a quoted expression as a second argument, but it's the first argument that we need to take a moment to talk about. The first argument in halt() is a boolean (true/false) value that tells halt() whether it should stop or halt (see where it gets it name from) the testing process and dump the contents of the quoted expression to the screen. By setting this first argument to `true`, halt() will do just that, but what if you set this first argument to `false`? In that case halt() will not only *NOT* display the results of the quoted expression to the screen and continue on with the testing process, it will also not even bother trying to evaluate the quoted expression. Because of that, it's safe it keep as many halt() calls with the first argument set to `false` inside your tests for later reference since there's no performance hit.
+Halt() takes a quoted expression as the first argument (called `expression`). Halt() also takes an optional boolean as the second argument (called `halt` which is defaulted to `true`). This arguments tells halt() whether it should stop or halt (see where it gets it name from) the testing process and dump the contents of the quoted expression to the screen. By setting this argument to `true`, halt() will do just that, but what if you set this argument to `false`? In that case halt() will not only *NOT* display the results of the quoted expression to the screen and continue on with the testing process, it will also not even bother trying to evaluate the quoted expression. Because of that, it's safe it keep as many halt() calls with the second argument set to `false` inside your tests for later reference since there's no performance hit.
 
 An example of halting the testing process and dumping an expression to the screen:
 
@@ -96,7 +96,7 @@ An example of halting the testing process and dumping an expression to the scree
 <cffunction name="test_key_exists_in_structure">
 	<cfset loc.a = {a=1, b=2, c=3}>
 	<cfset loc.b = "d">
-	<cfset halt(true, "loc.a")>
+	<cfset halt("loc.a")>
 	<cfset assert("structkeyexists(loc.a, loc.b)")>
 </cffunction>
 }}}
@@ -107,7 +107,33 @@ An example of keeping halt in a test for future reference:
 <cffunction name="test_key_exists_in_structure">
 	<cfset loc.a = {a=1, b=2, c=3}>
 	<cfset loc.b = "d">
-	<cfset halt(false, "loc.a")>
+	<cfset halt("loc.a", false)>
+	<cfset assert("structkeyexists(loc.a, loc.b)")>
+</cffunction>
+}}}
+
+Internally halt() uses _cfdump_, so if you want you can pass cfdump specific arguments to halt() and it will pass them along to _cfdump_.
+
+An example of displaying the output of halt as `text:
+
+{{{
+<cffunction name="test_key_exists_in_structure">
+	<cfset loc.a = {a=1, b=2, c=3}>
+	<cfset loc.b = "d">
+	<cfset halt(expression="loc.a", format="text")>
+	<cfset assert("structkeyexists(loc.a, loc.b)")>
+</cffunction>
+}}}
+
+*debug():* Works almost the same as halt(), however it doesn't stop the testing process and will display it's output at the bottom of the testing page. Just like halt(), debug() takes a quoted expression as its first arguments. Debug() also uses _cfdump_ internally so you can pass cfdump specific arguments.
+
+An example of displaying the debug output:
+
+{{{
+<cffunction name="test_key_exists_in_structure">
+	<cfset loc.a = {a=1, b=2, c=3}>
+	<cfset loc.b = "d">
+	<cfset debug("loc.a")>
 	<cfset assert("structkeyexists(loc.a, loc.b)")>
 </cffunction>
 }}}
