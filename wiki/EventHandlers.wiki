@@ -1,5 +1,5 @@
 #summary Use the standard CFML application events through the framework.
-#labels chapter,1.0,published_prod
+#labels chapter,1.1,draft
 
 Because the `Application.cfc` file in the root of your Wheels site just includes the `wheels/functions.cfm` file, which in turn includes a lot of framework specific code, you may wonder what the best way is to use CFML's `onApplicationStart`, `onRequestStart` and similar functions...
 
@@ -35,4 +35,4 @@ Sometimes it's useful to add functions right in the `Application.cfc` file to ma
 
 ==Application Settings==
 
-Again, because there is no `Application.cfc` file for you to work with in Wheels, you have to find a suitable place to set application settings such as `SessionTimeout`, `ScriptProtect`, `SetClientCookies`, and so on. These are usually set in the constructor area of an `Application.cfc` file. We recommend that you set them in the `events/onapplicationstart.cfm` file instead.
+Again, because there is no `Application.cfc` file for you to work with in Wheels, you have to find a suitable place to set application settings such as `SessionManagement`, `SessionTimeout`, `ScriptProtect`, `SetClientCookies`, and so on. These are usually set in the constructor area of an `Application.cfc` file. We recommend that you set them in the `config/app.cfm` file instead.
