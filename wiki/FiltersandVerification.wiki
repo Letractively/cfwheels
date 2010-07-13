@@ -225,12 +225,12 @@ Now let's see how using the [verifies verifies()] function within Wheels to impr
 
 With that one line of code, Wheels will perform the following checks when a request is made to the controller's edit action:
 
-* it will make sure that the request is a `post` request
-* it will make sure that the userid variables exists in the params struct
-* it will make sure that the params.userid is a guid datatype.
+  * it will make sure that the request is a `post` request
+  * it will make sure that the userid variables exists in the params struct
+  * it will make sure that the params.userid is a guid datatype.
 
 If any of those checks fail, Wheels will redirect the request to the index action of the controller and place an error key in the flash containing the message "Invalid user id". All that functionality and security in only one line of code!
 
-Hold on a sec... What if you wanted do this to two or more variables? Well dear developer, the params and paramsTypes take a list so you can include as many variables to check against as you want. The only thing you need to make sure of is that the number of variables in the `params` list matches the number types to check against in the `paramsTypes` list. This also goes for the session / sessionTypes and cookie / cookieTypes. 
+What if you wanted do this to two or more variables? The params and paramsTypes take a list so you can include as many variables to check against as you want. The only thing you need to make sure of is that the number of variables in the `params` list matches the number types to check against in the `paramsTypes` list. This also goes for the session / sessionTypes and cookie / cookieTypes. 
 
 You can read more in the documentation for the [verifies verifies()] function. 
