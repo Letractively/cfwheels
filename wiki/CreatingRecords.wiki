@@ -56,18 +56,34 @@ Don't forget that you can name your primary key whatever you want and you can ev
 
 No matter which method you prefer, Wheels will use database introspection to see how your table is structured and act accordingly.
 
-==Setting Default Values==
+==Using Database Defaults==
 
-If you're the kind of person who likes to give the database responsibility, you may have set your tables to create default values for new records. Wouldn't it be nice if you could also set these values automatically when creating new objects? Well, you can (surprise!), and it's dead simple too. Just pass in `defaults=true` to the [new new()] method, and it will return the object with all the default values set on it. In the background, Wheels uses the excellent `<cfdbinfo>` tag on application start-up, so no extra database calls are required to use this functionality.
+The best way of handling model defaults is usually by setting a default constraint in your database. When Wheels saves the model the database will automatically insert the default value if you haven't provided one within your model.
 
-If you find that you end up passing in `defaults=true` all the time to [new new()], then you may consider overriding this Wheels convention and simply set `defaults` to `true` globally. This is done by adding the following line to your `config/setting.cfm` file:
+However, unlike the primary key, Wheels will not automatically load database defaults after saving as it requires an additional database call and in most cases is not required (after saving the most common action is to redirect, in which case you would reload the newly saved model in the next request anyway).
 
-{{{
-<cfset set(functionName="new", defaults=true)>
-}}}
-
-You can also set the default values _after_ the object has been saved to the database if you prefer (i.e. after [create create()] or [save save()] has been called). In fact, Wheels does this for you out of the box. If you don't like this convention, you can turn it off with the following line in `config.cfm`:
+Of course, if you do need to access the database default immediately after saving then Wheels allows this - simply add `reload=true` to the [create create()], [update update()] or [save save()] methods:
 
 {{{
-<cfset set(functionName="save", defaults=false)>
+<cfset newAuthor = model("author").new()>
+<cfset newAuthor.firstName = "Joe">
+<cfset newAuthor.lastName = "Jones">
+<cfset newAuthor.save(reload=true)>
+<cfoutput>#newAuthor.aDatabaseDefault#</cfoutput>
 }}}
+
+==Using Model Defaults==
+
+Sometimes a database default isn't the most appropriate solution as the value is only set after the model has been inserted. If you want to set a default value when it is first created with [new new()] or [create create()] then you can the`defaultValue` argument of the [property property()] method used in your model's [init init()] block.
+
+{{{
+<cfset property(name="welcomeText", defaultValue="Hello world!")>
+}}}
+
+This is effectively the same as using:
+
+{{{
+<cfset model("myModel").new(welcomeText="Hello world!")>
+}}}
+
+...except you only need to set it once per model.
