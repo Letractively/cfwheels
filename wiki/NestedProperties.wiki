@@ -84,7 +84,7 @@ Consider a `post` that has many `comments`:
 </cfcomponent>
 }}}
 
-=== Auto-saving a Collection of Children Objects ===
+=== Auto-saving a Collection of Child Objects ===
 
 This time, Wheels will accept an array of objects for the `comments` property if you want to update them through their parent.
 
@@ -105,7 +105,7 @@ This time, Wheels will accept an array of objects for the `comments` property if
 </cfoutput>
 }}}
 
-=== Deleting Children Objects ===
+=== Deleting Child Objects ===
 
 Deleting children objects works similarly to the one-to-one example. To remove a child object, set a property called `_delete` to `true`.
 
