@@ -23,11 +23,13 @@ Consider a `user` model that has one `profile`:
 </cfcomponent>
 }}}
 
+== Auto-saving a Child Object ==
+
 By adding the call to `nestedProperties()` in the above example, you can create both the `user` object and the `profile` object in one call to `create()`. Setting `autoSave` to `true` allows this functionality to happen.
 
 {{{
-<cfset params.user = {firstName="Russ", lastName="Johnson"}>
-<cfset params.user.profile = {twitterHandle="russ_johnson"}>
+<cfset params.user = model("user").new(firstName="Russ", lastName="Johnson")>
+<cfset params.user.profile = model("profile").new(twitterHandle="russ_johnson")>
 <cfset user = model("user").create(params.user)>
 
 <cfoutput>
@@ -48,6 +50,8 @@ You can also save changes to the child `profile` through the parent `user` objec
 </cfoutput>
 }}}
 
+== Deleting a Child Object ==
+
 By passing `allowDelete=true` to the `nestedProperties()` call above, you can also delete the `user`'s related `profile` by setting a property called `_delete`:
 
 {{{
@@ -59,7 +63,6 @@ By passing `allowDelete=true` to the `nestedProperties()` call above, you can al
     #user.profile(returnAs="query").RecordCount#
 </cfoutput>
 }}}
-
 
 The `autoSave` and `allowDelete` arguments are both optional and default to `false`, so you must "opt in" to these capabilities when setting up your nested properties.
 
@@ -81,7 +84,43 @@ Consider a `post` that has many `comments`:
 </cfcomponent>
 }}}
 
+=== Auto-saving a Collection of Children Objects ===
 
+This time, Wheels will accept an array of objects for the `comments` property if you want to update them through their parent.
+
+{{{
+<cfset post = model("post").findByKey(38)>
+<cfset
+    post.comments = [
+        model("comment").new(name="Tony Petruzzi", comment="Radtacular!",
+        model("comment").new(name="John Q. Public", comment="I disagree."
+        model("comment").new(name="Tony Petruzzi", comment="Agree to disagree."
+    ]
+>
+<cfset post.save()>
+
+<!--- Outputs "3" --->
+<cfoutput>
+    #ArrayLen(post.comments)#
+</cfoutput>
+}}}
+
+=== Deleting Children Objects ===
+
+Deleting children objects works similarly to the one-to-one example. To remove a child object, set a property called `_delete` to `true`.
+
+{{{
+<!--- Delete the comment in positions 2 and 3 --->
+<cfset post.comments[2]._delete = true>
+<cfset post.comments[3]._delete = true>
+<cfset post.save()>
+}}}
+
+== Transactions are Included by Default ==
+
+Because there are several model objects involved in the examples above, Wheels will automatically wrap the database operations in a transaction. That way if something goes wrong with any of the operations, the transaction will rollback.
+
+See the chapter on [Transactions] for more details.
 
 == Many-to-Many Relationships with Nested Properties ==
 
