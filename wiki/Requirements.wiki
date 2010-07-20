@@ -61,7 +61,7 @@ Wheels requires that you use one of these CFML engines:
  * [http://www.adobe.com/products/coldfusion/ Adobe ColdFusion 9]
  * [http://www.getrailo.org/ Railo] (version 3.1)
 
-Wheels makes heavy use of CFML's `onMissingMethod` event, which wasn't available until the release of CF 8.
+Wheels makes heavy use of CFML's `OnMissingMethod` event, which wasn't available until the release of CF 8.
 
 ===Operating Systems===
 
@@ -75,6 +75,8 @@ Don't worry though. Wheels will adapt to your setup and run just fine regardless
 
 ===Database Engines===
 
-Finally, to build any kind of meaningful web application, you will likely interact with a database. Currently supported databases are SQL Server 7 or later, Oracle 10g or later, PostgreSQL, and MySQL 5. (Please note that MySQL 4 is not supported.)
+Finally, to build any kind of meaningful web application, you will likely interact with a database. Currently supported databases are SQL Server 7 or later, Oracle 10g or later, PostgreSQL, SQLite, and MySQL 5.
+
+Regarding MySQL, please note that MySQL 4 is not supported. We also recommend using the InnoDB engine if you want for [Transactions] to work.
 
 OK, hopefully this chapter didn't scare you too much. You can move on knowing that you have the basic knowledge needed, the software to run Wheels on, and a suitable project to start with.
