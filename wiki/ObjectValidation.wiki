@@ -71,6 +71,25 @@ Wheels provides quite a few useful model validation functions. These functions r
  * `validateOnCreate()`
  * `validateOnUpdate()`
 
+===Automatic Validations===
+
+Now that you have a good understanding of how validations work in the model, here is a piece of good news. By default, Wheels will perform many of these validations for you based on how you have your fields set up in the database.
+
+By default, these validations will run without your needing to set up anything in the model:
+
+ * Fields set to `NOT NULL` will automatically trigger `validatesPresenceOf()`.
+ * Numeric fields will automatically trigger `validatesNumericalityOf()`.
+ * Date or time fields will be checked for the appropriate format.
+ * Fields that have a maximum length will automatically trigger `validatesLengthOf()`.
+
+To disable this default behavior, change this setting in `config/settings.cfm`:
+
+{{{
+<cfset set(automaticValidations=false)>
+}}}
+
+See the chapter on [ConfigurationandDefaults] for more information on available Wheels ORM settings.
+
 ===Use `when`, `if`, or `unless` to Limit the Scope of Validation===
 
 If you want to limit the scope of the validation, you have 3 arguments at your disposal: `when`, `if`, and `unless`.
