@@ -74,7 +74,7 @@ The data source configuration is what tells Wheels which database to use for all
 <cfset set(dataSourcePassword="yourDataSourcePassword")> 
 }}}
 
-===Environment Settings===
+===Debugging and Error Settings===
 
 Not only are the environments useful for separating your production settings from your "under development" settings, but they are also opportunities for you to override settings that will only take effect in a specified environment.
 
@@ -93,6 +93,7 @@ For example, let's say that we want to disable debugging information in our `dev
 || `sendEmailOnError` || `boolean` || Enabled in `production` environments that have a TLD like `.com`, `.org`, etc. || When set to `true`, Wheels will send an email to administrators whenever Wheels throws an error. ||
 || `errorEmailAddress` || `string` || `[empty string]` || Comma-delimited list of email address to send error notifications to. Only applies if `sendEmailOnError` is set to `true`. ||
 || `errorEmailSubject` || `string` || `Error` || Subject of email that gets sent to administrators on errors. Only applies if `sendEmailOnError` is set to `true`. ||
+|| `excludeFromErrorEmail` || `string` || `[empty string]` || List of variables to exclude from the scope dumps in error emails. Use this to keep sensitive information from being sent in plain text over email. ||
 
 For more information, refer to the chapter about [SwitchingEnvironments Switching Environments].
 
