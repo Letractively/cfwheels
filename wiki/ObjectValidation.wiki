@@ -1,5 +1,5 @@
 #summary Wheels utilizes validation setup within the model to enforce appropriate data constraints and persistence. Validation may be performed for saves, creates, and updates.
-#labels chapter,1.0,published_prod
+#labels chapter,1.1,draft
 
 ==Basic Setup==
 
@@ -59,17 +59,17 @@ Now Wheels will only check for the maximum length on `firstName` if its value is
 
 Wheels provides quite a few useful model validation functions. These functions remove much of the tedious drudgery that you're probably used to when writing data validation.
 
- * [validatesConfirmationOf validatesConfirmationOf()]
- * [validatesExclusionOf validatesExclusionOf()]
- * [validatesFormatOf validatesFormatOf()]
- * [validatesInclusionOf validatesInclusionOf()]
- * [validatesLengthOf validatesLengthOf()]
- * [validatesNumericalityOf validatesNumericalityOf()]
- * [validatesPresenceOf validatesPresenceOf()]
- * [validatesUniquenessOf validatesUniquenessOf()]
- * [validate validate()]
- * [validateOnCreate validateOnCreate()]
- * [validateOnUpdate validateOnUpdate()]
+ * `validatesConfirmationOf()`
+ * `validatesExclusionOf()`
+ * `validatesFormatOf()`
+ * `validatesInclusionOf()`
+ * `validatesLengthOf()`
+ * `validatesNumericalityOf()`
+ * `validatesPresenceOf()`
+ * `validatesUniquenessOf()`
+ * `validate()`
+ * `validateOnCreate()`
+ * `validateOnUpdate()`
 
 ===Use `when`, `if`, or `unless` to Limit the Scope of Validation===
 
@@ -103,13 +103,13 @@ As an example, let's say that the model should only verify a CAPTCHA if the user
 
 ===Custom Validations===
 
-At the end of the listing above are 3 custom validation functions: [validate validate()], [validateOnCreate validateOnCreate()], and [validateOnUpdate validateOnUpdate()]. These functions allow you to create your own validation rules that aren't covered by Wheels's out-of-the-box functions.
+At the end of the listing above are 3 custom validation functions: `validate()`, `validateOnCreate()`, and `validateOnUpdate()`. These functions allow you to create your own validation rules that aren't covered by Wheels's out-of-the-box functions.
 
 There is only one difference between how the different functions work:
 
- * [validate validate()] runs on the save event, which happens on both create and update.
- * [validateOnCreate validateOnCreate()] runs on create.
- * [validateOnUpdate validateOnUpdate()] runs on update.
+ * `validate()` runs on the save event, which happens on both create and update.
+ * `validateOnCreate()` runs on create.
+ * `validateOnUpdate()` runs on update.
 
 To use a custom validation, we pass one of these functions a method or set of methods to run:
 
@@ -117,7 +117,7 @@ To use a custom validation, we pass one of these functions a method or set of me
 <cfset validate(method="validateEmailFormat")>
 }}}
 
-We then should create a method called `validateEmailFormat`, which in this case would verify that the value set for `this.email` is in the proper format. If not, then the method sets an error message for that field using the [addError addError()] function.
+We then should create a method called `validateEmailFormat`, which in this case would verify that the value set for `this.email` is in the proper format. If not, then the method sets an error message for that field using the `addError()` function.
 
 {{{
 <cffunction name="validateEmailFormat" access="private">
@@ -133,7 +133,7 @@ This is a simple rule, but you can surmise that this functionality can be used t
 
 ===Adding Errors to the Model Object as a Whole===
 
-We've mainly focused on adding error messages at a property level, which admittedly is what you'll be doing 80% of the time. But we can also add messages at the object level with the [addErrorToBase addErrorToBase()] function.
+We've mainly focused on adding error messages at a property level, which admittedly is what you'll be doing 80% of the time. But we can also add messages at the object level with the `addErrorToBase()` function.
 
 As an example, here's a custom validation method that doesn't allow the user to sign up for an account between the hours of 3:00 and 4:00 am in the server's time zone:
 
@@ -176,9 +176,9 @@ The controller continues with the simplicity of validation setup, and at the mos
 
 The first line of the action creates a `newUser` based on the `user` model and the form inputs (via the `params` struct).
 
-Now, to persist the object to the database, the model's [save save()] call can be placed within a `<cfif>` test. If the save succeeds, the [save save()] method will return `true`, and the contents of the `<cfif>` will be executed. But if any of the validations set up in the model fail, the [save save()] method returns `false`, and the `<cfelse>` will execute.
+Now, to persist the object to the database, the model's `save()` call can be placed within a `<cfif>` test. If the save succeeds, the `save()` method will return `true`, and the contents of the `<cfif>` will be executed. But if any of the validations set up in the model fail, the `save()` method returns `false`, and the `<cfelse>` will execute.
 
-The important step here is to recognize that the `<cfelse>` renders the original form input page using the [renderPage renderPage()] function. When this happens, the view will use the `newUser` object defined in our `save()` method. If a [redirectTo redirectTo()] were used instead, the validation information loaded in our `save()` method would be lost.
+The important step here is to recognize that the `<cfelse>` renders the original form input page using the `renderPage()` function. When this happens, the view will use the `newUser` object defined in our `save()` method. If a `redirectTo()` were used instead, the validation information loaded in our `save()` method would be lost.
 
 ==The View==
 
@@ -202,7 +202,7 @@ Wheels factors out much of the error display code that you'll ever need. As you 
 </cfoutput>
 }}}
 
-The biggest thing to note in this example is that a field called `passwordConfirmation` was provided so that the [validatesConfirmationOf validatesConfirmationOf()] validation in the model can be properly tested.
+The biggest thing to note in this example is that a field called `passwordConfirmation` was provided so that the `validatesConfirmationOf()` validation in the model can be properly tested.
 
 For more information on how this code behaves when there is an error, refer to the FormHelpersandShowingErrors chapter.
 
