@@ -60,13 +60,13 @@ Well that wasn't so bad, but there is an even easier approach. Enter Wheels plug
 One of the many benifets of Wheels its the [http://cfwheels.org/plugins Plugin Directory] currently there are two (2) plugins that will ease your AJAX development:
 
   * [http://cfwheels.org/plugins/listing/26 Remote Form Helpers Plugin]: Adds a set of CFMJS functions (CFML + Javascript) as well as a set of new form helpers that work exclusively with AJAX.
-  * [http://cfwheels.org/plugins/listing/6 Provides Plugin]: Enables Wheels to respond to yours requests with XML and JSON as well (currently HTML is the only one supported in an standalone version of Wheels). 
+  * [http://cfwheels.org/plugins/listing/6 Provides Plugin]: Enables Wheels to respond to your requests with XML and JSON as well (currently HTML is the only one supported in an standalone version of Wheels). 
 
 ===Remote Form Helpers plugin===
 
-By itself will add another type of respond to your application, `javascript` responses. Let's replicate the previous example ( (please refer to the plugin's documentation and follow the steps required to install it before you continue)
+By itself will add another type of respond to your application, `javascript` responses. Let's replicate the previous example (please refer to the plugin's documentation and follow the steps required to install it before you continue)
 
-First, let's visit that view file where the link is created, and let's replace that core with
+First, let's visit that view file where the link is created, and let's replace that `linkTo` code with `remoteLinkTo`:
 
 {{{
   <!--- View code --->
