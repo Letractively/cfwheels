@@ -82,7 +82,13 @@ By default, these validations will run without your needing to set up anything i
  * Date or time fields will be checked for the appropriate format.
  * Fields that have a maximum length will automatically trigger `validatesLengthOf()`.
 
-To disable this default behavior, change this setting in `config/settings.cfm`:
+Note these extra behaviors as well:
+
+ * Automatic validations will not run for [AutomaticTimeStamps Automatic Time Stamps].
+ * If you've already set a validation on a particular property in your model, the automatic validations will be overridden by your settings.
+ * If your database column provides a default value for a given field, Wheels will not enforce a `validatesPresenceOf()` rule on that property.
+
+To disable automatic validations in your Wheels application, change this setting in `config/settings.cfm`:
 
 {{{
 <cfset set(automaticValidations=false)>
