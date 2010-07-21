@@ -1,12 +1,11 @@
-#summary Developing web apps with Wheels is a breeze, but most of the web apps out there leverage asynchronous requests via AJAX, how is this possible with Wheels? Gladly we have several options:
+#summary Developing web apps with Wheels is a breeze, but most of the web apps out there leverage asynchronous requests via AJAX, how is this possible with Wheels? Gladly we have several options.
 #labels chapter,1.0,draft
 
-  * The "Do it yourself" where no plugins whatsoever will be used, a simple out of the box Wheels installation.
-  * The plugins approach will take in consideration two (2) plugins with one example of each.
+The "Do it yourself" where no plugins whatsoever will be used, a simple out of the box Wheels installation and the plugins approach.
 
-While there are several flavors of AJAX libraries out there, we will be using the [http://jquery.com/ jQuery framework] in this tutorial. Let's assume you are fairly familiar with jQuery, so that the following code examples makes the most sense possible.
+While there are several flavors of AJAX libraries out there, we will be using the [http://jquery.com/ jQuery framework] in this tutorial. Let's assume you are fairly familiar with jQuery and know the principles of setting it up.
 
-Let's create the simplest example of all, a link that will display an alert back to the user.
+For this tutorial let's create the simplest example of all, a link that will display an alert back to the user. Which we will cover it following both options discussed before.
 
 ==The "Do it yourself" option)==
 
@@ -19,7 +18,7 @@ To create the example discussed before, we will need to create a link to a contr
   #linkTo(text="Alert me!", action="ajaxHello", id="alert_button")#
 }}}
 
-That piece of code by itself will work just like you spect to, redirecting you to the `ajaxHello` action (inside a `Pages` controller). But, we don't want that, we need it to be an asynchronous request, so let's add this simple Javascript (inside it's corresponding `script` tags or in a separate `.js` file:
+That piece of code by itself will work just like you expect it to, it redirects you to the `ajaxHello` action (inside a `Pages` controller). But, we don't want that, we need it to be an asynchronous request, so let's add this simple Javascript (inside it's corresponding `script` tags or in a separate `.js` file:
 
 {{{
   // let's listen to the "click" event of the "alert_button" link and make an AJAX request
@@ -36,7 +35,7 @@ That piece of code by itself will work just like you spect to, redirecting you t
   });
 }}}
 
-With that we can now listen to the `click` event of that hyperlink created before and make an async request to the `Pages` controller, this won't work yet, we are still missing a key component, note how the request expects a `dataType` of JSON; Currently Wheels only supports HTML responses in its controller, but there is a way around this:
+With that code we are listening to the `click` event of the hyperlink created before and made an async request to the `Pages` controller, although, this won't work yet. We are still missing a key component, note how the request expects a `dataType` of JSON; Currently Wheels only supports HTML responses in its controller, but there is a way around this:
 
 {{{
   <!--- Controller code --->
@@ -47,25 +46,25 @@ With that we can now listen to the `click` event of that hyperlink created befor
       <cfset renderText(SerializeJSON("Hi there coder"))>
     </cfif>
     
-    <!--- Otherwise, let Wheels do its normal HTML respond (the `ajaxhello.cfm` view file) --->
+    <!--- Otherwise, let Wheels do its normal HTML response (the `ajaxhello.cfm` view file) --->
   </cffunction>
 }}}
 
-Assuming you already included jQuery in your application, and you followed the code examples before, you now have a AJAX powered web application built on Wheels. Hitting that `Alert me!` link, your `Pages` controller will respond back to you the message via AJAX.
+Assuming you already included jQuery in your application, and you followed the code examples before, you now have a AJAX powered web application built on Wheels. Hitting that `Alert me!` link your `Pages` controller will respond back to you the message via AJAX.
 
-Well that wasn't so bad, but there is an even easier approach. Enter Wheels plugins.
+Well that wasn't so bad, but there is an even easier way. Enter Wheels plugins.
 
 ==The plugins approach==
 
 One of the many benifets of Wheels its the [http://cfwheels.org/plugins Plugin Directory] currently there are two (2) plugins that will ease your AJAX development:
 
   * [http://cfwheels.org/plugins/listing/26 Remote Form Helpers Plugin]: Adds a set of CFMJS functions (CFML + Javascript) as well as a set of new form helpers that work exclusively with AJAX.
-  * [http://cfwheels.org/plugins/listing/6 Provides Plugin]: Enables Wheels to respond to your requests with XML and JSON as well (currently HTML is the only one supported in an standalone version of Wheels). 
+  * [http://cfwheels.org/plugins/listing/6 Provides Plugin]: Enables Wheels to respond to your requests with XML and JSON as well (currently HTML is the only one supported in an standalone version of Wheels).
 
 ===Remote Form Helpers plugin===
 
 By itself will add another type of respond to your application, `javascript` responses. Let's replicate the previous example (please refer to the plugin's documentation and follow the steps required to install it before you continue)
-
+	
 First, let's visit that view file where the link is created, and let's replace that `linkTo` code with `remoteLinkTo`:
 
 {{{
@@ -73,7 +72,7 @@ First, let's visit that view file where the link is created, and let's replace t
   #remoteLinkTo(text="Alert me!", action="ajaxHello")#
 }}}
 
-Notice the new function called `remoteLinkTo`, that is all you need in your view so go ahead and delete the whole `script` block, the new function will take care of creating the javascript for you. Let's review that `Pages` controller now:
+Notice the new function called `remoteLinkTo`, that is all you need in your view so go ahead and delete the whole `script` block, this new function will take care of creating the javascript for you. Now let's review that `Pages` controller:
 
 {{{
   <!--- Controller code --->
@@ -84,15 +83,15 @@ Notice the new function called `remoteLinkTo`, that is all you need in your view
       <cfset renderRemotePage()>
     </cfif>
     
-    <!--- Otherwise, let Wheels do its normal HTML respond (the `ajaxhello.cfm` view file) --->
+    <!--- Otherwise, let Wheels do its normal HTML response (the `ajaxhello.cfm` view file) --->
   </cffunction>
 }}}
 
-Wait, what? `ajaxhello.js.cfm`? Yes, the `Remote Form Helpers` plugin enables you to use a whole new set of view files, all files that have a `.js.cfm` suffix are considered `remote view files` and will be used with your `renderRemotePage` function to send it back to your initial request. Now let's create that `ajax.hello.js.cfm` file in your `/views/pages/` folder and add this code:
+Wait, what? `ajaxhello.js.cfm`? Yes, the `Remote Form Helpers` plugin enables you to use a whole new set of view files, all files that have a `.js.cfm` extension are considered `remote view files` and will be used with your `renderRemotePage` function to send it back to your initial request. Now let's create that `ajax.hello.js.cfm` file in your `/views/pages/` folder and add this code:
 
 {{{
   <!--- Remote View code --->
   alert("Hi there from the Remote Form Helpers plugin");
 }}}
 
-That's it, without a single line of Javascript we were able to setup an AJAX powered Wheels application. 
+That's it, without a single line of Javascript we were able to setup an AJAX powered Wheels application.
