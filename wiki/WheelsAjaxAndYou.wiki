@@ -1,0 +1,42 @@
+#summary Developing web apps with Wheels is a breeze, but most of the web apps out there leverage asynchronous requests via AJAX, how is this possible with Wheels? Gladly we have several options:
+#labels chapter,1.0,draft
+
+  * The "Do it yourself" where no plugins whatsoever will be used, a simple out of the box Wheels installation.
+  * The plugins approach will take in consideration two (2) plugins with one example of each.
+
+While there are several flavors of AJAX libraries out there, we will be using the [http://jquery.com/ jQuery framework] in this tutorial. Let's assume you are fairly familiar with jQuery, so that the following code examples makes the most sense possible.
+
+Let's create the simplest example of all, a link that will display an alert back to the user.
+
+==The "Do it yourself" option)==
+
+Creating AJAX powered web apps shouldn't be difficult nowadays, while using Wheels without any plugins can get you there, it requires a bit more work from you in order to make it work, luckily not that much work.
+
+To create the example discussed before, we will need to create a link to a controller's action like so:
+
+{{{
+  #linkTo(text="Alert me!", action="ajaxHello", id="alert_button")#
+}}}
+
+That piece of code by itself will work just like you spect to, redirecting you to the `ajaxHello` action. But, we don't want that, we need it to be an asynchronous request, so let's add this simple Javascript (inside it's corresponding `script` tags or in a separate `.js` file:
+
+{{{
+  // let's listen to the "click" event of the "alert_button" link and make an AJAX request
+  $('#alert_button').click(function() {
+    $.ajax({ 
+        type: 'POST', 
+        url: '/ajax-hello', // you could use here the Wheels URLFor helper
+        dataType: 'json', 
+        success: function(response) { 
+                alert(response); 
+        } 
+    });
+  });
+}}}
+
+==The plugins approach==
+
+One of the many benifets of Wheels its the [http://cfwheels.org/plugins Plugin Directory] currently there are two (2) plugins that will ease your AJAX development:
+
+  * [http://cfwheels.org/plugins/listing/6 Provides Plugin]: Enables Wheels to respond to yours requests with XML and JSON as well (currently HTML is the only one supported in an standalone version of Wheels). 
+  * [http://cfwheels.org/plugins/listing/26 Remote Form Helpers Plugin]: Adds a set of CFMJS functions (CFML + Javascript) as well as a set of new form helpers that work exclusively with AJAX.
