@@ -31,7 +31,7 @@ Your application code will end up in four of the folders, namely `controllers`, 
 
 Static media files should be placed in the `files`, `images`, `javascripts` and `stylesheets` folders.
 
-Place anything that need to be executed outside of the framework in the `miscellaneous` folder. The framework does not get involved when executing `.cfm` files in this folder (the empty `Application.cfc` takes care of that). Also, no URL rewriting will be performed in this folder so it's a good fit for placing CFCs that need to be accessed remotely via `<cfajaxproxy>` and Flash AMF binding for example.
+Place anything that need to be executed outside of the framework in the `miscellaneous` folder. The framework does not get involved when executing `.cfm` files in this folder. (The empty `Application.cfc` takes care of that.) Also, no URL rewriting will be performed in this folder, so it's a good fit for placing CFCs that need to be accessed remotely via `<cfajaxproxy>` and Flash AMF binding for example.
 
 Place Wheels plugins in the `plugins` folder.
 
