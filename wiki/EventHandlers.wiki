@@ -29,6 +29,8 @@ If you need to access the error information here (for logging purposes, for exam
 
 The `onmissingtemplate.cfm` file works in a similar way as the error file above, but it gets called when a `controller` or `action` in your application could not be found. When this page is shown a HTTP status code of 404 (Not Found) will also be sent.
 
+Note: If you want to make sure that all browsers show your custom 404 page you need to make it larger than 512 bytes in size. Google Chrome, for example, will display a friendly help page of its own when the 404 page is less than 512 bytes.
+
 ==Adding Functions==
 
 Sometimes it's useful to add functions right in the `Application.cfc` file to make them available to all templates. To achieve the same thing in Wheels you can place your functions in `events/functions.cfm`.
