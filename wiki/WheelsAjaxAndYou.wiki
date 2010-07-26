@@ -59,7 +59,7 @@ Well that wasn't so bad, but there is an even easier way. Enter Wheels plugins.
 One of the many benifets of Wheels its the [http://cfwheels.org/plugins Plugin Directory] currently there are two (2) plugins that will ease your AJAX development:
 
   * [http://cfwheels.org/plugins/listing/26 Remote Form Helpers Plugin]: Adds a set of CFMJS functions (CFML + Javascript) as well as a set of new form helpers that work exclusively with AJAX.
-  * [http://cfwheels.org/plugins/listing/6 Provides Plugin]: Enables Wheels to respond to your requests with XML and JSON as well (currently HTML is the only one supported in an standalone version of Wheels).
+  * [http://cfwheels.org/plugins/listing/6 Provides Plugin] (ColdFusion 9 only): Enables Wheels to respond to your requests with XML and JSON as well (currently HTML is the only one supported in an standalone version of Wheels).
 
 ===Remote Form Helpers plugin===
 
@@ -95,3 +95,28 @@ Wait, what? `ajaxhello.js.cfm`? Yes, the `Remote Form Helpers` plugin enables yo
 }}}
 
 That's it, without a single line of Javascript we were able to setup an AJAX powered Wheels application.
+
+===Provides plugin===
+
+Provides will allow Wheels to extend the format of its responses to the browser, making it ideal for the first example we discussed at the start of this chapter (please refer to the plugin's documentation and follow the steps required to install it before you continue) Now, let's revisit that code:
+
+Everything in our view file will remain the same except for a tiny addition in the `linkTo` function:
+
+{{{
+  <!--- View code --->
+  #linkTo(text="Alert me!", action="ajaxHello", id="alert_button", params="format=json")#
+}}}
+
+Notice that `format=json`, that tells `Provides` the type of response that your application needs. Now, let's revisit that Controller code and we make it more robust and extendible:
+
+{{{
+  <!--- Controller code --->
+  <cffunction name="ajaxHello">
+    
+    <!--- Provides will determinate the format you want and convert the data appropriately --->
+    <cfset renderWith("Hello from Provides plugin") />
+    
+  </cffunction>
+}}}
+
+That is it! Hopefully now you will have a cleaner picture on how to create AJAX based web application, remember that any of the three (3) example works, you just have several ways to accomplish the same goal, choose the one that fits your needs.
