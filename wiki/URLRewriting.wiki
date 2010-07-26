@@ -50,6 +50,17 @@ Unfortunately, there is no built-in URL rewriting mechanism in IIS 6, so getting
  # Type in anything you want as the _Filter Name_ and point the _Executable_ to the `IsapiRewrite4.dll` file.
  # Uncomment the rewrite rules in the `IsapiRewrite4.ini` file.
 
+*NOTE:* Make sure you have "Verify that file exists" disabled for your site.
+
+For Adobe Coldfusion:
+
+  # Right click your website and select "Properties"
+  # Click "Home Directory" tab
+  # Click the "Configuration" button 
+  # Under the "Wildcard application mapping" section, double click path for the jrun_iis6_wildcard.dll
+  # Uncheck "Verify that file exists"
+  # Click "Ok" until all property screens are closed
+
 ==Deleting Unnecessary Files==
 
 The sole purpose of the `.htaccess` (for Apache), `web.config` (for IIS 7), and `IsapiRewrite4.ini` (for IIS 6) files is to make it possible to use URL rewriting.
