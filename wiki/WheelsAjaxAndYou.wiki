@@ -8,7 +8,7 @@ Wheels was designed to be as lightweight as possible, so this keeps your options
 
 While there are several flavors of !JavaScript libraries out there with AJAX support, we will be using the [http://jquery.com/ jQuery framework] in this tutorial. Let's assume that you are fairly familiar with the basics of jQuery and know how to set it up.
 
-For this tutorial, let's create the simplest example of all: a link that will display an alert back to the user.
+For this tutorial, let's create the simplest example of all: a link that will render a message back to the user without refreshing the page.
 
 ==Approach #1: "Do It Yourself"==
 
@@ -33,7 +33,8 @@ $('#alert-button').click(function() {
         url: '/say/hello', // you could also use the Wheels URLFor() helper here
         dataType: 'json', 
         success: function(response) { 
-            alert(response); 
+	    $("h1").html(response.message);
+	    $("p").html(response.time);
         } 
     });
     return false; // keeps the normal request from firing
@@ -47,12 +48,16 @@ The last thing that we need to do is implement the `say/hello` action. Note that
 {{{
 <!--- Controller code --->
 <cffunction name="hello">
-    
+    <!--- Prepare the message for the user --->
+    <cfset greeting = {}>
+    <cfset greeting["message"] = "Hi there">
+    <cfset greeting["time"] = Now()>
+		
     <!--- If your request is an AJAX request, respond with the CFML SerializeJSON function --->
     <cfif isAjax()> 
-        <cfset renderText(SerializeJSON("Hi there, coder!"))>
+        <cfset renderText(SerializeJSON(greeting))>
     </cfif>
-    
+		
     <!--- Otherwise, let Wheels do its normal HTML response (the view file at `views/say/hello.cfm`) --->
 </cffunction>
 }}}
@@ -86,7 +91,7 @@ Now let's review that `say` controller:
 {{{
 <!--- Controller code --->
 <cffunction name="hello">
-    
+  
     <!--- If your request is an AJAX request, respond with the `views/say/hello.js.cfm remote view` --->
     <cfif isAjax()> 
         <cfset renderRemotePage()>
@@ -102,7 +107,10 @@ Now let's create that `hello.js.cfm` file in your `/views/say/` folder and add t
 
 {{{
 <!--- Remote View code --->
-alert("Hi there from the Remote Form Helpers plugin");
+<cfoutput>
+    #pageInsertHTML(selector="h1", content=greeting.message)#
+    #pageInsertHTML(selector="p", content=greeting.time)#
+</cfoutput>
 }}}
 
 That's it. Without a single line of !JavaScript, we were able to setup an AJAX-powered Wheels application.
@@ -125,10 +133,13 @@ Next, let's revisit our controller code and we make it more robust and extensibl
 {{{
 <!--- Controller code --->
 <cffunction name="hello">
-    
+    <!--- Prepare the message for the user --->
+    <cfset greeting = {}>
+    <cfset greeting["message"] = "Hi there">
+    <cfset greeting["time"] = Now()> 
+  
     <!--- Provides will determinate the format you want and convert the data appropriately --->
-    <cfset renderWith("Hello from Provides plugin")>
-    
+    <cfset renderWith(greeting)>
 </cffunction>
 }}}
 
