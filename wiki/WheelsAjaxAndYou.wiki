@@ -42,7 +42,7 @@ $('#alert-button').click(function() {
 
 With that code, we are listening to the `click` event of the hyperlink, which will make an asynchronous request to the `ajaxHello` action in the `say` controller.
 
-The last thing that we need to do is implement the `say/ajaxHello` action. Note that the request expects a `dataType` of JSON. By default, Wheels controllers only generates HTML responses, but there is an easy way to generate JSON instead using Wheels's `renderText()` function along with CF's `SerializeJSON()` function:
+The last thing that we need to do is implement the `say/hello` action. Note that the request expects a `dataType` of JSON. By default, Wheels controllers only generates HTML responses, but there is an easy way to generate JSON instead using Wheels's `renderText()` function along with CF's `SerializeJSON()` function:
 
 {{{
 <!--- Controller code --->
@@ -57,13 +57,13 @@ The last thing that we need to do is implement the `say/ajaxHello` action. Note 
 </cffunction>
 }}}
 
-Assuming you already included jQuery in your application, and you followed the code examples above, you now have a simple AJAX-powered web application built on Wheels. Hitting that `Alert me!` link your `Pages` controller will respond back to you the message via AJAX.
+Assuming you already included jQuery in your application, and you followed the code examples above, you now have a simple AJAX-powered web application built on Wheels. Hitting that `Alert me!` link your `Say` controller will respond back to you the message via AJAX.
 
 Well that wasn't so bad, but there is an easier way. Enter Wheels plugins.
 
 ==Approach #2: Plugins==
 
-One of the many benefits of Wheels its the [http://cfwheels.org/plugins Plugin Directory]. Currently, there are 2 plugins that will ease your AJAX development:
+One of the many benefits of Wheels it's the [http://cfwheels.org/plugins Plugin Directory]. Currently, there are 2 plugins that will ease your AJAX development:
 
   * [http://cfwheels.org/plugins/listing/26 Remote Form Helpers] adds a set of CFMJS functions (CFML + !JavaScript) as well as a set of new form helpers that work exclusively with AJAX.
   * [http://cfwheels.org/plugins/listing/6 Provides] (!ColdFusion 9 only) enables Wheels actions to respond to your requests with XML, JSON, and other formats like PDF, Excel, CSV, and other custom types.
@@ -98,7 +98,7 @@ Now let's review that `say` controller:
 
 Wait, what? `hello.js.cfm`? Yes, the Remote Form Helpers plugin enables you to use a whole new set of view files. All files that have a `.js.cfm` extension are considered "remote view files" and will be used with your `renderRemotePage()` function to send it back to your initial request.
 
-Now let's create that `hello.js.cfm` file in your `/views/pages/` folder and add this code:
+Now let's create that `hello.js.cfm` file in your `/views/say/` folder and add this code:
 
 {{{
 <!--- Remote View code --->
