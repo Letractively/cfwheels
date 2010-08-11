@@ -73,7 +73,7 @@ Take a minute to read that last statement again. OK, let's move on to the action
 
 === Saving the Object and Its Nested Properties ===
 
-You may be surprised to find out that our form action does not change at all from what you're used to.
+You may be surprised to find out that our standard `create` action does not change at all from what you're used to.
 
 {{{
 <!--- In controllers/Users.cfc --->
@@ -90,12 +90,12 @@ You may be surprised to find out that our form action does not change at all fro
 
 When calling `user.save()` in the example above, Wheels takes care of the following:
 
- * Save the data passed into the `user` model.
- * Set a property on `user` called `profile` with the profile data stored in an object.
- * Save the data passed into that `profile` model.
- * All of this is wrapped in a transaction automatically in case validations on any of the objects fail or something wrong happens with the database.
+ * Saves the data passed into the `user` model.
+ * Sets a property on `user` called `profile` with the profile data stored in an object.
+ * Saves the data passed into that `profile` model.
+ * Wraps all calls in a transaction in case validations on any of the objects fail or something wrong happens with the database.
 
-For the edit scenario, this is what our `update` action would look like:
+For the edit scenario, this is what our `update` action would look like (which is very similar to `create`:
 
 {{{
 <!--- In controllers/Users.cfc --->
@@ -128,53 +128,103 @@ The `autoSave` and `allowDelete` arguments are both optional and default to `fal
 
 == One-to-Many Relationships with Nested Properties ==
 
-Nested properties work with one-to-many associations as well, except now the nested properties will contain many objects instead of a single one.
+Nested properties work with one-to-many associations as well, except now the nested properties will contain an array of objects instead of a single one.
 
-Consider a `post` that has many `comments`:
+In the `user` model, let's add an association called `addresses` and also enable it as nested properties.
 
 {{{
-<!--- models/Post.cfc --->
+<!--- models/User.cfc --->
 <cfcomponent extends="Model">
 
     <cffunction name="init">
-        <cfset hasMany("comments")>
-        <cfset nestedProperties(associations="comments", autoSave=true, allowDelete=true)>
+        <cfset hasOne("profile")>
+        <cfset hasMany("addresses")>
+        <cfset nestedProperties(associations="profile,addresses", autoSave=true, allowDelete=true)>
     </cffunction>
 
 </cfcomponent>
 }}}
 
-=== Auto-saving a Collection of Child Objects ===
+In this example, we have added the `addresses` association to the call to `nestedProperties()`, thus enabling `autoSave` and `allowDelete`.
 
-This time, Wheels will accept an array of objects for the `comments` property if you want to update them through their parent.
+=== Building the Form for the One-to-Many Association ===
+
+This time, we'll add a section for addresses on our form with a little !JavaScript that allows for multiple addresses to be entered. (To keep the example simpler, let's omit the `profile` association from the earlier example.)
 
 {{{
-<cfset post = model("post").findByKey(38)>
-<cfset
-    post.comments = [
-        model("comment").new(name="Tony Petruzzi", comment="Radtacular!",
-        model("comment").new(name="John Q. Public", comment="I disagree."
-        model("comment").new(name="Tony Petruzzi", comment="Agree to disagree."
-    ]
->
-<cfset post.save()>
+<!--- jQuery code that would probably be included by `javaScriptIncludeTag()` --->
+<script type="text/javascript">
+(function($){
+    $(document).ready(function(){
+        // Address container
+        var address = $("#address");
 
-<!--- Outputs "3" --->
-<cfoutput>
-    #ArrayLen(post.comments)#
-</cfoutput>
+        // Add "+ Add Address" link after addresses div
+        address.after('<a id="add-address-link">+ Add Address</a>');
+        
+        // Copy a new blank address on click of "+ Add Address" link
+        $("#add-address-link").click(function(){
+            var firstAddressCopy = $("#addresses .address").first().clone();
+            address.append(firstAddressCopy);
+            // TODO: Finish this script when I'm less tired
+        });
+    });
+})(jQuery);
+</script>
+
+#startFormTag(action="create")#
+
+    <!--- Data for `user` model --->
+    <fieldset>
+        <legend>User</legend>
+
+        #textField(label="First Name", objectName="user", property="firstName")#
+        #textField(label="Last Name", objectName="user", property="lastName")#
+    </fieldset>
+
+    <!--- Data for `address` models --->
+    <fieldset>
+        <legend>Addresses</legend>
+
+        <div id="addresses">
+            <div class="address">
+                #textField(label="Street", objectName="user", association="addresses", position=1, property="address1")#
+                #textField(label="City", objectName="user", association="addresses", position=1, property="city")#
+                #textField(label="State", objectName="user", association="addresses", position=1, property="state")#
+                #textField(label="Zip", objectName="user", association="addresses", position=1, property="zip")#
+            </div>
+        </div>
+    </fieldset>
+
+    <div>#submitTag(value="Create")#</div>
+
+#endFormTag()#
+}}}
+
+Because there can be multiple addresses on the form, the form helpers accept an additional argument for `position`. Without having a unique position identifier for each `address`, Wheels would have no way of understanding which `state` field matches with which particular `address`.
+
+=== Auto-saving a Collection of Child Objects ===
+
+Even with a complex form with a number of child objects, Wheels will save all of the data through its parent's `save()`, `update()`, or `create()` methods.
+
+Here, we save the `user` model, which will take care of all of the child `addresses` as well.
+
+{{{
+<!--- In controllers/Users.cfc --->
+<cffunction name="create">
+    <cfset user = model("user").new(params.user)>
+    <cfif user.save()>
+        <cfset flashInsert(success="The user was created successfully.")>
+        <cfset redirectTo(controller=params.controller)>
+    <cfelse>
+        <cfset renderPage(action="new")>
+    </cfif>
+</cffunction>
 }}}
 
 === Deleting Child Objects ===
 
-Deleting children objects works similarly to the one-to-one example. To remove a child object, set a property called `_delete` to `true`.
-
-{{{
-<!--- Delete the comment in positions 2 and 3 --->
-<cfset post.comments[2]._delete = true>
-<cfset post.comments[3]._delete = true>
-<cfset post.save()>
-}}}
+TODO: Add a description of using `hasManyCheckBox()`.
 
 == Transactions are Included by Default ==
 
@@ -184,7 +234,7 @@ See the chapter on [Transactions] for more details.
 
 == Many-to-Many Relationships with Nested Properties ==
 
-Consider the many-to-many associations related to `customer`s, `publication`s, and `subscription`s from the [Associations] chapter.
+Consider the many-to-many associations related to `customer`s, `publication`s, and `subscription`s, straight from the [Associations] chapter.
 
 {{{
 <!--- models/Customer.cfc --->
