@@ -3,7 +3,7 @@
 
 When you're starting out as a Wheels developer, you are probably amazed at the simplicity of a model's CRUD methods. But then it all gets quite a bit more complex when you need to update records in multiple database tables in a single transaction.
 
-_Nested properties_ in Wheels makes this scenario dead simple. With a configuration using `nestedProperties()` in your model, you can save changes to that model and associated models in a single call to `save()`, `create()`, and `update()`.
+_Nested properties_ in Wheels makes this scenario dead simple. With a configuration using the `nestedProperties()` function in your model's `init()` method, you can save changes to that model and its associated models in a single call with `save()`, `create()`, or `update()`.
 
 == One-to-One Relationships with Nested Properties ==
 
@@ -14,45 +14,105 @@ Consider a `user` model that has one `profile`:
 <cfcomponent extends="Model">
 
     <cffunction name="init">
-        
         <cfset hasOne("profile")>
         <cfset nestedProperties(associations="profile", autoSave=true, allowDelete=true)>
-
     </cffunction>
 
 </cfcomponent>
 }}}
 
-== Auto-saving a Child Object ==
+By adding the call to `nestedProperties()` in the model, you can create both the `user` object and the `profile` object in a single call to `create()`. Setting `autoSave` to `true` allows for this functionality to happen.
 
-By adding the call to `nestedProperties()` in the above example, you can create both the `user` object and the `profile` object in one call to `create()`. Setting `autoSave` to `true` allows this functionality to happen.
+=== Setting up Data for the `user` Form ===
+
+First, in our controller, let's set the data needed for our form:
 
 {{{
-<cfset params.user = model("user").new(firstName="Russ", lastName="Johnson")>
-<cfset params.user.profile = model("profile").new(twitterHandle="russ_johnson")>
-<cfset user = model("user").create(params.user)>
-
-<cfoutput>
-    #user.profile.id# <!--- Outputs "2" --->
-    #user.profile.twitterHandle# <!--- Outputs "russ_johnson" --->
-</cfoutput>
+<!--- In controllers/User.cfc --->
+<cffunction name="new">
+    <cfset user = model("user").new()>
+</cffunction>
 }}}
 
-You can also save changes to the child `profile` through the parent `user` object:
+All that we need to do here is call `new()` on the `user` model.
+
+Note that if this were an `edit` action calling an existing object, our call would need to look similar to this:
 
 {{{
-<cfset user = model("user").findByKey(key=45, include="profile")>
-<cfset user.profile.twitterHandle = "CFonWheels">
-<cfset user.save()>
+<!--- In controllers/User.cfc --->
+<cffunction name="edit">
+    <cfset user = model("user").findByKey(key=params.key, include="profile")>
+</cffunction>
+}}}
 
-<cfoutput>
-    #user.profile.twitterHandle# <!--- Outputs "CFonWheels" --->
-</cfoutput>
+Because the form will also expect data set in the `profile` property, you must include that association in the finder call.
+
+=== Building a Form for Posting Nested Properties ===
+
+For this example, our form at `views/users/new.cfm` will end up looking like this:
+
+{{{
+#startFormTag(action="create")#
+
+    <!--- Data for `user` model --->
+    #textField(label="First Name", objectName="user", property="firstName")#
+    #textField(label="Last Name", objectName="user", property="lastName")#
+
+    <!--- Data for associated `profile` model --->
+    #textField(label="Twitter Handle", objectName="user", association="profile", property="twitterHandle")#
+    #textArea(label="Biography", objectName="user", association="profile", property="bio")#
+
+    <div>#submitTag(value="Create")#</div>
+
+#endFormTag()#
+}}}
+
+Of note are the calls to form helpers for the `profile` model, which contain an extra argument for `association`. This argument is available for all object-based form helpers. By using the `association` argument, Wheels will name the form field in such a way that the properties for the `profile` will be nested within an object in the `user` model.
+
+Take a minute to read that last statement again. OK, let's move on to the action that handles the form submission.
+
+=== Saving the Object and Its Nested Properties ===
+
+You may be surprised to find out that our form action does not change at all from what you're used to.
+
+{{{
+<!--- In controllers/Users.cfc --->
+<cffunction name="create">
+    <cfset user = model("user").new(params.user)>
+    <cfif user.save()>
+        <cfset flashInsert(success="The user was created successfully.")>
+        <cfset redirectTo(controller=params.controller)>
+    <cfelse>
+        <cfset renderPage(action="new")>
+    </cfif>
+</cffunction>
+}}}
+
+When calling `user.save()` in the example above, Wheels takes care of the following:
+
+ * Save the data passed into the `user` model.
+ * Set a property on `user` called `profile` with the profile data stored in an object.
+ * Save the data passed into that `profile` model.
+ * All of this is wrapped in a transaction automatically in case validations on any of the objects fail or something wrong happens with the database.
+
+For the edit scenario, this is what our `update` action would look like:
+
+{{{
+<!--- In controllers/Users.cfc --->
+<cffunction name="update">
+    <cfset user = model("user").findByKey(params.user.id)>
+    <cfif user.update(params.user)>
+        <cfset flashInsert(success="The user was updated successfully.")>
+        <cfset redirectTo(action="edit")>
+    <cfelse>
+        <cfset renderPage(action="edit")>
+    </cfif>
+</cffunction>
 }}}
 
 == Deleting a Child Object ==
 
-By passing `allowDelete=true` to the `nestedProperties()` call above, you can also delete the `user`'s related `profile` by setting a property called `_delete`:
+By passing `allowDelete=true` to the `nestedProperties()` call in the model, you can also delete the `user`'s related `profile` by setting a property called `_delete` on it:
 
 {{{
 <cfset user.profile._delete = true>
