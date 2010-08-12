@@ -102,6 +102,8 @@ Wheels makes this easy for you. When setting up your association, simply add the
 <cfset hasOne(name="profile", dependent="nullify")>
 }}}
 
+You can create dependencies on hasOne() and hasMany() associations, but not belongsTo().
+
 ==Database Table Setup==
 
 Like everything else in Wheels, we strongly recommend a default naming convention for foreign key columns in your database tables.
