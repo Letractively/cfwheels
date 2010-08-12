@@ -85,6 +85,23 @@ By the way, as you can see above, the association goes both ways, i.e. a `user` 
 
 However, this is not a definite requirement. Wheels associations are completely independent of one another, so it's perfectly OK to setup a [hasMany hasMany()] association without specifying the related [belongsTo belongsTo()] association.
 
+==Dependencies==
+
+A dependency is when an associated model relies on the existence of its parent. In example above, a profile is dependent on a user. When you delete the user, you would usually want to delete the profile as well.
+
+Wheels makes this easy for you. When setting up your association, simply add the argument 'dependent' with one of the following values, and Wheels will automatically deal with the dependency.
+
+{{{
+<!--- instantiates the profile model and calls its delete method --->
+<cfset hasOne(name="profile", dependent="delete")>
+
+<!--- quickly deletes the profile without instantiating it --->
+<cfset hasOne(name="profile", dependent="deleteAll")> 
+
+<!--- sets the userId of the profile to NULL --->
+<cfset hasOne(name="profile", dependent="nullify")>
+}}}
+
 ==Database Table Setup==
 
 Like everything else in Wheels, we strongly recommend a default naming convention for foreign key columns in your database tables.
