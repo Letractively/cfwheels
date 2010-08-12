@@ -17,13 +17,20 @@ In this example, we'll wire up some simple !JavaScript code that calls a Wheels 
 First, let's create a link to a controller's action in a view file, like so:
 
 {{{
-  <!--- View code --->
-  #linkTo(text="Alert me!", controller="say", action="hello", id="alert-button")#
+<cfoutput>
+
+<!--- View code --->
+<h1></h1>
+<p></p>
+
+#linkTo(text="Alert me!", controller="say", action="hello", id="alert-button")#
+
+</cfoutput>
 }}}
 
 That piece of code by itself will work just like you expect it to. When you click the link, you will load the `hello` action inside the `say` controller.
 
-But let's make it into an asynchronous request. Add this simple !JavaScript (either on the page inside `script` tags or in a separate `.js` file included via `javaScriptIncludeTag()`):
+But let's make it into an asynchronous request. Add this !JavaScript (either on the page inside `script` tags or in a separate `.js` file included via `javaScriptIncludeTag()`):
 
 {{{
 // Listen to the "click" event of the "alert-button" link and make an AJAX request
@@ -41,9 +48,11 @@ $('#alert-button').click(function() {
 });
 }}}
 
-With that code, we are listening to the `click` event of the hyperlink, which will make an asynchronous request to the `ajaxHello` action in the `say` controller.
+With that code, we are listening to the `click` event of the hyperlink, which will make an asynchronous request to the `hello` action in the `say` controller.
 
-The last thing that we need to do is implement the `say/hello` action. Note that the request expects a `dataType` of JSON. By default, Wheels controllers only generates HTML responses, but there is an easy way to generate JSON instead using Wheels's `renderText()` function along with CF's `SerializeJSON()` function:
+Note that the success block inserts keys from the `response` into the empty `h1` and `p` blocks in the calling view. (You may have been wondering about those when you saw the first example. Mystery solved)
+
+The last thing that we need to do is implement the `say/hello` action. Note that the request expects a `dataType` of `JSON`. By default, Wheels controllers only generate HTML responses, but there is an easy way to generate JSON instead using Wheels's `renderText()` function along with CF's `SerializeJSON()` function:
 
 {{{
 <!--- Controller code --->
@@ -62,13 +71,15 @@ The last thing that we need to do is implement the `say/hello` action. Note that
 </cffunction>
 }}}
 
-Assuming you already included jQuery in your application, and you followed the code examples above, you now have a simple AJAX-powered web application built on Wheels. Hitting that `Alert me!` link your `Say` controller will respond back to you the message via AJAX.
+Notice the lines where we're setting `greeting["message"]` and `greeting["time"]`. Due to the case-insensitive nature of !ColdFusion, we recommend setting variables to be consumed by !JavaScript using bracket notation like that. If you do not use that notation (i.e., `greetings.message` and `greetings.time`), your !JavaScript will need to reference those keys from the JSON as `MESSAGE` and `TIME` (all caps). Unless you like turning caps lock on and off, you can see how that would get annoying after some time.
 
-Well that wasn't so bad, but there is an easier way. Enter Wheels plugins.
+Assuming you already included jQuery in your application and you followed the code examples above, you now have a simple AJAX-powered web application built on Wheels. After clicking that `Alert me!` link, your `say` controller will respond back to you the serialized message via AJAX.
+
+Well, that wasn't so bad, but there is an easier way. Enter Wheels plugins.
 
 ==Approach #2: Plugins==
 
-One of the many benefits of Wheels it's the [http://cfwheels.org/plugins Plugin Directory]. Currently, there are 2 plugins that will ease your AJAX development:
+One of the many benefits of Wheels is the [http://cfwheels.org/plugins Plugin Directory]. Currently, there are 2 plugins that will ease your AJAX development:
 
   * [http://cfwheels.org/plugins/listing/26 Remote Form Helpers] adds a set of CFMJS functions (CFML + !JavaScript) as well as a set of new form helpers that work exclusively with AJAX.
   * [http://cfwheels.org/plugins/listing/6 Provides] (!ColdFusion 9 only) enables Wheels actions to respond to your requests with XML, JSON, and other formats like PDF, Excel, CSV, and other custom types.
@@ -77,14 +88,21 @@ One of the many benefits of Wheels it's the [http://cfwheels.org/plugins Plugin 
 
 By itself, the Remote Form Helpers plugin will add another type of response to your application: the `javascript` response. Let's replicate the previous example using Remote Form Helpers. (Refer to the [http://cfwheels.org/plugins/listing/26 plugin's documentation] and our chapter on [UsingandCreatingPlugins Using and Creating Plugins] for more information.)
 	
-First, let's replace the `linkTo()` call from the first example with a call to a function included by the plugin called `remoteLinkTo()`:
+First, let's replace the `linkTo()` call from the first example with a call to a function included by the plugin, called `remoteLinkTo()`:
 
 {{{
+<cfoutput>
+
 <!--- View code --->
+<h1></h1>
+<p></p>
+
 #remoteLinkTo(text="Alert me!", controller="say", action="hello")#
+
+</cfoutput>
 }}}
 
-`remoteLinkTo` is all you need in your view now, so go ahead and delete the whole `script` block from the first example. This new function will take care of creating the !JavaScript for you.
+`remoteLinkTo` is all you need in your view now, so go ahead and remove the whole `script` block from the first example. This new function will take care of creating the !JavaScript for you.
 
 Now let's review that `say` controller:
 
@@ -103,13 +121,15 @@ Now let's review that `say` controller:
 
 Wait, what? `hello.js.cfm`? Yes, the Remote Form Helpers plugin enables you to use a whole new set of view files. All files that have a `.js.cfm` extension are considered "remote view files" and will be used with your `renderRemotePage()` function to send it back to your initial request.
 
-Now let's create that `hello.js.cfm` file in your `/views/say/` folder and add this code:
+Now let's create the file at `views/say/hello.js.cfm` and add this code:
 
 {{{
 <!--- Remote View code --->
 <cfoutput>
-    #pageInsertHTML(selector="h1", content=greeting.message)#
-    #pageInsertHTML(selector="p", content=greeting.time)#
+
+#pageInsertHTML(selector="h1", content=greeting.message)#
+#pageInsertHTML(selector="p", content=greeting.time)#
+
 </cfoutput>
 }}}
 
@@ -122,8 +142,15 @@ Provides will allow Wheels to extend the format of a controller's responses to t
 Now let's revisit that code. Everything in our view file will remain the same except for a tiny addition in the `linkTo` function:
 
 {{{
+<cfoutput>
+
 <!--- View code --->
+<h1></h1>
+<p></p>
+
 #linkTo(text="Alert me!", action="hello", id="alert-button", params="format=json")#
+
+</cfoutput>
 }}}
 
 Adding `format=json` to the `params` argument lets the Provides plugin know what type of response that your application is requesting.
