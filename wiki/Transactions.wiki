@@ -27,7 +27,7 @@ In this example, if the post doesn't save, perhaps due to a validation problem, 
 
 =Disabling transactions=
 
-If you want to manage transactions yourself using the <cftransaction> tag, you can simple add transaction=false to any CRUD method.
+If you want to manage transactions yourself using the `<cftransaction>` tag, you can simple add transaction=false to any CRUD method.
 
 {{{
 <cfset model("Author").create(name="John", transaction=false)>
@@ -43,7 +43,7 @@ Sometimes it's useful to use a rollback to test a process without making any per
 
 =invokeWithTransaction=
 
-One issue with Coldfusion is that you cannot nest <cftransaction> tags. In this case, Wheels provides a workaround. If you wish to run a method within a transaction, use invokeWithTransaction(), as below. 
+One issue with Coldfusion is that you cannot nest `<cftransaction>` tags. In this case, Wheels provides a workaround. If you wish to run a method within a transaction, use invokeWithTransaction(), as below. 
 
 {{{
 <cfset invokeWithTransaction(method="transferFunds", personFrom=david, personTo=mary, amount=100)>
