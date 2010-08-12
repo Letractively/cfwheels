@@ -43,8 +43,8 @@ Sometimes it's useful to use a rollback to test a process without making any per
 
 =invokeWithTransaction=
 
-One issue with Coldfusion is that you cannot nest <cftransaction> tags. In this case, Wheels provides a solution:
+One issue with Coldfusion is that you cannot nest <cftransaction> tags. In this case, Wheels provides a workaround. If you wish to run a method within a transaction, use invokeWithTransaction(), as below. 
 
 {{{
-<cfset invokeWithTransaction(method="blah")>
+<cfset invokeWithTransaction(method="transferFunds", personFrom=david, personTo=mary, amount=100)>
 }}}
