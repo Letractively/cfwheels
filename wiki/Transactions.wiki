@@ -3,8 +3,24 @@
 
 = Introduction =
 
-Something something something darkside.
+Database transactions are a way of grouping multiple queries together. They are useful in case the outcome of one query depends on the completion of another. For example, if you want to take money from one person's bank account, and transfer it into someone else's, you want to make sure the debit completes before running the credit.
 
+You'll be pleased to know that Wheels makes using database transactions easy. In fact, for the vast majority of the time, you never need to think about using them at all, as Wheels automatically runs all queries within a create, update or delete within a transaction.
+
+Whether or not the transaction gets committed depends on the succesful completion of the callback chain.
+
+A good example of this is when you use a callback to delete associated records
+
+For example, take the following code:
+
+
+
+
+
+
+ into a single as a series, you use a 'transaction.' This groups. This runs all of the queries as a single process, and if any of the que
+
+Wheels automatically groups all database queries within a
 
 = Details =
 
