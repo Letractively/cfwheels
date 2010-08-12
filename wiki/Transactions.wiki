@@ -33,10 +33,18 @@ If you want to manage transactions yourself using the <cftransaction> tag, you c
 <cfset model("Author").create(name="John", transaction=false)>
 }}}
 
-=Disabling transactions=
+=Using rollbacks=
 
-If you want to manage transactions yourself using the <cftransaction> tag, you can simple add transaction=false to any CRUD method.
+Sometimes it's useful to use a rollback to test a process without making any permanent changes to the database. To do this, add transaction="rollback" to any CRUD method.
 
 {{{
-<cfset model("Author").create(name="John", transaction=false)>
+<cfset model("Author").create(name="John", transaction="rollback")>
+}}}
+
+=invokeWithTransaction=
+
+One issue with Coldfusion is that you cannot nest <cftransaction> tags. In this case, Wheels provides a solution:
+
+{{{
+<cfset invokeWithTransaction(method="blah")>
 }}}
