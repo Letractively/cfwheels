@@ -11,35 +11,41 @@ In the past writing test against your application meant downloading, configuring
 
 With Wheels, writing tests for your application is part of the development lifecycle itself and running the test is as simple as clicking a link.
 
+==Setting Your Application For Testing==
+
+In order to run tests against your application, you must first create a `tests` directory off the root of your Wheels application. All tests *MUST* reside in the `tests` directory or within a subdirectory thereof.
+
+When you run the tests for your application, Wheels recursively scans your application's `tests` directory and looks for any available valid tests to run, so feel free to organize the subdirectories and place whatever files needed to run your tests under the `tests` directory any way you like.
+
 ==Touring the Testing Framework==
 
 Like everything else in Wheels, the testing framework is very simple yet powerful. You're not going to having to remember a hundred different commands and methods since Wheels' testing framework has only three commands and four methods (you can't get any simpler than that). Let's take a tour and go over the conventions, commands and methods that make up the different parts of the Testing Framework:
 
-===Conventions===
+===Writing Tests===
 
-All testing code *MUST* reside in the `tests` directory off the root of your Wheels application or within a subdirectory thereof. If you do not have a `tests` directory, simply create one. When you run the tests for your application Wheels recursively scans your application's `tests` directory and looks for any available valid tests to run, so feel free to organize the subdirectories and place whatever files needed to run your tests under the `tests` directory any way you like.
-
-Any components that will contain tests *MUST* extend the *_wheelsMapping.test_* component:
+Any components that will contain tests *MUST* extend the *_wheels.Test_* component:
 
 {{{
-<cfcomponent extends="wheels.test">
+<cfcomponent extends="wheels.Test">
 }}}
 
-If the testing engine sees that a component *DOES NOT* extend *_wheelsMapping.test_*, that component skipped. This let's you create and store any _mock_ components you might want to use in your `tests` directory and keep everything together.
+If the testing engine sees that a component *DOES NOT* extend *_wheels.Test_*, that component skipped. This let's you create and store any _mock_ components you might want to use in your `tests` directory and keep everything together.
 
-Any methods that will be used as tests must begin their name with *_test_*:
+Any methods that will be used as tests *MUST* begin their name with *_test_*:
 
 {{{
 <cffunction name="test_a_equals_b">
 }}}
 
-If a method *DOES NOT* begin with *_test_* it is *NOT* considered a test and is skipped. This let's you create as many helper methods for your testing components as you want.
+If a method *DOES NOT* begin with *_test_* it is ignored and skipped. This let's you create as many helper methods for your testing components as you want.
+
+===Conventions===
 
 *<font color="red">DO NOT VAR ANY VARIABLES</font>* used in your tests. In order for the testing framework to get access to the variables within the tests that you're writing, all variables need to be within the components *variables scope*. The easy way to do this is to just not "var" variables within your tests and ColdFusion will automatically assign these variables into the variables scope of the component for you. The only gotcha is that this could cause some variables to overwrite each other and gets kinda of confusing of what's being thrown into the variables scope.
 
-===Commands===
+===Evaluation===
 
-*assert():* This is the main command that you will be using when developing tests. To use, all you have to do is provide a quoted expression. The power of this is that *ANY* expression can be used.
+*assert():* This is the main method that you will be using when developing tests. To use, all you have to do is provide a quoted expression. The power of this is that *ANY* expression can be used.
 
 An example test that checks that two values equal each other:
 
@@ -73,18 +79,19 @@ An example test that checks that a key exists in a structure:
 </cffunction>
 }}}
 
-*raised():* Used when you want to test that an exception will be thrown. Raised() will raise and catch the exception and return to you the exception type (think cfcatch.type). Just like assert(), raise() takes a quoted expression as it's argument.
+*raised():* Used when you want to test that an exception will be thrown. Raised() will raise and catch the exception and return to you the exception type (think cfcatch.type). Just like assert(), raised() takes a quoted expression as it's argument.
 
 An example of raising the Wheels.TableNotFound error when you specify an invalid model name:
 
 {{{
 <cffunction name="test_table_not_found">
 	<cfset loc.e = raised("model('table_not_found')")>
-	<cfset halt(false, "loc.e")>
 	<cfset loc.r = "Wheels.TableNotFound">
 	<cfset assert("loc.e eq loc.r")>
 </cffunction>
 }}}
+
+===Debugging===
 
 *debug():* Will display it's output after the test result so you can examine an expression more closely.
 
@@ -115,7 +122,6 @@ An example of calling debug but NOT displaying the output:
 </cffunction>
 }}}
 
-
 An example of displaying the output of debug as `text`:
 
 {{{
@@ -127,15 +133,13 @@ An example of displaying the output of debug as `text`:
 </cffunction>
 }}}
 
-===Methods===
+===Setup and Teardown===
 
-There are two reserved methods that testing framework provides for you:
+It's common when writing a group of tests that there will be some duplicate code, global configuration, and/or cleanup needed to be run before or after each test. In order to keep things DRY (Don't Repeat Yourself), the testing framework offers two special methods that you can optionally use to handle such configuration.
 
 *setup():* Used to initialize or override any variables or execute any code that needs to be run *BEFORE EACH* test.
 
 *teardown():* Used to cleanup any variables or execute any code that needs to be ran *AFTER EACH* test.
-
-Remember that you don't have to use these methods when creating your tests, however they do help to keep thing DRY (Don't Repeat Yourself) and compact.
 
 Example:
 
@@ -161,7 +165,6 @@ Example:
 	<cffunction name="test_with_seconds_below_10_seconds">
 		<cfset loc.c = 10 - 1>
 		<cfset loc.args.toTime = dateadd('s', loc.c, loc.args.fromTime)>
-		<cfset halt(false, "loc.controller.distanceOfTimeInWords(argumentcollection=loc.args)")>
 		<cfinvoke method="loc.f" argumentcollection="#loc.args#" returnvariable="loc.e">
 		<cfset loc.r = "less than 10 seconds">
 		<cfset assert("loc.e eq loc.r")>
@@ -182,6 +185,6 @@ Down in the debug area of your Wheels application (that grey area at the bottom 
 
 *Plugins*: A *Run Tests* link will be next to *each* installed plugin you have in your wheels installation. You should run these tests whenever you install or update a plugin.
 
-==Running Selected Test Packages==
+===Running Selected Test Packages===
 
 Very often you might want to only run a package of tests (a group of tests within a single directory). In order to do this, just append the *package* argument to the url with the name of the package you want ran. For instance, say you had a test package called UserVerifcation. To run only that test package, add *&package=UserVerifcation* to the end of the test url.
