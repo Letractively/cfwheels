@@ -37,7 +37,7 @@ First, in our controller, let's set the data needed for our form:
 
 Because our form will also expect an object called `profile` nested within the `user` object, we must create a new instance of it and set it as a property in the call to `user.new()`.
 
-Also, because we don't intend on using the particular `profile` object set in the first line of the action, we can `var` scope it to clearly mark our intentions for its use.
+Also, because we don't intend on using the particular `newProfile` object set in the first line of the action, we can `var` scope it to clearly mark our intentions for its use.
 
 If this were an `edit` action calling an existing object, our call would need to look similar to this:
 
