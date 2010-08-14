@@ -15,13 +15,13 @@ Consider a `user` model that has one `profile`:
 
     <cffunction name="init">
         <cfset hasOne("profile")>
-        <cfset nestedProperties(associations="profile", autoSave=true, allowDelete=true)>
+        <cfset nestedProperties(associations="profile", allowDelete=true)>
     </cffunction>
 
 </cfcomponent>
 }}}
 
-By adding the call to `nestedProperties()` in the model, you can create both the `user` object and the `profile` object in a single call to `create()`. Setting `autoSave` to `true` allows for this functionality to happen.
+By adding the call to `nestedProperties()` in the model, you can create both the `user` object and the `profile` object in a single call to `create()`.
 
 === Setting up Data for the `user` Form ===
 
@@ -54,11 +54,11 @@ For this example, our form at `views/users/new.cfm` will end up looking like thi
 {{{
 #startFormTag(action="create")#
 
-    <!--- Data for `user` model --->
+    <!--- Data for user model --->
     #textField(label="First Name", objectName="user", property="firstName")#
     #textField(label="Last Name", objectName="user", property="lastName")#
 
-    <!--- Data for associated `profile` model --->
+    <!--- Data for associated profile model --->
     #textField(label="Twitter Handle", objectName="user", association="profile", property="twitterHandle")#
     #textArea(label="Biography", objectName="user", association="profile", property="bio")#
 
@@ -95,7 +95,7 @@ When calling `user.save()` in the example above, Wheels takes care of the follow
  * Saves the data passed into that `profile` model.
  * Wraps all calls in a transaction in case validations on any of the objects fail or something wrong happens with the database.
 
-For the edit scenario, this is what our `update` action would look like (which is very similar to `create`:
+For the edit scenario, this is what our `update` action would look like (which is very similar to `create`):
 
 {{{
 <!--- In controllers/Users.cfc --->
@@ -124,7 +124,7 @@ By passing `allowDelete=true` to the `nestedProperties()` call in the model, you
 </cfoutput>
 }}}
 
-The `autoSave` and `allowDelete` arguments are both optional and default to `false`, so you must "opt in" to these capabilities when setting up your nested properties.
+The `allowDelete` argument is optional and defaults to `false`, so you must "opt in" to this capability when setting up your nested properties.
 
 == One-to-Many Relationships with Nested Properties ==
 
@@ -139,17 +139,17 @@ In the `user` model, let's add an association called `addresses` and also enable
     <cffunction name="init">
         <cfset hasOne("profile")>
         <cfset hasMany("addresses")>
-        <cfset nestedProperties(associations="profile,addresses", autoSave=true, allowDelete=true)>
+        <cfset nestedProperties(associations="profile,addresses", allowDelete=true)>
     </cffunction>
 
 </cfcomponent>
 }}}
 
-In this example, we have added the `addresses` association to the call to `nestedProperties()`, thus enabling `autoSave` and `allowDelete`.
+In this example, we have added the `addresses` association to the call to `nestedProperties()`.
 
 === Building the Form for the One-to-Many Association ===
 
-This time, we'll add a section for addresses on our form with a little !JavaScript that allows for multiple addresses to be entered. (To keep the example simpler, let's omit the `profile` association from the earlier example.)
+This time, we'll add a section for addresses on our form with a little !JavaScript that allows for multiple addresses to be entered.
 
 {{{
 <!--- jQuery code that would probably be included by `javaScriptIncludeTag()` --->
@@ -207,20 +207,7 @@ Because there can be multiple addresses on the form, the form helpers accept an 
 
 Even with a complex form with a number of child objects, Wheels will save all of the data through its parent's `save()`, `update()`, or `create()` methods.
 
-Here, we save the `user` model, which will take care of all of the child `addresses` as well.
-
-{{{
-<!--- In controllers/Users.cfc --->
-<cffunction name="create">
-    <cfset user = model("user").new(params.user)>
-    <cfif user.save()>
-        <cfset flashInsert(success="The user was created successfully.")>
-        <cfset redirectTo(controller=params.controller)>
-    <cfelse>
-        <cfset renderPage(action="new")>
-    </cfif>
-</cffunction>
-}}}
+Basically, your typical code to save the `user` and its `addresses` is exactly the same as the code demonstrated in the _Saving the Object and Its Nested Properties_ section earlier in this chapter.
 
 === Deleting Child Objects ===
 
@@ -284,7 +271,7 @@ We would set it up in `init()` like so:
         <!--- Associations --->
         <cfset hasMany(name="subscriptions", shortcut="publications")>
         <!--- Nested properties --->
-        <cfset nestedProperties(associations="subscriptions", autoSave=true, allowDelete=true)>
+        <cfset nestedProperties(associations="subscriptions", allowDelete=true)>
     </cffunction>
 
 </cfcomponent>
