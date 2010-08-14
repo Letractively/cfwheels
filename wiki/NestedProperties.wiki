@@ -23,20 +23,23 @@ Consider a `user` model that has one `profile`:
 
 By adding the call to `nestedProperties()` in the model, you can create both the `user` object and the `profile` object in a single call to `create()`.
 
-=== Setting up Data for the `user` Form ===
+=== Setting up Data for the `user` Form in the Controller ===
 
 First, in our controller, let's set the data needed for our form:
 
 {{{
 <!--- In controllers/User.cfc --->
 <cffunction name="new">
-    <cfset user = model("user").new()>
+    <cfset var newProfile = model("profile").new()>
+    <cfset user = model("user").new(profile=newProfile)>
 </cffunction>
 }}}
 
-All that we need to do here is call `new()` on the `user` model.
+Because our form will also expect an object called `profile` nested within the `user` object, we must create a new instance of it and set it as a property in the call to `user.new()`.
 
-Note that if this were an `edit` action calling an existing object, our call would need to look similar to this:
+Also, because we don't intend on using the particular `profile` object set in the first line of the action, we can `var` scope it to clearly mark our intentions for its use.
+
+If this were an `edit` action calling an existing object, our call would need to look similar to this:
 
 {{{
 <!--- In controllers/User.cfc --->
@@ -45,7 +48,7 @@ Note that if this were an `edit` action calling an existing object, our call wou
 </cffunction>
 }}}
 
-Because the form will also expect data set in the `profile` property, you must include that association in the finder call.
+Because the form will also expect data set in the `profile` property, you must include that association in the finder call with the `include` argument.
 
 === Building a Form for Posting Nested Properties ===
 
@@ -147,31 +150,34 @@ In the `user` model, let's add an association called `addresses` and also enable
 
 In this example, we have added the `addresses` association to the call to `nestedProperties()`.
 
+=== Setting up Data for the `user` Form in the Controller ===
+
+Setting up data for the form is similar to the one-to-one scenario, but this time the form will expect an array of objects for the nested properties instead of a single object.
+
+In this example, we'll just put one new `address` in the array.
+
+{{{
+<!--- In controllers/Users.cfc --->
+<cffunction name="new">
+    <cfset var newAddresses = [ model("address").new() ]>
+    <cfset user = model("user").new(addresses=newAddresses)>
+</cffunction>
+}}}
+
+In the edit scenario, we just need to remember to call the `include` argument to include the array of addresses saved for the particular `user`:
+
+{{{
+<!--- In controllers/Users.cfc --->
+<cffunction name="edit">
+    <cfset user = model("user").findByKey(key=params.key, include="addresses")>
+</cffunction>
+}}}
+
 === Building the Form for the One-to-Many Association ===
 
 This time, we'll add a section for addresses on our form with a little !JavaScript that allows for multiple addresses to be entered.
 
 {{{
-<!--- jQuery code that would probably be included by `javaScriptIncludeTag()` --->
-<script type="text/javascript">
-(function($){
-    $(document).ready(function(){
-        // Address container
-        var address = $("#address");
-
-        // Add "+ Add Address" link after addresses div
-        address.after('<a id="add-address-link">+ Add Address</a>');
-        
-        // Copy a new blank address on click of "+ Add Address" link
-        $("#add-address-link").click(function(){
-            var firstAddressCopy = $("#addresses .address").first().clone();
-            address.append(firstAddressCopy);
-            // TODO: Finish this script when I'm less tired
-        });
-    });
-})(jQuery);
-</script>
-
 #startFormTag(action="create")#
 
     <!--- Data for `user` model --->
@@ -187,12 +193,7 @@ This time, we'll add a section for addresses on our form with a little !JavaScri
         <legend>Addresses</legend>
 
         <div id="addresses">
-            <div class="address">
-                #textField(label="Street", objectName="user", association="addresses", position=1, property="address1")#
-                #textField(label="City", objectName="user", association="addresses", position=1, property="city")#
-                #textField(label="State", objectName="user", association="addresses", position=1, property="state")#
-                #textField(label="Zip", objectName="user", association="addresses", position=1, property="zip")#
-            </div>
+            #includePartial(user.addresses)#
         </div>
     </fieldset>
 
@@ -201,7 +202,24 @@ This time, we'll add a section for addresses on our form with a little !JavaScri
 #endFormTag()#
 }}}
 
-Because there can be multiple addresses on the form, the form helpers accept an additional argument for `position`. Without having a unique position identifier for each `address`, Wheels would have no way of understanding which `state` field matches with which particular `address`.
+In this case, you'll see that the form for `addresses` is broken into a partial. (See the chapter on [Partials] for more details.) Let's take a look at that partial.
+
+=== The `_address` Partial ===
+
+Here is the code for the partial at `views/users/_address.cfm`. Wheels will loop through each `address` in your nested properties and display this piece of code for each one.
+
+{{{
+<div class="address">
+    #textField(label="Street", objectName="user", association="addresses", position=arguments.current, property="address1")#
+    #textField(label="City", objectName="user", association="addresses", position=arguments.current, property="city")#
+    #textField(label="State", objectName="user", association="addresses", position=arguments.current, property="state")#
+    #textField(label="Zip", objectName="user", association="addresses", position=arguments.current, property="zip")#
+</div>
+}}}
+
+Because there can be multiple addresses on the form, the form helpers require an additional argument for `position`. Without having a unique position identifier for each `address`, Wheels would have no way of understanding which `state` field matches with which particular `address`, for example.
+
+Here, we're passing a value of `arguments.current` for `position`. This value is set automatically by Wheels for each iteration through the loop of `addresses`.
 
 === Auto-saving a Collection of Child Objects ===
 
@@ -209,17 +227,17 @@ Even with a complex form with a number of child objects, Wheels will save all of
 
 Basically, your typical code to save the `user` and its `addresses` is exactly the same as the code demonstrated in the _Saving the Object and Its Nested Properties_ section earlier in this chapter.
 
-=== Deleting Child Objects ===
-
-TODO: Add a description of using `hasManyCheckBox()`.
+Writing the action to save the data is clearly the easiest part of this process!
 
 == Transactions are Included by Default ==
 
-Because there are several model objects involved in the examples above, Wheels will automatically wrap the database operations in a transaction. That way if something goes wrong with any of the operations, the transaction will rollback.
+As mentioned earlier, Wheels will automatically wrap your database operations for nested properties in a transaction. That way if something goes wrong with any of the operations, the transaction will rollback, and you won't end up with incomplete saves.
 
 See the chapter on [Transactions] for more details.
 
 == Many-to-Many Relationships with Nested Properties ==
+
+We all enter the scenario where we have "join tables" where we need to associate models in a many-to-many fashion. Wheels makes this pairing of entities simple with some form helpers.
 
 Consider the many-to-many associations related to `customer`s, `publication`s, and `subscription`s, straight from the [Associations] chapter.
 
@@ -255,13 +273,11 @@ Consider the many-to-many associations related to `customer`s, `publication`s, a
 </cfcomponent>
 }}}
 
-When it's time to save `customer`s' subscriptions in the `subscriptions` join table, one approach is to loop through data submitted by `checkBoxTag()`s, populate `subscription` model objects with the data, and call `save()`. This approach is valid, but there is a simpler way.
+When it's time to save `customer`s' subscriptions in the `subscriptions` join table, one approach is to loop through data submitted by `checkBoxTag()`s from your form, populate `subscription` model objects with the data, and call `save()`. This approach is valid, but it is quite cumbersome. Fortunately, there is a simpler way.
 
 === Setting up the Nested Properties in the Model ===
 
-In this case, let's define the nested properties in your model's `init()` method with the `nestedProperties()` method. Using the `customer` model from the example above, let's say that we want to allow our Wheels application to automatically save and delete related `subscription` objects based on form submissions (more on the form part later).
-
-We would set it up in `init()` like so:
+Here is how we would set up the nested properties in the `customer` model for this example:
 
 {{{
 <!--- models/Customer.cfc --->
@@ -277,18 +293,12 @@ We would set it up in `init()` like so:
 </cfcomponent>
 }}}
 
-With this set of nested properties defined, the `customer` model now has some extra behaviors enabled:
- * `customer` will now accept one or many values for a property called `subscriptions`.
- * `customer` will automatically save the value(s) when there are changes.
- * `customer` will automatically delete the value(s) marked for deletion through a key called `_delete`.
+=== Setting up Data for the `customer` Form in the Controller ===
 
-=== Building the Many-to-Many Form with Nested Properties ===
-
-With the nested properties configured in the model, we can now build a series of check boxes that will allow the end user to associate many `subscriptions` with the `customer`.
-
-First, let's define the data needed in an `edit` action in the controller at `controllers/Customers.cfc`. For the view, we need to pull the `customer` with its associated `subscriptions` included with the `include` argument. We also need all of the `publication`s in the system for the user to choose from.
+Let's define the data needed in an `edit` action in the controller at `controllers/Customers.cfc`.
 
 {{{
+<!--- In `controllers/Customers.cfc` --->
 <cffunction name="edit">
 
     <cfset customer = model("customer").findByKey(key=params.key, include="subscriptions")>
@@ -297,15 +307,19 @@ First, let's define the data needed in an `edit` action in the controller at `co
 </cffunction>
 }}}
 
-Now the view template at `views/customers/edit.cfm` is where the magic happens. In this view, we will have a form for editing the `customer` and check boxes for selecting the `customer`'s `subscription`s.
+For the view, we need to pull the `customer` with its associated `subscriptions` included with the `include` argument. We also need all of the `publication`s in the system for the user to choose from.
+
+=== Building the Many-to-Many Form ===
+
+We can now build a series of check boxes that will allow the end user choose which `publications` to assign to the `customer`.
+
+The view template at `views/customers/edit.cfm` is where the magic happens. In this view, we will have a form for editing the `customer` and check boxes for selecting the `customer`'s `subscription`s.
 
 {{{
 <cfparam name="customer">
 <cfparam name="publications" type="query">
 
 <cfoutput>
-
-#errorMessagesFor("customer")#
 
 #startFormTag(action="update")#
 
@@ -334,15 +348,17 @@ Now the view template at `views/customers/edit.cfm` is where the magic happens. 
 </cfoutput>
 }}}
 
-The main point of interest in this example is the `<fieldset>` for Subscriptions, which loops through the query of `publications` and uses the `hasManyCheckBox()` form helper. This helper is similar to `checkBox()` and `checkBoxTag()`, but it is specifically designed for building form data related by associations.
+The main point of interest in this example is the `<fieldset>` for Subscriptions, which loops through the query of `publications` and uses the `hasManyCheckBox()` form helper. This helper is similar to `checkBox()` and `checkBoxTag()`, but it is specifically designed for building form data related by associations. (Note that `checkBox()` is primarily designed for columns in your table that store a single `true`/`false` value, so that is the big difference.)
 
 Notice that the `objectName` argument passed to `hasManyCheckBox()` is the parent `customer` object and the `associations` argument contains the name of the related association. Wheels will build a form variable named in a way that the `customer` object is automatically bound to the `subscriptions` association.
 
-The `keys` argument accepts the foreign keys that should be associated together in the `subscriptions` join table. Note that these keys should be listed in the order that they appear in the related database table. In this example, the `subscriptions` table in the database contains composite primary key columns called `customerid` and `publicationid`, in that order.
+The `keys` argument accepts the foreign keys that should be associated together in the `subscriptions` join table. Note that these keys should be listed in the order that they appear in the database table. In this example, the `subscriptions` table in the database contains a composite primary key with columns called `customerid` and `publicationid`, in that order.
 
 == How the Form Submission Works ==
 
-Handling the form submission is the most powerful part of the process, yet it involves no extra effort on your part. You'll notice that this example `update` action is fairly standard for a Wheels application:
+Handling the form submission is the most powerful part of the process, but like all other nested properties scenarios, it involves no extra effort on your part.
+
+You'll notice that this example `update` action is fairly standard for a Wheels application:
 
 {{{
 <cffunction name="update">
@@ -365,4 +381,3 @@ In fact, there is nothing special about this. But with the nested properties def
  * Wheels will update the `customers` table with any changes submitted in the Customers `<fieldset>`.
  * Wheels will add and remove records in the `subscriptions` table depending on which check boxes are selected by the user in the Subscriptions `<fieldset>`.
  * All of these database queries will be wrapped in a [Transactions transaction]. If any of the above updates don't pass validation or if the database queries fail, the transaction will roll back.
- * The `customer` object will collect validation errors for the whole transaction. All of these errors will be shown by the `errorMessagesFor()` view helper on the form.
