@@ -1,5 +1,5 @@
 #summary Using Wheels to develop web applications with AJAX features is a breeze. You have several options and tools at your disposal, which we'll cover in this chapter.
-#labels chapter,1.0,published_dev
+#labels chapter,1.0,published_prod
 
 Wheels was designed to be as lightweight as possible, so this keeps your options fairly open for developing AJAX features into your application. We will cover two different approaches in this chapter:
 
@@ -37,7 +37,7 @@ But let's make it into an asynchronous request. Add this !JavaScript (either on 
 $("#alert-button").click(function() {
     $.ajax({ 
         type: "POST", 
-        url: "/say/hello", // you could also use the Wheels URLFor() helper here
+        url: $(this).attr("href"), // Outputs "/say/hello"
         dataType: "json", 
         success: function(response) { 
 	    $("h1").html(response.message);
