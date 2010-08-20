@@ -137,6 +137,8 @@ That's it. Without a single line of !JavaScript, we were able to setup an AJAX-p
 
 ===Provides Plugin===
 
+Note that you will also need the jQuery code from the "Do It Yourself" approach above for this example to work.
+
 Provides will allow Wheels to extend the format of a controller's responses to the browser, making it ideal for the first example we discussed near the beginning of this chapter. (Refer to the [http://cfwheels.org/plugins/listing/6 plugin's documentation] and our chapter on [UsingandCreatingPlugins Using and Creating Plugins] for more information.)
 
 Now let's revisit that code. Everything in our view file will remain the same except for a tiny addition in the `linkTo` function:
@@ -174,6 +176,6 @@ In this example, `renderWith()` will see that a format of JSON was requested and
 
 ==AJAX Explained==
 
-That is it! Hopefully now you will have a cleaner picture on how to create AJAX-based features for your web applications.
+That is it! Hopefully now you have a clearer picture on how to create AJAX-based features for your web applications.
 
 Remember that any of the 3 examples work just fine. You have several ways to accomplish the same goal. Choose the one that fits your style and needs.
