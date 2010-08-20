@@ -102,7 +102,7 @@ First, let's replace the `linkTo()` call from the first example with a call to a
 </cfoutput>
 }}}
 
-`remoteLinkTo` is all you need in your view now, so go ahead and remove the whole `script` block from the first example. This new function will take care of creating the !JavaScript for you.
+`remoteLinkTo()` is all you need in your view now, so go ahead and remove the whole `script` block from the first example. This new function will take care of creating the !JavaScript for you.
 
 Now let's review that `say` controller:
 
