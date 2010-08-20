@@ -141,7 +141,7 @@ Note that you will also need the jQuery code from the "Do It Yourself" approach 
 
 Provides will allow Wheels to extend the format of a controller's responses to the browser, making it ideal for the first example we discussed near the beginning of this chapter. (Refer to the [http://cfwheels.org/plugins/listing/6 plugin's documentation] and our chapter on [UsingandCreatingPlugins Using and Creating Plugins] for more information.)
 
-Now let's revisit that code. Everything in our view file will remain the same except for a tiny addition in the `linkTo` function:
+Now let's revisit that code. Everything in our view file will remain the same except for a tiny addition in the `linkTo()` function:
 
 {{{
 <cfoutput>
