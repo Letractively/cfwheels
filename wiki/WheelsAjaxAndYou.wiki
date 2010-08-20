@@ -1,5 +1,5 @@
 #summary Using Wheels to develop web applications with AJAX features is a breeze. You have several options and tools at your disposal, which we'll cover in this chapter.
-#labels chapter,1.0,draft
+#labels chapter,1.0,published_dev
 
 Wheels was designed to be as lightweight as possible, so this keeps your options fairly open for developing AJAX features into your application. We will cover two different approaches in this chapter:
 
@@ -34,11 +34,11 @@ But let's make it into an asynchronous request. Add this !JavaScript (either on 
 
 {{{
 // Listen to the "click" event of the "alert-button" link and make an AJAX request
-$('#alert-button').click(function() {
+$("#alert-button").click(function() {
     $.ajax({ 
-        type: 'POST', 
-        url: '/say/hello', // you could also use the Wheels URLFor() helper here
-        dataType: 'json', 
+        type: "POST", 
+        url: "/say/hello", // you could also use the Wheels URLFor() helper here
+        dataType: "json", 
         success: function(response) { 
 	    $("h1").html(response.message);
 	    $("p").html(response.time);
@@ -50,7 +50,7 @@ $('#alert-button').click(function() {
 
 With that code, we are listening to the `click` event of the hyperlink, which will make an asynchronous request to the `hello` action in the `say` controller.
 
-Note that the success block inserts keys from the `response` into the empty `h1` and `p` blocks in the calling view. (You may have been wondering about those when you saw the first example. Mystery solved)
+Note that the success block inserts keys from the `response` into the empty `h1` and `p` blocks in the calling view. (You may have been wondering about those when you saw the first example. Mystery solved.)
 
 The last thing that we need to do is implement the `say/hello` action. Note that the request expects a `dataType` of `JSON`. By default, Wheels controllers only generate HTML responses, but there is an easy way to generate JSON instead using Wheels's `renderText()` function along with CF's `SerializeJSON()` function:
 
