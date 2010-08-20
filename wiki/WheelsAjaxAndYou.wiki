@@ -109,7 +109,11 @@ Now let's review that `say` controller:
 {{{
 <!--- Controller code --->
 <cffunction name="hello">
-  
+    <!--- Prepare the message for the user --->
+    <cfset greeting = {}>
+    <cfset greeting["message"] = "Hi there">
+    <cfset greeting["time"] = Now()> 
+
     <!--- If your request is an AJAX request, respond with the `views/say/hello.js.cfm remote view` --->
     <cfif isAjax()> 
         <cfset renderRemotePage()>
