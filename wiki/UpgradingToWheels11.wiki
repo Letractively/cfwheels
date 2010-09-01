@@ -12,7 +12,7 @@ If you are upgrading from Wheels 1.0 or newer, the easiest way to upgrade is to 
 
 == Database Structure Changes ==
 
- * By default, Wheels 1.1 will wrap database queries in transactions. This requires that your database engine supports transactions. For MySQL in particular, you can convert your MyISAM tables to InnoDB to overcome this. To turn off automatic transactions, place a call to `set(transactionMode="none")`.
+ * By default, Wheels 1.1 will wrap database queries in transactions. This requires that your database engine supports transactions. For MySQL in particular, you can convert your MyISAM tables to InnoDB to be compatible with this new functionality. Otherwise, to turn off automatic transactions, place a call to `set(transactionMode="none")`.
  * Binary data types are now supported.
 
 == CFML Code Changes ==
