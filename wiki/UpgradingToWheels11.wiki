@@ -1,0 +1,29 @@
+#summary Instructions for upgrading your ColdFusion on Wheels 1.0.x application to Wheels 1.1.x.
+#labels draft,1.1,chapter
+
+If you are upgrading from Wheels 1.0 or newer, the easiest way to upgrade is to replace the `wheels` folder with the new one from the 1.1 download. If you are upgrading from an earlier version, we recommend reviewing the steps outlined in [UpgradingWheels Upgrading to Wheels 1.0].
+
+== Supported System Changes ==
+
+ * The SQLite database engine is now supported.
+ * The H2 database engine is now supported.
+
+== File System Changes ==
+
+== Database Structure Changes ==
+
+ * Binary data types are now supported.
+
+== CFML Code Changes ==
+
+=== Config Code ===
+
+=== Model Code ===
+
+=== View Code ===
+
+ * `stylesheetLinkTag()` and `javaScriptIncludeTag()` now accept external URLs for the `source`/`sources` argument. If you manually typed out these tags in previous releases, you can now use these helpers instead.
+
+=== Controller Code ===
+
+=== URL/Routing ===
