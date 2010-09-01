@@ -10,6 +10,8 @@ If you are upgrading from Wheels 1.0 or newer, the easiest way to upgrade is to 
 
 == File System Changes ==
 
+ * The `.htaccess` file has been changed. Be sure to copy over the new one from the new version 1.1 download and copy any addition changes that you may have also made to the original version.
+
 == Database Structure Changes ==
 
  * By default, Wheels 1.1 will wrap database queries in transactions. This requires that your database engine supports transactions. For MySQL in particular, you can convert your MyISAM tables to InnoDB to be compatible with this new functionality. Otherwise, to turn off automatic transactions, place a call to `set(transactionMode="none")`.
