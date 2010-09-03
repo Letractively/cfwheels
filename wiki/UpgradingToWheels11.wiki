@@ -5,6 +5,8 @@ If you are upgrading from Wheels 1.0 or newer, the easiest way to upgrade is to 
 
 == Supported System Changes ==
 
+ * The minimum Adobe !ColdFusion version required is now 8.0.1.
+ * The minimum Railo version required is now 3.1.2.020.
  * The SQLite database engine is now supported.
  * The H2 database engine is now supported.
 
