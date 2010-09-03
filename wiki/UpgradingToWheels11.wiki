@@ -23,8 +23,6 @@ If you are upgrading from Wheels 1.0 or newer, the easiest way to upgrade is to 
 
 === Config Code ===
 
- * If you are using sessions, you will need to enable them inside of your *config/app.cfm* by adding `<cfset this.sessionManagement = true>`. Wheels no longer requires the session scope to be enabled as the Flash can now be stored in cookies.
-
 === Model Code ===
 
  * Validations will be applied to some model properties automatically. This may cause unintended behavior with your validations. To turn this setting off, call `set(automaticValidations=false)` in `config/settings.cfm`.
