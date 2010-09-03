@@ -57,9 +57,9 @@ MVC is how Wheels structures your code for you. As you start working with Wheels
 
 Wheels requires that you use one of these CFML engines:
 
- * [http://www.adobe.com/products/coldfusion/coldfusion8/ Adobe ColdFusion 8]
+ * [http://www.adobe.com/products/coldfusion/coldfusion8/ Adobe ColdFusion] 8.0.1
  * [http://www.adobe.com/products/coldfusion/ Adobe ColdFusion 9]
- * [http://www.getrailo.org/ Railo] (version 3.1)
+ * [http://www.getrailo.org/ Railo] (version 3.1.2.020 or greater)
 
 Wheels makes heavy use of CFML's `OnMissingMethod` event, which wasn't available until the release of CF 8.
 
