@@ -1,5 +1,5 @@
 #summary Through some simple configuration, Wheels allows you to unlock some powerful functionality to use your database tables' relationships in your code.
-#labels chapter,1.0,draft
+#labels chapter,1.1,published_dev
 
 _Associations_ in Wheels allow you to define the relationships between your database tables. After configuring these relationships, doing pesky table joins becomes a trivial task. And like all other ORM functions in Wheels, this is done without writing a single line of SQL.
 
@@ -81,9 +81,9 @@ And our `user` model would look like this:
 
 As you can see, you do not pluralize "profile" in this case because there is only one profile.
 
-By the way, as you can see above, the association goes both ways, i.e. a `user` [hasOne hasOne()] `profile` and a `profile` [belongsTo belongsTo()] a `user`. Generally speaking, all associations should be set up this way. This will give you the fullest API to work with in terms of the methods and arguments that Wheels makes available for you.
+By the way, as you can see above, the association goes both ways, i.e. a `user` `hasOne()` `profile` and a `profile` `belongsTo()` a `user`. Generally speaking, all associations should be set up this way. This will give you the fullest API to work with in terms of the methods and arguments that Wheels makes available for you.
 
-However, this is not a definite requirement. Wheels associations are completely independent of one another, so it's perfectly OK to setup a [hasMany hasMany()] association without specifying the related [belongsTo belongsTo()] association.
+However, this is not a definite requirement. Wheels associations are completely independent of one another, so it's perfectly OK to setup a `hasMany()` association without specifying the related `belongsTo()` association.
 
 ==Dependencies==
 
