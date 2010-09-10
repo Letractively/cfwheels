@@ -205,7 +205,6 @@ This will prevent others from being able to reload your application or change en
 || `assetPaths` || `struct` || `false` || Pass `false` or a struct with up to 2 different keys to autopopulate the domains of your assets: `http` (required) and `https`. For example: `{http="asset0.domain1.com,asset2.domain1.com,asset3.domain1.com", https="secure.domain1.com"}` ||
 || `ipExceptions` || `string` || `[empty string]` || IP addresses that Wheels will ignore when the environment is set to `maintenance`. That way administrators can test the site while in maintenance mode, while the rest of users will see the message loaded in `events/onmaintenance.cfm`. ||
 || `loadDefaultRoutes` || `boolean` || `true` || Set to `false` to disable Wheels's default route patterns for `controller/action/key`, etc. ||
-|| `mimeTypes` || `string` || || Append additional MIME types to this list for Wheels to evaluate for file processing functions like `sendFile()`. ||
 || `obfuscateURLs` || `boolean` || `false` || Set to `true` to obfuscate primary keys in URLs. ||
 || `reloadPassword` || `string` || `[empty string]` || Password to require when reloading the Wheels application from the URL. Leave empty to require no password. ||
 
