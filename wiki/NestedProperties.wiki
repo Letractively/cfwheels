@@ -15,7 +15,7 @@ Consider a `user` model that has one `profile`:
 
     <cffunction name="init">
         <cfset hasOne("profile")>
-        <cfset nestedProperties(associations="profile", allowDelete=true)>
+        <cfset nestedProperties(associations="profile")>
     </cffunction>
 
 </cfcomponent>
@@ -113,21 +113,7 @@ For the edit scenario, this is what our `update` action would look like (which i
 </cffunction>
 }}}
 
-== Deleting a Child Object ==
 
-By passing `allowDelete=true` to the `nestedProperties()` call in the model, you can also delete the `user`'s related `profile` by setting a property called `_delete` on it:
-
-{{{
-<cfset user.profile._delete = true>
-<cfset user.save()>
-
-<!--- Would output "0" --->
-<cfoutput>
-    #user.profile(returnAs="query").RecordCount#
-</cfoutput>
-}}}
-
-The `allowDelete` argument is optional and defaults to `false`, so you must "opt in" to this capability when setting up your nested properties.
 
 == One-to-Many Relationships with Nested Properties ==
 
@@ -175,7 +161,7 @@ In the edit scenario, we just need to remember to call the `include` argument to
 
 === Building the Form for the One-to-Many Association ===
 
-This time, we'll add a section for addresses on our form with a little !JavaScript that allows for multiple addresses to be entered.
+This time, we'll add a section for addresses on our form:
 
 {{{
 #startFormTag(action="create")#
@@ -381,3 +367,20 @@ In fact, there is nothing special about this. But with the nested properties def
  * Wheels will update the `customers` table with any changes submitted in the Customers `<fieldset>`.
  * Wheels will add and remove records in the `subscriptions` table depending on which check boxes are selected by the user in the Subscriptions `<fieldset>`.
  * All of these database queries will be wrapped in a [Transactions transaction]. If any of the above updates don't pass validation or if the database queries fail, the transaction will roll back.
+
+==TODO: Get Deletion Description Back in Where It Makes Sense==
+== Deleting a Child Object ==
+
+By passing `allowDelete=true` to the `nestedProperties()` call in the model, you can also delete the `user`'s related `profile` by setting a property called `_delete` on it:
+
+{{{
+<cfset user.profile._delete = true>
+<cfset user.save()>
+
+<!--- Would output "0" --->
+<cfoutput>
+    #user.profile(returnAs="query").RecordCount#
+</cfoutput>
+}}}
+
+The `allowDelete` argument is optional and defaults to `false`, so you must "opt in" to this capability when setting up your nested properties.
