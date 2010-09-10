@@ -113,8 +113,6 @@ For the edit scenario, this is what our `update` action would look like (which i
 </cffunction>
 }}}
 
-
-
 == One-to-Many Relationships with Nested Properties ==
 
 Nested properties work with one-to-many associations as well, except now the nested properties will contain an array of objects instead of a single one.
@@ -190,7 +188,7 @@ This time, we'll add a section for addresses on our form:
 
 In this case, you'll see that the form for `addresses` is broken into a partial. (See the chapter on [Partials] for more details.) Let's take a look at that partial.
 
-=== The `_address` Partial ===
+==== The `_address` Partial ====
 
 Here is the code for the partial at `views/users/_address.cfm`. Wheels will loop through each `address` in your nested properties and display this piece of code for each one.
 
