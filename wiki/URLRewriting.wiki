@@ -55,7 +55,7 @@ Unfortunately, there is no built-in URL rewriting mechanism in IIS 6, so getting
   # Right click your website and select _Properties_.
   # Click _Home Directory_ tab.
   # Click the _Configuration_ button.
-  # Under the _Wildcard application mapping_ section. Double click path for the `jrun_iis6_wildcard.dll`.
+  # Under the _Wildcard application mapping_ section, double-click path for the `jrun_iis6_wildcard.dll`.
   # Uncheck _Verify that file exists_.
   # Click _OK_ until all property screens are closed.
 
