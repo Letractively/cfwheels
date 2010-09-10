@@ -1,5 +1,5 @@
 #summary Making URLs prettier using URL rewriting.
-#labels chapter,1.0,published_prod
+#labels chapter,1.0,published_dev
 
 URL rewriting is a completely optional feature of Wheels, and all it does is get rid of the `index.cfm` part of the URL.
 
@@ -52,14 +52,12 @@ Unfortunately, there is no built-in URL rewriting mechanism in IIS 6, so getting
 
 *NOTE:* Make sure you have "Verify that file exists" disabled for your site.
 
-For Adobe Coldfusion:
-
-  # Right click your website and select "Properties"
-  # Click "Home Directory" tab
-  # Click the "Configuration" button 
-  # Under the "Wildcard application mapping" section, double click path for the jrun_iis6_wildcard.dll
-  # Uncheck "Verify that file exists"
-  # Click "Ok" until all property screens are closed
+  # Right click your website and select _Properties_.
+  # Click _Home Directory_ tab.
+  # Click the _Configuration_ button.
+  # Under the _Wildcard application mapping_ section. Double click path for the `jrun_iis6_wildcard.dll`.
+  # Uncheck _Verify that file exists_.
+  # Click _OK_ until all property screens are closed.
 
 ==Deleting Unnecessary Files==
 
