@@ -1,5 +1,5 @@
 #summary Use Wheels to simplify the task of setting up automated emails in your application.
-#labels chapter,1.1,draft
+#labels chapter,1.1,published_dev
 
 Sending emails in Wheels is done from your controller files with the [sendEmail sendEmail()] function. It's basically a wrapper around `cfmail`, but it has some smart functionality and a more Wheels-like approach in general.
 
@@ -80,7 +80,7 @@ Like the `template` argument, the logic for which file to include follows the sa
 
 ===Attaching Files===
 
-You can attach files to your emails as well by using the `file` argument (or `files` argument if you want multiple attachments). Simply pass in the name of a file that exists in the `files` folder (or a sub folder of it) of your application. 
+You can attach files to your emails as well by using the `file` argument (or `files` argument if you want multiple attachments). Simply pass in the name of a file that exists in the `files` folder (or a subfolder of it) of your application. 
 
 ==Using Email Layouts==
 
