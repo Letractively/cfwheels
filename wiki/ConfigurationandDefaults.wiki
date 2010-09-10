@@ -1,5 +1,5 @@
 #summary An overview of Wheels configuration and how is it used in your applications. Learn how to override a Wheels convention to make it your own.
-#labels chapter,1.1,draft
+#labels chapter,1.1,published_dev
 
 We all love the "Convention over Configuration" motto of Wheels, but what about those two cases that pop into everyone's head? _What if I want to develop in my own way?_ Or, _What about an existing application that I need to port into Wheels?_ Gladly, that's what configuration and defaults are there for. Let's take a look at exactly how is this performed.
 
@@ -155,7 +155,7 @@ Now your `post` model will map to the `blog_posts` table, `comment` model will m
 ====Full Listing of ORM Settings====
 
 || *Name* || *Type* || *Default* || *Description* ||
-|| `afterFindCallbackLegacySupport` || `boolean` || `true` || When writing afterFind callback, you need to write the same logic for both the this scope (for objects) and arguments scope (for queries). Setting this to `false` makes both ways use the arguments scope so you don't have to duplicate logic. Note: that the default is `true` for backwards compatibility ||
+|| `afterFindCallbackLegacySupport` || `boolean` || `true` || When this is set to `false` and you're implementing an `afterFind()` callback, you need to write the same logic for both the `this` scope (for objects) and `arguments` scope (for queries). Setting this to `false` makes both ways use the `arguments` scope so you don't need to duplicate logic. Note that the default is `true` for backwards compatibility. ||
 || `automaticValidations` || `boolean` || `true` || Set to `false` to stop Wheels from automatically running object validations based on column settings in your database. ||
 || `tableNamePrefix` || `string` || `[empty string]` || String to prefix all database tables with so you don't need to define your model objects including it. Useful in environments that have table naming conventions like starting all table names with `tbl` ||
 || `timeStampOnCreateProperty` || `string` || `createdAt` || Name of database column that Wheels will look for in order to automatically store a "created at" time stamp when records are created. ||
