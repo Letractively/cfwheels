@@ -87,9 +87,9 @@ However, this is not a definite requirement. Wheels associations are completely 
 
 ==Dependencies==
 
-A dependency is when an associated model relies on the existence of its parent. In example above, a profile is dependent on a user. When you delete the user, you would usually want to delete the profile as well.
+A dependency is when an associated model relies on the existence of its parent. In example above, a `profile` is dependent on a `user`. When you delete the `user`, you would usually want to delete the `profile` as well.
 
-Wheels makes this easy for you. When setting up your association, simply add the argument 'dependent' with one of the following values, and Wheels will automatically deal with the dependency.
+Wheels makes this easy for you. When setting up your association, simply add the argument `dependent` with one of the following values, and Wheels will automatically deal with the dependency.
 
 {{{
 <!--- instantiates the profile model and calls its delete method --->
@@ -102,7 +102,7 @@ Wheels makes this easy for you. When setting up your association, simply add the
 <cfset hasOne(name="profile", dependent="nullify")>
 }}}
 
-You can create dependencies on hasOne() and hasMany() associations, but not belongsTo().
+You can create dependencies on `hasOne()` and `hasMany()` associations, but not `belongsTo()`.
 
 ==Database Table Setup==
 
