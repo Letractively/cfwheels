@@ -48,24 +48,24 @@ If you are consuming the service with another Wheels application, your `<cfhttp>
 
 {{{
 <cfhttp url="http://www.example.com/products">
-    <cfhttpparam type="header" name="Accept" value="#get('formats.xml')#">
+    <cfhttpparam type="header" name="Accept" value="#mimeTypes('xml')#">
 </cfhttp>
 }}}
 
 In this example, we are sending an `Accept` header with the value for the `xml` format.
 
-Here is a list of values that you can grab from `get()` with Wheels out of the box.
- * `formats.html`
- * `formats.xml`
- * `formats.json`
- * `formats.csv`
- * `formats.pdf`
- * `formats.xls`
+Here is a list of values that you can grab from `mimeTypes()` with Wheels out of the box.
+ * `html`
+ * `xml`
+ * `json`
+ * `csv`
+ * `pdf`
+ * `xls`
 
-You can use `set()` to set more types to the appropriate MIME type for reference. For example, we could set a Microsoft Word MIME type in `config/settings.cfm` like so:
+You can use `addFormat()` to set more types to the appropriate MIME type for reference. For example, we could set a Microsoft Word MIME type in `config/settings.cfm` like so:
 
 {{{
-<cfset set(formats.doc="application/msword")>
+<cfset addFormat(extension="doc", mimeType="application/msword")>
 }}}
 
 == Responding to Different Formats in the Controller ==
@@ -93,8 +93,50 @@ By calling the `provides()` function in `init()`, you are instructing the Wheels
 
 This is coupled with a call to `renderWith()` in the following actions. In the example above, we are setting a query result of `products` and passing it to `renderWith()`. By passing our data to this function, Wheels gives us the ability to respond to requests for different formats, and it even gives us the option to just let Wheels handle the generation of certain formats automatically.
 
-===Providing the HTML Format===
+When Wheels handles this response, it will set the appropriate MIME type in the `Content-Type` HTTP header as well.
+
+=== Providing the HTML Format ===
 
 Responding to requests for the HTML version is the same as you're already used to with [RenderingContent Rendering Content]. `renderWith()` will accept the same arguments as `renderPage()`, and you create just a view template in the `views` folder like normal.
 
-===Automatic Generation of XML and JSON Formats===
+=== Automatic Generation of XML and JSON Formats ===
+
+If the requested format is `xml` or `json`, the `renderWith()` function will automatically transform the data that you provide it. If you're fine with what the function produces, then you're done!
+
+=== Providing Your Own Custom Responses ===
+
+If you need to provide content for another type than `xml` or `json`, or if you need to customize what your Wheels application generates, you have that option.
+
+In your controller's corresponding folder in `views`, all you need to do is implement a view file like so:
+
+|| Type || Example ||
+|| `html` || `views/products/index.cfm` ||
+|| `xml` || `views/products/index.xml.cfm` ||
+|| `json` || `views/products/index.json.cfm` ||
+|| `csv` || `views/products/index.csv.cfm` ||
+|| `pdf` || `views/products/index.pdf.cfm` ||
+|| `xls` || `views/products/index.xls.cfm` ||
+
+If you need to implement your own XML- or JSON-based output, the presence of your new custom view file will override the automatic generation that Wheels normally performs.
+
+==== Example: PDF Generation ====
+
+If you need to provide a PDF version of the product catalog, the view file at `views/products/index.pdf.cfm` may look something like this:
+
+{{{
+<cfdocument format="pdf">
+    <h1>Products</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            #includePartial(products)#
+        </tbody>
+    </table>
+</cfdocument>
+}}}
