@@ -1,5 +1,5 @@
 #summary How to create new objects and save them to the database.
-#labels chapter,1.0,published_dev
+#labels chapter,1.1,published_dev
 
 In Wheels, one way to create objects that represent records in our table is by calling the [new new()] class-level method.
 
@@ -73,7 +73,7 @@ Of course, if you do need to access the database default immediately after savin
 
 ==Using Model Defaults==
 
-Sometimes a database default isn't the most appropriate solution because the value is only set after the model has been inserted. If you want to set a default value when it is first created with `new()` or `create()`, then you can pass the`defaultValue` argument of the `property()` method used in your model's `init()` block.
+Sometimes a database default isn't the most appropriate solution because the value is only set after the model has been inserted. If you want to set a default value when it is first created with `new()` or `create()`, then you can pass the `defaultValue` argument of the `property()` method used in your model's `init()` block.
 
 {{{
 <cfset property(name="welcomeText", defaultValue="Hello world!")>
