@@ -1,5 +1,5 @@
 #summary How to speed up your website by caching content.
-#labels chapter,1.1,draft
+#labels chapter,1.1,published_dev
 
 If your website doesn't get a whole lot of traffic, then you can probably skip this chapter completely. Just remember that it's here, waiting for your triumphant return.
 
@@ -26,13 +26,13 @@ Here are the global caching parameters you can set, their default values, and a 
 <cfset set(cachePlugins=true)>
 }}}
 
-===The `maximumItemsToCache` Setting===
+===`maximumItemsToCache` Setting===
 
 The total amount of items the cache can hold. When the cache is full, items will be deleted automatically at a regular interval based on the other settings below.
 
 Note that the cache is stored in !ColdFusion's `application` scope, so take this into consideration when deciding the number of items to store.
 
-===The `cacheCullPercentage` Setting===
+===`cacheCullPercentage` Setting===
 
 This is the percentage of items that are culled from the cache when `maximumItemsToCache` has been reached.
 
@@ -40,13 +40,13 @@ For example, if you set this value to `10`, then at most, 10% of expired items w
 
 If you set this to `100`, then all expired items will be deleted. Setting it to 100 is perfectly fine for small caches but can be problematic if the cache is very large.
 
-===The `cacheCullInterval` Setting===
+===`cacheCullInterval` Setting===
 
 This is the number of minutes between each culling action. The reason the cache is not culled during each request is to keep performance as high as possible.
 
-===The `cacheDatePart` Setting===
+===`cacheDatePart` Setting===
 
-The measurement unit to use during caching. The default is minutes ("n") but you can set it to seconds ("s") for example if you want more precise control over when a cached item should expire. For the rest of this chapter we'll assume you've left it at the default setting.
+The measurement unit to use during caching. The default is minutes (`"n"`), but you can set it to seconds (`"s"`) for example if you want more precise control over when a cached item should expire. For the rest of this chapter, we'll assume you've left it at the default setting.
 
 ===The `defaultCacheTime` Setting===
 
@@ -54,15 +54,15 @@ The number of minutes an item should be cached when it has not been specifically
 
 ===The `cacheQueriesDuringRequest` Setting===
 
-When set to `true` caches identical queries during a request. See the section titled "Automatic Caching of Identical Queries" below for more information about this setting.
+When set to `true`, Wheels caches identical queries during a request. See the section titled _Automatic Caching of Identical Queries_ below for more information about this setting.
 
 ===The `clearQueryCacheOnReload` Setting===
 
-When set to `true` this will clear out all cached queries when doing a `reload=true` request. This is usually a good idea but if you want to avoid hitting the database too hard on application reloads you can set this to `false` to keep queries cached and ease the load for the database a little.
+When set to `true`, Wheels will clear out all cached queries when doing a `reload=true` request. This is usually a good idea, but if you want to avoid hitting the database too hard on application reloads, you can set this to `false` to keep queries cached and ease the load on the database.
 
 ===The `cachePlugins` Setting===
 
-If you set this to `false` all plugins will reload on each request (as opposed to during `reload=true` requests only). Setting this is only recommended if you are developing a plugin yourself and need to see the impact of your changes as you develop it on a per request basis. 
+If you set this to `false`, all plugins will reload on each request (as opposed to during `reload=true` requests only). Setting this is only recommended if you are developing a plugin yourself and need to see the impact of your changes as you develop it on a per-request basis. 
 
 ==Environment-Level Caching==
 
@@ -137,9 +137,9 @@ Here is some code that shows this technique with using the Flash to expire the c
 <cfset redirectTo(action="showArticle", key=params.key)>
 }}}
 
-Note that, by default, any filters set for the action are being run as normal. This means that if you do authentication in the filter (which is a common technique for sites with content where you have to login first to see it), you can still cache those pages safely using the [caches caches()] function.
+Note that by default, any filters set for the action are being run as normal. This means that if you do authentication in the filter (which is a common technique for sites with content where you have to login first to see it), you can still cache those pages safely using the [caches caches()] function.
 
-However, to achieve the fastest possible cache you can override this default and tell Wheels to cache the HTML and serve that exactly as it is to all subsequent requests without running any filters or application events (`onSessionStart`, `onRequestStart` etc). To do this, set the `static` argument on [caches caches()] to `true`. This will cache your content using the `cfcache` tag behind the scenes. This means that the Wheels framework won't even get involved with the subsequent requests (until they expire from the cache again of course).
+However, to achieve the fastest possible cache, you can override this default and tell Wheels to cache the HTML and serve that exactly as it is to all subsequent requests without running any filters or application events (`onSessionStart`, `onRequestStart`, etc.). To do this, set the `static` argument on [caches caches()] to `true`. This will cache your content using the `cfcache` tag behind the scenes. This means that the Wheels framework won't even get involved with the subsequent requests until they expire from the cache again.
 
 ===Page Caching===
 
