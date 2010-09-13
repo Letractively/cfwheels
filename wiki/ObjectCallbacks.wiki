@@ -16,7 +16,6 @@ Let's say you want to have the following things executed somewhere in the code:
 
  * Stripping out dashes from the credit card number to make it as easy as possible for the user to make a purchase.
  * Calculating shipping cost based on the country the package will be sent to.
- * Sending a confirmation email to the user if the order is canceled.
 
 It's tempting to put this code right in the controller, isn't it? But if you think ahead a little, you'll realize that you might build an administrative interface for orders and maybe an express checkout as well at some point in the future. You don't want to duplicate all your logic in all these places, do you?
 
@@ -30,7 +29,6 @@ Part of the `Order.cfc` model file:
     <cffunction name="init">
         <cfset beforeValidationOnCreate("fixCreditCard")>
         <cfset afterValidation("calculateShippingCost")>
-        <cfset afterDelete("sendConfirmationEmail")>
     </cffunction>  
 
     <cffunction name="fixCreditCard">
@@ -41,14 +39,10 @@ Part of the `Order.cfc` model file:
         Code for calculating shipping cost goes here...
     </cffunction>
 
-    <cffunction name="sendConfirmationEmail">
-        Code for sending confirmation email goes here...
-    </cffunction>
-
 </cfcomponent>
 }}}
 
-The above code registers 3 methods to be run at specific points in the life cycle of all objects in your application. 
+The above code registers 2 methods to be run at specific points in the life cycle of all objects in your application. 
 
 ==Registering and Controlling Callbacks==
 
