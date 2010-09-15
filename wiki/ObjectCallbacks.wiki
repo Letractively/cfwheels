@@ -1,5 +1,5 @@
 #summary Learn how to write code that runs every time a given object is created, updated, or deleted.
-#labels chapter,1.0,published_prod
+#labels chapter,1.1,draft
 
 Callbacks in Wheels allow you to have code executed before and/or after certain operations on an object. This requires some further explanation, so let's go straight to an example of a real-world application: the e-commerce checkout.
 
@@ -83,50 +83,48 @@ Sometimes you need to run more than one method at a specific point in the object
 
 When an object is saved in your application, these two callbacks will be executed in the order that you registered them. The `checkSomething` method will be executed first, and unless it returns `false`, the `checkSomethingElse` method will be executed directly afterwards.
 
-==Special Case #1: `findAll()` and the `afterFind` Callback==
+==Special Case #1: `findAll()` and the `afterFind()` Callback==
 
-When you read about the `afterFind()` callback above, you may have thought that it must surely only work for `findOne()`/`findByKey()` calls but not for `findAll()` because those calls return query result sets by default, not objects.
+When you read about the `afterFind()` callback above, you may have thought that it must surely only work for `findOne()`/`findByKey()` calls but not for `findAll()`. After all, those calls return query result sets by default, not objects.
 
-Believe it or not, but callbacks are even triggered on `findAll()`! You do need to write your callback code differently to cater to `findAll()` because there will be no `this` scope in the query object. Instead of modifying properties in the `this` scope like you normally would, the properties are passed in to the callback method via the `arguments` struct.
+Believe it or not, but callbacks are also triggered on `findAll()`! But instead of modifying properties in the `this` scope like you would with other callbacks, the properties are passed in to the callback method via the `arguments` struct.
 
-Does that sound complicated? This example should clear it up a little. Let's show some code to display how you can handle setting a `fullName` property on a hypothetical `artist` model:
+Here is an example of how you can handle setting a `fullName` property on a hypothetical `artist` model:
 
 {{{
 <cfcomponent extends="Model" output="false">
 
     <cffunction name="init">
-        <cfset afterFind("addFullName")>
-    </cffunction>
-
-    <cffunction name="addFullName">
-        <cfif StructIsEmpty(arguments)>
-            <cfset this.fullName = setFullName(this.firstName, this.lastName)>
-        <cfelse>
-            <cfset arguments.fullName = setFullName(arguments.firstName, arguments.lastName)>
-            <cfreturn arguments>
-        </cfif>
+        <cfset afterFind("setFullName")>
     </cffunction>
 
     <cffunction name="setFullName">
-        <cfargument name="fn" type="string">
-        <cfargument name="ln" type="string">
-
-        <cfset var fullName = "">
-        <cfset fullName = arguments.ln>
-        <cfif Len(arguments.fn)>
-            <cfset fullName = arguments.fn & " " & fullName>
+        <cfset arguments.fullName = arguments.lastName>
+        <cfif Len(arguments.firstName)>
+            <cfset arguments.fullName = arguments.firstName & " " & fullName>
         </cfif>
-       <cfreturn fullName>
+        <cfreturn arguments>
     </cffunction>
 
 </cfcomponent>
 }}}
 	
-In our example model, an artist's name can consist of both a first name and a last name like in "John Mayer" or just the band / last name like in "Abba".
+In our example model, an artist's name can consist of both a first name and a last name like in "John Mayer" or just the band or last name like in "Abba".
 
-The `setFullName` method handles the concatenation of the names, but the interesting stuff is in the `addFullName` method. This is where we check if the `arguments` struct is empty. If it is, then we know we're dealing with an object and can proceed to work with the `this` scope. Otherwise, we do the changes directly on the `arguments` struct and return it back.
+Always remember to return the `arguments` struct, otherwise Wheels won't be able to tell that you actually wanted to make any changes to the query or object.
 
-(Always remember to return the `arguments` struct, otherwise Wheels won't be able to tell that you actually wanted to make any changes to the query.)
+===Setting Legacy Support for the `afterFind()` Callback===
+
+Prior to version 1.1, you needed to write your `afterFind()` implementations to cater to scenarios setting properties for both queries and objects. This extra logic is no longer needed as of Wheels 1.1.
+
+To preserve backwards compatibility when upgrading Wheels from version 1.0.x to 1.1.x, you can set the `afterFindCallbackLegacySupport` configuration to `true`, like so:
+
+{{{
+<!--- In `config/settings.cfm` --->
+<cfset set(afterFindCallbackLegacySupport=true)>
+}}}
+
+See the chapter about [ConfigurationandDefaults Configuration and Defaults] for more information.
 
 ==Special Case #2: Callbacks and the `updateAll()` and `deleteAll()` Methods==
 
