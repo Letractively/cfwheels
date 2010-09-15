@@ -1,5 +1,5 @@
 #summary Learn how to write code that runs every time a given object is created, updated, or deleted.
-#labels chapter,1.0,draft
+#labels chapter,1.0,published_prod
 
 Callbacks in Wheels allow you to have code executed before and/or after certain operations on an object. This requires some further explanation, so let's go straight to an example of a real-world application: the e-commerce checkout.
 
@@ -81,7 +81,7 @@ Sometimes you need to run more than one method at a specific point in the object
 <cfset beforeSave("checkSomething,checkSomethingElse")>
 }}}
 
-When an object is saved in your application these two callbacks will be executed in the order you registered them. The `checkSomething` method will be executed first and unless it returns `false` the `checkSomethingElse` method will be executed directly afterwards.
+When an object is saved in your application, these two callbacks will be executed in the order that you registered them. The `checkSomething` method will be executed first, and unless it returns `false`, the `checkSomethingElse` method will be executed directly afterwards.
 
 ==Special Case #1: `findAll()` and the `afterFind` Callback==
 
