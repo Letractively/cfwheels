@@ -171,23 +171,34 @@ Sometimes it's useful to be able to pass through arguments to the filters. For o
 
 Now the `byIP` argument will be available in the `authorize` function.
 
-Hard-coded variables like that pose no issues, but because the `init()` function doesn't run on every request, you can't start passing through dynamic variables. What would happen is that Wheels would only evaluate that variable once `OnApplicationStart` and then pass that same value through on all subsequent requests. This is probably not what you would want.
-
-There is a way around this limitation though and that is to delay the evaluation of the variable so it evaluates on each request instead of just once. Here's how you can pull that off:
+To help you avoid any clashing of argument names, Wheels also supports passing in the arguments in a struct as well:
 
 {{{
-<cfset filters(through="authorize", byIP=true, region="##request.region##")>
-}}}
-
-Now, instead of evaluating `request.region` inside the `init()` function it will be done as it gets passed through to the `authorize` function on each request instead.
-
-To avoid any clashing of variables, Wheels also supports passing in the arguments in a struct as well:
-
-{{{
+<!--- The `through` argument would clash here if it weren't stored within a struct --->
 <cfset args.byIP = true>
 <cfset args.through = true>
 <cfset filters(through="authorize", authorizeArguments=args)>
 }}}
+
+===Evaluating Filter Arguments at Runtime===
+
+Because your controller's `init()` method only runs once per application start, the passing of arguments can also be written as expressions to be evaluated at runtime. This is helpful if you need for the value to be dynamic from request to request.
+
+For example, this code would only evaluate the value for `request.region` on the very first request and store it in memory for all subsequent requests:
+
+{{{
+<!--- This is probably not what you intended --->
+<cfset filters(through="authorize", byIP=true, region=request.region)>
+}}}
+
+To avoid this "hard-coding" of values from request to request, you can instead pass an expression. (The double pound signs are necessary to escape dynamic values within the string. We only want to store a string representation of the expression to be evaluated.)
+
+{{{
+<!--- This is probably more along the lines of what you intended --->
+<cfset filters(through="authorize", byIP=true, region="##request.region##")>
+}}}
+
+Now instead of evaluating `request.region` inside the `init()` function, it will be done on each individual request.
 
 ==Low Level Access==
 
