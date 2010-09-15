@@ -1,9 +1,7 @@
 #summary Verify the existence of variables before allowing for a given controller action to run.
 #labels chapter,draft,1.1
 
-Verification, through the [verifies verifies()] function, is just a special type of filter that runs before actions. Its capability is limited; the only thing you can do is verify the request method (`post` or `get`), whether it's an AJAX request, whether specified variables exist and if it is of a certain type.
-
-Let's say that you want to make sure that all requests coming to a page that handles form submissions are `post` requests. While you can do this with a filter, it is more convenient to do it with the [verifies verifies()] function.
+Verification, through the [verifies verifies()] function, is just a special type of filter that runs before actions. Let's say that you want to make sure that all requests coming to a page that handles form submissions are `post` requests. While you can do this with a filter, it is more convenient to do it with the [verifies verifies()] function.
 
 All that you need to do is this:
 
@@ -25,10 +23,10 @@ On your edit.cfm page what you probably did was write some code at the top of th
 
 With this snippet of code you could ensure that any request to the edit.cfm had to have the userid in the form scope and that userid had to be guid. If these conditions weren't met, the request was redirected to the index.cfm page. This was a very time consuming, but necessary task.
 
-Now let's see how using the [verifies verifies()] function within Wheels to improve this:
+Now let's see how using the [verifies verifies()] function within Wheels improves this:
 
 {{{
-<cfset verifies(only="edit", post=true, params="userid", paramsTypes="guid", action="index", error="Invalid user id.")>
+<cfset verifies(only="edit", post="true", params="userid", paramsTypes="guid", action="index", error="Invalid user id.")>
 }}}
 
 With that one line of code, Wheels will perform the following checks when a request is made to the controller's edit action:
