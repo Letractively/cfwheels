@@ -48,18 +48,18 @@ The above code registers 2 methods to be run at specific points in the life cycl
 
 The following 17 functions can be used to register callbacks.
 
- * [afterNew afterNew()] or [afterFind afterFind()]
- * [afterInitialization afterInitialization()]
- * [beforeValidation beforeValidation()]
- * [beforeValidationOnCreate beforeValidationOnCreate()] or [beforeValidationOnUpdate beforeValidationOnUpdate()]
- * [afterValidation afterValidation()]
- * [afterValidationOnCreate afterValidationOnCreate()] or [afterValidationOnUpdate afterValidationOnUpdate()]
- * [beforeSave beforeSave()]
- * [beforeCreate beforeCreate()] or [beforeUpdate beforeUpdate()]
- * [afterCreate afterCreate()] or [afterUpdate afterUpdate()]
- * [afterSave afterSave()]
- * [beforeDelete beforeDelete()]
- * [afterDelete afterDelete()]
+ * `afterNew()` or `afterFind()`
+ * `afterInitialization()`
+ * `beforeValidation()`
+ * `beforeValidationOnCreate()` or `beforeValidationOnUpdate()`
+ * `afterValidation()`
+ * `afterValidationOnCreate()` or `afterValidationOnUpdate()`
+ * `beforeSave()`
+ * `beforeCreate()` or `beforeUpdate()`
+ * `afterCreate()` or `afterUpdate()`
+ * `afterSave()`
+ * `beforeDelete()`
+ * `afterDelete()`
 
 ===Callback Life Cycle===
 
