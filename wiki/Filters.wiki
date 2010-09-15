@@ -179,7 +179,7 @@ There is a way around this limitation though and that is to delay the evaluation
 <cfset filters(through="authorize", byIP=true, region="##request.region##")>
 }}}
 
-Now, instead of evaluating `request.region` inside the `init` function it will be done as it gets passed through to the `authorize` function on each request instead.
+Now, instead of evaluating `request.region` inside the `init()` function it will be done as it gets passed through to the `authorize` function on each request instead.
 
 To avoid any clashing of variables, Wheels also supports passing in the arguments in a struct as well:
 
@@ -191,7 +191,7 @@ To avoid any clashing of variables, Wheels also supports passing in the argument
 
 ==Low Level Access==
 
-If you need to access your filters on a lower level, you can do so by using the [filterChain filterChain()] and [setFilterChain setFilterChain()] functions. Typically, you'll want to call [filterChain filterChain()] to return an array of all the filters set on the current controller, make your desired changes, and save it back using the [setFilterChain setFilterChain()] function.
+If you need to access your filters on a lower level, you can do so by using the `filterChain()` and `setFilterChain()` functions. Typically, you'll want to call `filterChain()` to return an array of all the filters set on the current controller, make your desired changes, and save it back using the `setFilterChain()` function.
 
 Here is an example in our controller's `init()` method where we remove a certain restriction if the username is `perdjurner`:
 
