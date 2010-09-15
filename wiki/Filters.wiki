@@ -130,7 +130,7 @@ If you actually want to set the same filters to be run for all controllers, you 
 
 ==2 Types of Filters==
 
-You specify if you want to run the filter function `before` or `after` the controller action with the `type` argument to the [filters filters()] function. It defaults to running it `before` the action.
+You specify if you want to run the filter function `before` or `after` the controller action with the `type` argument to the `filters()` function. It defaults to running it `before` the action.
 
 The previous example with authentication showed a "before filter" in action. The other type of filter you can run is an "after filter." As you can tell from the name, an after filter executes code after the action has been completed.
 
