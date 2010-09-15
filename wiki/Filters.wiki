@@ -184,7 +184,7 @@ To help you avoid any clashing of argument names, Wheels also supports passing i
 
 Because your controller's `init()` method only runs once per application start, the passing of arguments can also be written as expressions to be evaluated at runtime. This is helpful if you need for the value to be dynamic from request to request.
 
-For example, this code would only evaluate the value for `request.region` on the very first request and store it in memory for all subsequent requests:
+For example, this code would only evaluate the value for `request.region` on the very first request, and Wheels will store that particular value in memory for all subsequent requests:
 
 {{{
 <!--- This is probably not what you intended --->
