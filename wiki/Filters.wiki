@@ -85,7 +85,7 @@ As the smart coder that you are, you re-factor this to another method so your co
 </cfcomponent>
 }}}
 
-Much better! But Wheels can take this process of avoiding repetition one step further. By placing a [filters filters()] call in the `init` method of the controller, you can tell Wheels what function to run before any desired action(s).
+Much better! But Wheels can take this process of avoiding repetition one step further. By placing a `filters()` call in the `init()` method of the controller, you can tell Wheels what function to run before any desired action(s).
 
 {{{
 <cfcomponent extends="Controller">
@@ -124,37 +124,9 @@ All of these advantages will become much more obvious as your applications grow.
 
 So far, we've only been dealing with one controller. Unless you're building a very simple website, you'll end up with a lot more.
 
-The question then becomes, "Where do I place the `restrictAccess()` function so I can call it from any one of my controllers?" The answer is that because all controllers extend `Controller.cfc`, you should probably put it there. The `init()` method itself with the call to [filters filters()] should remain inside your individual controllers though.
+The question then becomes, "Where do I place the `restrictAccess()` function so I can call it from any one of my controllers?" The answer is that because all controllers extend `Controller.cfc`, you should probably put it there. The `init()` method itself with the call to `filters()` should remain inside your individual controllers though.
 
 If you actually want to set the same filters to be run for all controllers, you can go ahead and move it to the `Controller.cfc` file's `init()` method as well. Keep in mind that if you want to run the `init()` method in the individual controller *and* in `Controller.cfc`, you will need to call `super.init()` from the `init()` method of your individual controller.
-
-==Passing Arguments to Filter Functions==
-
-Sometimes it's useful to be able to pass through arguments to the filters. For one, it can help you reduce the amount of functions you need to write. Here's the easy way to pass through an argument:
-
-{{{
-<cfset filters(through="authorize", byIP=true)>
-}}}
-
-Now the `byIP` argument will be available in the `authorize` function.
-
-Hard-coded variables like that pose no issues, but because the `init()` function doesn't run on every request, you can't start passing through dynamic or `url`, `form`, or `request` scoped variables for. What would happen is that Wheels would only evaluate that variable once and then pass that same value through on all subsequent requests. This is probably not what you would want.
-
-There is a way around this limitation though and that is to delay the evaluation of the variable so it evaluates on each request instead of just once. Here's how you can pull that off:
-
-{{{
-<cfset filters(through="authorize", byIP=true, region="##request.region##")>
-}}}
-
-Now, instead of evaluating `request.region` inside the `init` function it will be done as it gets passed through to the `authorize` function on each request instead.
-
-To avoid any clashing of variables, Wheels also supports passing in the arguments in a struct as well:
-
-{{{
-<cfset args.byIP = true>
-<cfset args.through = true>
-<cfset filters(through="authorize", authorizeArguments=args)>
-}}}
 
 ==2 Types of Filters==
 
@@ -187,6 +159,34 @@ Here are some examples showing how to setup filtering in your controllers. Remem
 {{{
 <cfset filters(through="isLoggedIn,checkIPAddress", except="home,login")>
 <cfset filters(through="translateText", only="termsOfUse", type="after")>
+}}}
+
+==Passing Arguments to Filter Functions==
+
+Sometimes it's useful to be able to pass through arguments to the filters. For one, it can help you reduce the amount of functions you need to write. Here's the easy way to pass through an argument:
+
+{{{
+<cfset filters(through="authorize", byIP=true)>
+}}}
+
+Now the `byIP` argument will be available in the `authorize` function.
+
+Hard-coded variables like that pose no issues, but because the `init()` function doesn't run on every request, you can't start passing through dynamic variables. What would happen is that Wheels would only evaluate that variable once `OnApplicationStart` and then pass that same value through on all subsequent requests. This is probably not what you would want.
+
+There is a way around this limitation though and that is to delay the evaluation of the variable so it evaluates on each request instead of just once. Here's how you can pull that off:
+
+{{{
+<cfset filters(through="authorize", byIP=true, region="##request.region##")>
+}}}
+
+Now, instead of evaluating `request.region` inside the `init` function it will be done as it gets passed through to the `authorize` function on each request instead.
+
+To avoid any clashing of variables, Wheels also supports passing in the arguments in a struct as well:
+
+{{{
+<cfset args.byIP = true>
+<cfset args.through = true>
+<cfset filters(through="authorize", authorizeArguments=args)>
 }}}
 
 ==Low Level Access==
