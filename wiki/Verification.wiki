@@ -1,0 +1,44 @@
+#summary Verify the existence of variables before allowing for a given controller action to run.
+#labels chapter,draft,1.1
+
+Verification, through the [verifies verifies()] function, is just a special type of filter that runs before actions. Its capability is limited; the only thing you can do is verify the request method (`post` or `get`), whether it's an AJAX request, whether specified variables exist and if it is of a certain type.
+
+Let's say that you want to make sure that all requests coming to a page that handles form submissions are `post` requests. While you can do this with a filter, it is more convenient to do it with the [verifies verifies()] function.
+
+All that you need to do is this:
+
+{{{
+<cfset verifies(only="handleForm", post=true)>
+}}}
+
+The code above will ensure that all requests coming to the `handleForm` function are from form submissions. All other requests will be aborted. You can also specify different behavior for when the verification fails in a special handler function.
+
+A very convenient and common use is when you want to make sure that a variables exists and it is of a certain type otherwise redirect the user to a different page. Step back in time for a moment and remember how you use to code websites before Wheels (yes I know those were dark days, but stay with me).
+
+On your edit.cfm page what you probably did was write some code at the top of that looked like this:
+
+{{{
+<cfif !StructKeyExists(form, "userid") OR !IsValid("guid", form.userid)>
+  <cflocation url="index.cfm" addToken="false">
+</cfif>
+}}}
+
+With this snippet of code you could ensure that any request to the edit.cfm had to have the userid in the form scope and that userid had to be guid. If these conditions weren't met, the request was redirected to the index.cfm page. This was a very time consuming, but necessary task.
+
+Now let's see how using the [verifies verifies()] function within Wheels to improve this:
+
+{{{
+<cfset verifies(only="edit", post=true, params="userid", paramsTypes="guid", action="index", error="Invalid user id.")>
+}}}
+
+With that one line of code, Wheels will perform the following checks when a request is made to the controller's edit action:
+
+  * it will make sure that the request is a `post` request
+  * it will make sure that the userid variables exists in the params struct
+  * it will make sure that the params.userid is a guid datatype.
+
+If any of those checks fail, Wheels will redirect the request to the index action of the controller and place an error key in the flash containing the message "Invalid user id". All that functionality and security in only one line of code!
+
+What if you wanted do this to two or more variables? The params and paramsTypes take a list so you can include as many variables to check against as you want. The only thing you need to make sure of is that the number of variables in the `params` list matches the number types to check against in the `paramsTypes` list. This also goes for the session / sessionTypes and cookie / cookieTypes. 
+
+You can read more in the documentation for the [verifies verifies()] function. 
