@@ -136,9 +136,9 @@ The previous example with authentication showed a "before filter" in action. The
 
 This can be used to make some last minute modifications to the HTML before it is sent to the browser (think translation, compression, etc.), for example.
 
-If you want to get a copy of the content that will be rendered to the browser from an after filter, you can use the [response response()] function.
+If you want to get a copy of the content that will be rendered to the browser from an after filter, you can use the `response()` function. To set your changes to the response afterward, use the `setResponse()` function.
 
-Let's say you want to quickly translate the content to Gibberish before sending it to your visitor. You can do something like this:
+As an example, let's say that you want to translate the content to Gibberish before sending it to your visitor. You can do something like this:
 
 {{{
 <cffunction name="init">
