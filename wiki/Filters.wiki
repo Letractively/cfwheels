@@ -1,5 +1,5 @@
 #summary Stop repeating yourself with the use of before and after filters.
-#labels chapter,draft,1.1
+#labels chapter,published_dev,1.1
 
 If you find the need to run a piece of code before or after several controller actions, then you can use _filters_ to accomplish this without needing to explicitly call the code inside each action in question.
 
@@ -208,7 +208,7 @@ Here is an example in our controller's `init()` method where we remove a certain
 
 {{{
 <cfset var myFilterChain = filterChain()>
-<cfif loggedInUser.username is `perdjurner`>
+<cfif loggedInUser.username is "perdjurner">
     <cfset StructDelete(myFilterChain, "restrictAccess")>
 </cfif>
 <cfset setFilterChain(myFilterChain)>
