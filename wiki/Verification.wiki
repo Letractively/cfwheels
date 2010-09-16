@@ -1,42 +1,80 @@
-#summary Verify the existence of variables before allowing for a given controller action to run.
+#summary Verify the existence and type of variables before allowing for a given controller action to run.
 #labels chapter,draft,1.1
 
-Verification, through the [verifies verifies()] function, is just a special type of filter that runs before actions. Let's say that you want to make sure that all requests coming to a page that handles form submissions are `post` requests. While you can do this with a filter, it is more convenient to do it with the [verifies verifies()] function.
+Verification, through the `verifies()` function, is just a special type of filter that runs before actions. With verifications defined in your controller, you can eliminate the need for wrapping your entire actions in `<cfif>` blocks checking for the existence and types of variables. You also can limit your actions' scopes to specific request types like `post`, `get`, and AJAX requests.
 
-All that you need to do is this:
+==Using `verifies()` to Enforce Request Types==
+
+Let's say that you want to make sure that all requests coming to a page that handles form submissions are `post` requests. While you can do this with a filter and the `isPost()` function, it is more convenient and DRY to do it with the `verifies()` function.
+
+All that you need to do is add this line to your controller's `init()` function:
 
 {{{
-<cfset verifies(only="handleForm", post=true)>
+<!--- In the controller --->
+<cffunction name="init">
+    <cfset verifies(only="create,update", post=true)>
+</cffunction>
 }}}
 
-The code above will ensure that all requests coming to the `handleForm` function are from form submissions. All other requests will be aborted. You can also specify different behavior for when the verification fails in a special handler function.
+The code above will ensure that all requests coming to the `create` and `update` actions are from form submissions. All other requests will be aborted.
 
-A very convenient and common use is when you want to make sure that a variables exists and it is of a certain type otherwise redirect the user to a different page. Step back in time for a moment and remember how you use to code websites before Wheels (yes I know those were dark days, but stay with me).
+There are also boolean arguments for `get` and `ajax` request types.
 
-On your edit.cfm page what you probably did was write some code at the top of that looked like this:
+==Defining a Handler for Failed Verifications==
+
+You can also specify different behavior for when the verification fails in a special handler function registered with the `handler` argument.
+
+In this example, we register the `incorrectRequestType()` function as the handler:
 
 {{{
-<cfif !StructKeyExists(form, "userid") OR !IsValid("guid", form.userid)>
-  <cflocation url="index.cfm" addToken="false">
+<!--- In the controller --->
+<cffunction name="init">
+    <cfset verifies(only="create,update", post=true, handler="incorrectRequestType")>
+</cffunction>
+
+<cffunction name="incorrectRequestType">
+    <cfset renderPage(action="accessDenied")>
+</cffunction>
+}}}
+
+==Enforcing the Existence and Type of Variables==
+
+A very convenient and common use of `verifies()` is when you want to make sure that a variables exists and is of a certain type; otherwise, you would like for your controller to redirect the user to a different page.
+
+Step back in time for a moment and remember how you used to code websites before Wheels. (Yes I know those were dark days, but stay with me.)
+
+On your `edit.cfm` page, what you probably did was write some code at the top of that looked like this:
+
+{{{
+<cfif !StructKeyExists(form, "userId") OR !IsValid("guid", form.userId)>
+    <cflocation url="index.cfm" addToken="false">
 </cfif>
 }}}
 
-With this snippet of code you could ensure that any request to the edit.cfm had to have the userid in the form scope and that userid had to be guid. If these conditions weren't met, the request was redirected to the index.cfm page. This was a very time consuming, but necessary task.
+With this snippet of code, you could ensure that any request to the `edit.cfm` had to have the `userId` in the `form` scope and that `userId` had to be of type `guid`. If these conditions weren't met, the request was redirected to the `index.cfm` page. This was a very tedious but necessary task.
 
-Now let's see how using the [verifies verifies()] function within Wheels improves this:
+Now let's see how using the `verifies()` function within Wheels improves this:
 
 {{{
-<cfset verifies(only="edit", post="true", params="userid", paramsTypes="guid", action="index", error="Invalid user id.")>
+<!--- In the controller --->
+<cffunction name="init">
+    <cfset verifies(only="edit", post=true, params="userId", paramsTypes="guid", action="index", error="Invalid user ID.")>
+</cffunction>
 }}}
 
-With that one line of code, Wheels will perform the following checks when a request is made to the controller's edit action:
+With that one line of code, Wheels will perform the following checks when a request is made to the controller's `edit` action:
 
-  * it will make sure that the request is a `post` request
-  * it will make sure that the userid variables exists in the params struct
-  * it will make sure that the params.userid is a guid datatype.
+ * Make sure that the request is a `post` request.
+ * Make sure that the `userId` variables exists in the `params` struct.
+ * Make sure that the `params.userId` is of type `guid`.
+ * If any of those checks fail, redirect the request to the `index` action and place an error key in the Flash containing the message "Invalid user ID."
 
-If any of those checks fail, Wheels will redirect the request to the index action of the controller and place an error key in the flash containing the message "Invalid user id". All that functionality and security in only one line of code!
+All that functionality in only one line of code!
 
-What if you wanted do this to two or more variables? The params and paramsTypes take a list so you can include as many variables to check against as you want. The only thing you need to make sure of is that the number of variables in the `params` list matches the number types to check against in the `paramsTypes` list. This also goes for the session / sessionTypes and cookie / cookieTypes. 
+Note that type checking with `verifies()` is not a substitute for [ObjectValidation Object Validation] in your model. `verifies()` adds convenience to your application flow for stopping basic type errors, especially for values passed in through the URL.
 
-You can read more in the documentation for the [verifies verifies()] function. 
+What if you wanted do this for two or more variables? The `params` and `paramsTypes` each accept a list so you can include as many variables to check against as you want.
+
+The only thing you need to make sure of is that the number of variables in the `params` list matches the number types to check against in the `paramsTypes` list. This also goes for the `session`/`sessionTypes` and `cookie`/`cookieTypes` arguments, which check for existence and type in the `session` and `cookie` scopes, respectively. 
+
+You can read more in the API documentation for the `verifies()` function. 
