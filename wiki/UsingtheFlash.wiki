@@ -22,7 +22,7 @@ Here's an example of how we then display the Flash message we just set in the vi
 <p class="error-message"><cfoutput>#flash("error")#</cfoutput></p>
 }}}
 
-As you can see above, you use the [flashInsert flashInsert()] function when you want to store data in the Flash and the [flash flash()] function when you want to display the data in a view.
+As you can see above, you use the `flashInsert()` function when you want to store data in the Flash and the `flash()` function when you want to display the data in a view.
 
 The key chosen above is `error`, but it could have been anything. Just like with a normal `struct`, the naming of the keys is your job.
 
@@ -30,11 +30,11 @@ As an example, you may choose to use one key for storing messages after the user
 
 ==Shortcut for Setting the Flash and Redirecting==
 
-The more you work with Wheels and the Flash the more you're gonna find that you keep repeating that [flashInsert flashInsert()] / [redirectTo redirectTo()] combo all the time. Wheels is all about finding commonalities like that in code and creating a better and quicker solution for it so it figures that we have something in store for this situation.
+The more you work with Wheels and the Flash the more you're gonna find that you keep repeating that `flashInsert()` / `redirectTo()` combo all the time. Wheels is all about finding commonalities like that in code and creating a better and quicker solution for it so it figures that we have something in store for this situation.
 
 <cfset redirectTo(action="edit", error="Oops! Please correct your errors and try again")>
 
-That piece of code does exactly the same thing as the two lines of code shown previously in this chapter. The Wheels [redirectTo redirectTo()] function sees the `error` argument coming in and knows that it's not part of its own declared arguments so therefore you (the developer) must intend for it to be stored in the Flash so it goes ahead and calls `flashInsert(error="Oops! Please correct your errors and try again")` for you behind the scenes.
+That piece of code does exactly the same thing as the two lines of code shown previously in this chapter. The Wheels `redirectTo()` function sees the `error` argument coming in and knows that it's not part of its own declared arguments so therefore you (the developer) must intend for it to be stored in the Flash so it goes ahead and calls `flashInsert(error="Oops! Please correct your errors and try again")` for you behind the scenes.
 
 So what if you want to redirect to the "edit" action *and* set a key in the Flash named "action" as well? Simply prepend the flash key with "flash" to tell Wheels to avoid the argument naming collision and still place an "action" key in the Flash.
 
@@ -44,7 +44,7 @@ Obviously we don't recommend naming the keys in your Flash "action" but these na
 
 ==Your Storage Options==
 
-We mentioned that the data for the Flash is stored in either a `cookie` or the `session` scope. You can find out where Wheels stores the Flash data in your application by running `get("flashStorage")`. If you have `session` management enabled in your application Wheels will default to storing the Flash in the `session` scope, otherwise it will store it in a `cookie` on the user's computer. You can of course override this setting in the same way you can override all other Wheels settings, by running the [set set()] function like this: `set(flashStorage="session")`.
+We mentioned that the data for the Flash is stored in either a `cookie` or the `session` scope. You can find out where Wheels stores the Flash data in your application by running `get("flashStorage")`. If you have `session` management enabled in your application Wheels will default to storing the Flash in the `session` scope, otherwise it will store it in a `cookie` on the user's computer. You can of course override this setting in the same way you can override all other Wheels settings, by running the `set()` function like this: `set(flashStorage="session")`.
 
 Note: before you set Wheels to use the `session` scope you have to make sure that `session` management is enabled. To enable it all you have to do is add `this.sessionManagement = true` to the `config/app.cfm` file.
 
@@ -58,13 +58,13 @@ So, what storage option should you choose? Well, to be honest it doesn't really 
 
 ==More Flashy Functions==
 
-Besides [flash flash()] and [flashInsert flashInsert()] that are used to read from/insert to the Flash, there are a few other functions worth mentioning.
+Besides `flash()` and `flashInsert()` that are used to read from/insert to the Flash, there are a few other functions worth mentioning.
 
-[flashCount flashCount()] is used to count how many key/value pairs there are in the Flash.
+`flashCount()` is used to count how many key/value pairs there are in the Flash.
 
-[flashClear flashClear()] and [flashDelete flashDelete()] does exactly what its counterparts in the `struct` world, `StructClear` and `StructDelete`, does. Namely clear the entire Flash and delete a specific key/value from it.
+`flashClear()` and `flashDelete()` does exactly what its counterparts in the `struct` world, `StructClear` and `StructDelete`, does. Namely clear the entire Flash and delete a specific key/value from it.
 
-[flashKeyExists flashKeyExists()] is used to check if a specific key exists. So it would make sense to make use of that function in the code listed above to avoid outputting an empty `<p>` tag on requests where the Flash is empty. ([flash flash()] will return an empty string when the specified key does not exist). Throw the [flashIsEmpty flashIsEmpty()] function into the mix as well and you might end up with code looking something like this.
+`flashKeyExists()` is used to check if a specific key exists. So it would make sense to make use of that function in the code listed above to avoid outputting an empty `<p>` tag on requests where the Flash is empty. (`flash()` will return an empty string when the specified key does not exist). Throw the `flashIsEmpty()` function into the mix as well and you might end up with code looking something like this.
 
 
 {{{
@@ -80,9 +80,9 @@ Besides [flash flash()] and [flashInsert flashInsert()] that are used to read fr
 </cfif>
 }}}
 
-Do you think that looks like a painful amount of code to write all by yourself and you'd rather leave the office early today? Well, simply call [flashMessages flashMessages()] and that exact code will be written for you!
+Do you think that looks like a painful amount of code to write all by yourself and you'd rather leave the office early today? Well, simply call `flashMessages()` and that exact code will be written for you!
 
-Just keep in mind that this approach isn't very flexible so if you need to customize the display of the messages you should revert back to using [flashIsEmpty flashIsEmpty()], [flash flash()] etc manually.
+Just keep in mind that this approach isn't very flexible so if you need to customize the display of the messages you should revert back to using `flashIsEmpty()`, `flash()` etc manually.
 
 Check out the [ControllerRequestFunctions Controller Request Functions] page for a listing of all the functions that deal with the Flash.
 
