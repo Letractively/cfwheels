@@ -64,7 +64,7 @@ Check out the [ControllerRequestFunctions Controller Request Functions] page for
 
 ==Wholesale Flash Handling with `flashMessages()`==
 
-Throw the `flashIsEmpty()` function into the mix as well and you might end up with code looking something like this:
+Throw the `flashIsEmpty()` function into the mix, and you might find yourself writing code across your Wheels projects that looks something like this:
 
 {{{
 <cfoutput>
