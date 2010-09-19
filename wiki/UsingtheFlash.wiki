@@ -50,7 +50,7 @@ The more you work with Wheels and the Flash, the more that you're going to find 
 
 That piece of code does exactly the same thing as the example shown previously in this chapter. The Wheels `redirectTo()` function sees the `success` argument coming in and knows that it's not part of its own declared arguments. Therefore, you (the developer) must intend for it to be stored in the Flash, so Wheels goes ahead and calls `flashInsert(success="The user was updated successfully.")` for you behind the scenes.
 
-== Prepend with `flash` for Argument Names that Collide with `redirectTo()`'s===
+===Prepend with `flash` for Argument Names that Collide with `redirectTo()`'s===
 
 So what if you want to redirect to the `edit` action and set a key in the Flash named `action` as well? Simply prepend the key with "flash" to tell Wheels to avoid the argument naming collision.
 
