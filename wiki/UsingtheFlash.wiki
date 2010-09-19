@@ -5,6 +5,8 @@ The Flash is actually a very simple concept. And no, it has nothing to do with A
 
 The Flash is just a struct in the `session` or `cookie` scope with some added functionality. It is cleared at the end of the *next* page that the user views. This means that it's a good fit for storing messages or variables temporarily from one request to the next.
 
+By the way, the name "Flash" comes from Ruby on Rails, like so many other cool things in Wheels.
+
 ==An Example of Using the Flash==
 
 The code below is commonly used in Wheels applications to store a message about an error in the Flash and then redirect to another URL, which then displays the message in its view page.
@@ -12,23 +14,29 @@ The code below is commonly used in Wheels applications to store a message about 
 The following example shows how code dealing with the Flash can look in an action that handles a form submission.
 
 {{{
-<cfset flashInsert(error="Oops! Please correct your errors and try again")>
-<cfset redirectTo(action="edit")>
+<cffunction name="update">
+    <cfif user.update(params.user)>
+        <cfset flashInsert(success="The user was updated successfully.")>
+        <cfset redirectTo(action="edit")>
+    <cfelse>
+        <cfset renderPage(action="edit")>
+    </cfif>
+</cffunction>
 }}}
 
-Here's an example of how we then display the Flash message we just set in the view page for the "edit" action. Please note that this is done on the *next* request since we performed a redirect after setting the Flash.
+Here's an example of how we then display the Flash message we just set in the view page for the `edit` action. Please note that this is done on the *next* request since we performed a redirect after setting the Flash.
 
 {{{
 <cfoutput>
-<p class="error-message">
-    #flash("error")#
+<p class="success-message">
+    #flash("success")#
 </p>
 </cfoutput>
 }}}
 
 As you can see above, you use the `flashInsert()` function with a named argument when you want to store data in the Flash and the `flash()` function when you want to display the data in a view.
 
-The key chosen above is `error`, but it could have been anything that we wanted. Just like with a normal struct, the naming of the keys is your job.
+The key chosen above is `success`, but it could have been anything that we wanted. Just like with a normal struct, the naming of the keys is your job.
 
 As an example, you may choose to use one key for storing messages after the user made an error, called `error`, and another one for storing messages after a successful user operation, called `success`.
 
@@ -37,18 +45,20 @@ As an example, you may choose to use one key for storing messages after the user
 The more you work with Wheels and the Flash, the more that you're going to find that you keep repeating that `flashInsert()`/`redirectTo()` combo all the time. Wheels has a solution for that within the `redirectTo()` function itself:
 
 {{{
-<cfset redirectTo(action="edit", error="Oops! Please correct your errors and try again.")>
+<cfset redirectTo(action="edit", success="The user was updated successfully.")>
 }}}
 
-That piece of code does exactly the same thing as the example shown previously in this chapter. The Wheels `redirectTo()` function sees the `error` argument coming in and knows that it's not part of its own declared arguments. Therefore, you (the developer) must intend for it to be stored in the Flash, so Wheels goes ahead and calls `flashInsert(error="Oops! Please correct your errors and try again.")` for you behind the scenes.
+That piece of code does exactly the same thing as the example shown previously in this chapter. The Wheels `redirectTo()` function sees the `success` argument coming in and knows that it's not part of its own declared arguments. Therefore, you (the developer) must intend for it to be stored in the Flash, so Wheels goes ahead and calls `flashInsert(success="The user was updated successfully.")` for you behind the scenes.
 
-So what if you want to redirect to the "edit" action and set a key in the Flash named "action" as well? Simply prepend the flash key with "flash" to tell Wheels to avoid the argument naming collision.
+== Prepend with `flash` for Argument Names that Collide with `redirectTo()`'s===
+
+So what if you want to redirect to the `edit` action and set a key in the Flash named `action` as well? Simply prepend the key with "flash" to tell Wheels to avoid the argument naming collision.
 
 {{{
-<cfset redirectTo(action="edit", flashAction="Oops! Please correct your errors and try again.")>
+<cfset redirectTo(action="edit", flashAction="The user was updated successfully.")>
 }}}
 
-We don't recommend naming the keys in your Flash `action`, but these naming collisions can also happen when you want to redirect to a route that takes custom arguments, so remember this workaround.
+We don't recommend naming the keys in your Flash `action`, but these naming collisions can potentially happen when you want to redirect to a route that takes custom arguments, so remember this workaround.
 
 ==More Flashy Functions==
 
@@ -56,7 +66,7 @@ Besides `flash()` and `flashInsert()` that are used to read from/insert to the F
 
 `flashCount()` is used to count how many key/value pairs there are in the Flash.
 
-`flashClear()` and `flashDelete()` do exactly what their counterparts in the struct world--`StructClear` and `StructDelete`--do. Respectively, they clear the entire Flash and delete a specific key/value from it.
+`flashClear()` and `flashDelete()` do exactly the same as their counterparts in the struct world, `StructClear` and `StructDelete`--they clear the entire Flash and delete a specific key/value from it, respectively.
 
 `flashKeyExists()` is used to check if a specific key exists. So it would make sense to make use of that function in the code listed above to avoid outputting an empty `<p>` tag on requests where the Flash is empty. (`flash()` will return an empty string when the specified key does not exist.)
 
@@ -95,9 +105,9 @@ All of that above code can be replaced with a single call to the `flashMessages(
 </cfoutput>
 }}}
 
-Whenever any value is inserted into the Flash, `flashMessages()` will display it similarly to the more complex example above, with `class` attributes set similarly (`error-message` for the `error` key and `success-message` for the `success` key).
+Whenever any value is inserted into the Flash, `flashMessages()` will display it similarly to the complex example above, with `class` attributes set similarly (`error-message` for the `error` key and `success-message` for the `success` key).
 
-You can also use `flashMessage()`'s `key`/`keys` argument to limit its reach to a list of given keys. Let's say that we only want our layout to show messages for the `alert` key but not for the `error` or success keys (or any other for that matter). We would write our call like so:
+You can also use `flashMessage()`'s `key`/`keys` argument to limit its reach to a list of given keys. Let's say that we only want our layout to show messages for the `alert` key but not for the `error` or `success` keys (or any other for that matter). We would write our call like so:
 
 {{{
 <cfoutput>
@@ -105,7 +115,7 @@ You can also use `flashMessage()`'s `key`/`keys` argument to limit its reach to 
 </cfoutput>
 }}}
 
-Just keep in mind that this approach isn't as flexible, so if you need to customize the display of the messages beyond `flashMessages()`'s capabilities, you should revert back to using `flashIsEmpty()`, `flash()`, and other related functions manually.
+Just keep in mind that this approach isn't as flexible, so if you need to customize the markup of the messages beyond `flashMessages()`'s capabilities, you should revert back to using `flashIsEmpty()`, `flash()`, and other related functions manually.
 
 ==Flash Storage Options==
 
@@ -120,10 +130,10 @@ You can override this setting in the same way that you override other Wheels set
 
 Note: Before you set Wheels to use the `session` scope, you need to make sure that session management is enabled. To enable it, all you need to do is add `this.SessionManagement = true` to the `config/app.cfm` file.
 
+===Choosing a Storage Method===
+
 So what storage option should you choose? Well, to be honest, it doesn't really matter that much, so we recommend you just go with the default setting. If you're a control freak and always want to use the optimal setting, here are some considerations.
 
  * Although the Flash data is deserialized before stored in a cookie (making it possible to store complex values), you need to remember that a cookie is not the best place to store data that requires a lot of space.
  * If you run multiple ColdFusion servers in a clustered environment and use `session`-based Flash storage, users might experience a loss of their Flash variables as their request gets passed to other servers.
  * Using `cookies` is, generally speaking, less secure than using the `session` scope. Users could open their cookie file up and manually change its value. `session`s are stored on the server, out of users' reach.
-
-By the way, the name "Flash" comes from Ruby on Rails, like so many other cool things in Wheels.
