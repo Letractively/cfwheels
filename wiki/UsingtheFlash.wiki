@@ -135,5 +135,5 @@ Note: Before you set Wheels to use the `session` scope, you need to make sure th
 So what storage option should you choose? Well, to be honest, it doesn't really matter that much, so we recommend you just go with the default setting. If you're a control freak and always want to use the optimal setting, here are some considerations.
 
  * Although the Flash data is deserialized before stored in a cookie (making it possible to store complex values), you need to remember that a cookie is not the best place to store data that requires a lot of space.
- * If you run multiple ColdFusion servers in a clustered environment and use `session`-based Flash storage, users might experience a loss of their Flash variables as their request gets passed to other servers.
+ * If you run multiple !ColdFusion servers in a clustered environment and use session-based Flash storage, users might experience a loss of their Flash variables as their request gets passed to other servers.
  * Using `cookies` is, generally speaking, less secure than using the `session` scope. Users could open their cookie file up and manually change its value. `session`s are stored on the server, out of users' reach.
