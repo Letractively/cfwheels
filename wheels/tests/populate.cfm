@@ -1,164 +1,7 @@
-<cfdbinfo name="loc.dbinfo" datasource="wheelstestdb" type="version">
-<cfset loc.db = LCase(Replace(loc.dbinfo.database_productname, " ", "", "all"))>
-
-<cfif loc.db IS "microsoftsqlserver">
-	<cfset loc.ident = "IDENTITY(1,1)">
-<cfelseif loc.db IS "mysql">
-	<cfset loc.ident = "AUTO_INCREMENT">
-<cfelse>
-	<cfset loc.ident = "IDENTITY">
-</cfif>
-
-<cfset tables = "users,photogalleries,photogalleryphotos,posts,authors,classifications,comments,profiles,tags,cities,shops,userphotos">
-<cfloop list="#tables#" index="loc.i">
-	<cftry>
-		<cfquery name="loc.query" datasource="wheelstestdb">
-		DROP VIEW #loc.i#
-		</cfquery>
-	<cfcatch>
-	</cfcatch>
-	</cftry>
-	<cftry>
-		<cfquery name="loc.query" datasource="wheelstestdb">
-		DROP TABLE #loc.i#
-		</cfquery>
-	<cfcatch>
-	</cfcatch>
-	</cftry>
+<!--- reset all tables --->
+<cfloop list="user,photogallery,photogalleryphoto,author,post,city,shop,profile" index="loc.i">
+	<cfset model(loc.i).deleteAll(instantiate=false, softDelete=false, includeSoftDeletes=true)>
 </cfloop>
-
-<cfquery name="loc.query" datasource="wheelstestdb">
-CREATE TABLE users
-(
-	id int NOT NULL #loc.ident# PRIMARY KEY,
-	username varchar(50) NOT NULL,
-	password varchar(50) NOT NULL,
-	firstname varchar(50) NOT NULL,
-	lastname varchar(50) NOT NULL,
-	address varchar(100) NULL,
-	city varchar(50) NULL,
-	state char(2) NULL,
-	zipcode varchar(50) NULL,
-	phone varchar(20) NULL,
-	fax varchar(20) NULL,
-	birthday datetime NULL,
-	birthdaymonth int NULL,
-	birthdayyear int NULL,
-	birthtime datetime NULL DEFAULT '2000-01-01 18:26:08.690',
-	isactive bit NULL
-)
-</cfquery>
-
-<cfquery name="loc.query" datasource="wheelstestdb">
-CREATE TABLE photogalleries
-(
-	photogalleryid int NOT NULL #loc.ident# PRIMARY KEY,
-	userid int NOT NULL,
-	title varchar(255) NOT NULL,
-	description text NOT NULL
-)
-</cfquery>
-
-<cfquery name="loc.query" datasource="wheelstestdb">
-CREATE TABLE photogalleryphotos
-(
-	photogalleryphotoid int NOT NULL #loc.ident# PRIMARY KEY,
-	photogalleryid int NOT NULL,
-	filename varchar(255) NOT NULL,
-	description varchar(255) NOT NULL,
-	filedata <cfif loc.db IS "microsoftsqlserver">image<cfelse>blob</cfif> NULL
-)
-</cfquery>
-
-<cfquery name="loc.query" datasource="wheelstestdb">
-CREATE TABLE posts
-(
-	id int NOT NULL #loc.ident# PRIMARY KEY,
-	authorid int NULL,
-	title varchar(250) NOT NULL,
-	body text NOT NULL,
-	createdat datetime NOT NULL,
-	updatedat datetime NOT NULL,
-	deletedat datetime NULL,
-	views int NOT NULL DEFAULT 0,
-	averagerating float NULL
-)
-</cfquery>
-
-<cfquery name="loc.query" datasource="wheelstestdb">
-CREATE TABLE authors
-(
-	id int NOT NULL #loc.ident# PRIMARY KEY,
-	firstname varchar(100) NOT NULL,
-	lastname varchar(100) NOT NULL
-)
-</cfquery>
-
-<cfquery name="loc.query" datasource="wheelstestdb">
-CREATE TABLE classifications
-(
-	id int NOT NULL #loc.ident# PRIMARY KEY,
-	postid int NOT NULL,
-	tagid int NOT NULL
-)
-</cfquery>
-
-<cfquery name="loc.query" datasource="wheelstestdb">
-CREATE TABLE comments
-(
-	id int NOT NULL #loc.ident# PRIMARY KEY,
-	postid int NOT NULL,
-	body text NOT NULL,
-	name varchar(100) NOT NULL,
-	url varchar(100) NULL,
-	email varchar(100) NULL,
-	createdat datetime NOT NULL
-)
-</cfquery>
-
-<cfquery name="loc.query" datasource="wheelstestdb">
-CREATE TABLE profiles
-(
-	id int NOT NULL #loc.ident# PRIMARY KEY,
-	authorid int NULL,
-	dateofbirth datetime NOT NULL,
-	bio text NULL
-)
-</cfquery>
-
-<cfquery name="loc.query" datasource="wheelstestdb">
-CREATE TABLE tags
-(
-	id int NOT NULL #loc.ident# PRIMARY KEY,
-	name varchar(50) NOT NULL,
-	description varchar(50) NULL
-)
-</cfquery>
-
-<cfquery name="loc.query" datasource="wheelstestdb">
-CREATE TABLE cities
-(
-	countyid char(4) NOT NULL,
-	citycode tinyint NOT NULL,
-	name varchar(50) NOT NULL,
-	PRIMARY KEY(countyid,citycode)
-)
-</cfquery>
-
-<cfquery name="loc.query" datasource="wheelstestdb">
-CREATE TABLE shops
-(
-	shopid char(9) NOT NULL PRIMARY KEY,
-	citycode tinyint NULL,
-	name varchar(80) NOT NULL
-)
-</cfquery>
-
-<cfquery name="loc.query" datasource="wheelstestdb">
-CREATE VIEW userphotos AS
-SELECT u.id AS userid, u.username AS username, u.firstname AS firstname, u.lastname AS lastname, pg.title AS title, pg.photogalleryid AS photogalleryid
-FROM users u INNER JOIN photogalleries pg ON u.id = pg.userid;
-</cfquery>
 
 <!--- populate with data --->
 <cfset loc.user = model("user").create(
@@ -259,7 +102,7 @@ FROM users u INNER JOIN photogalleries pg ON u.id = pg.userid;
 <cfset loc.raul = model("author").create(firstName="Raul", lastName="Riera")>
 <cfset loc.andy = model("author").create(firstName="Andy", lastName="Bellenie")>
 
-<cfset loc.users = model("user").findAll(order="id")>
+<cfset loc.users = model("user").findAll()>
 
 <cfloop query="loc.users">
 	<cfloop from="1" to="5" index="loc.i">
@@ -279,7 +122,7 @@ FROM users u INNER JOIN photogalleries pg ON u.id = pg.userid;
 	</cfloop>
 </cfloop>
 
-<cfset loc.posts = model("post").findAll(order="id")>
+<cfset loc.posts = model("post").findAll()>
 
 <cfloop query="loc.posts">
 	<cfloop from="1" to="3" index="loc.i">

@@ -138,19 +138,17 @@
 				loc.iEnd = Len(loc.returnValue);
 				for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
 					loc.checksumtest = (loc.checksumtest + Left(Right(loc.returnValue, loc.i),1));
-				loc.c1 = ToString(FormatBaseN((loc.checksumtest+154),10));
-				loc.c2 = InputBasen(loc.checksum, 16);
-				if (loc.c1 != loc.c2)
+				if (Left(ToString(FormatBaseN((loc.checksumtest+154),10)),2) != Left(InputBasen(loc.checksum, 16),2))
 					loc.returnValue = arguments.param;
 			}
 			catch(Any e)
 			{
-		    	loc.returnValue = arguments.param;
+	    	loc.returnValue = arguments.param;
 			}
 		}
 		else
 		{
-	    	loc.returnValue = arguments.param;
+    	loc.returnValue = arguments.param;
 		}
 	</cfscript>
 	<cfreturn loc.returnValue>
@@ -201,8 +199,6 @@
 		var loc = {};
 		if (IsValid("integer", arguments.param) && IsNumeric(arguments.param) && arguments.param > 0)
 		{
-			// railo strips leading zeros from integers so do this for both engines
-			arguments.param = Val(arguments.param);
 			loc.iEnd = Len(arguments.param);
 			loc.a = (10^loc.iEnd) + Reverse(arguments.param);
 			loc.b = "0";

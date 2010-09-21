@@ -18,7 +18,7 @@
  	<cffunction name="test_insert">
 		<cfset loc.gallery = model("photogallery").findOne(
 			include="user"
-			,where="users.lastname = 'Petruzzi'"
+			,where="users.lastname = 'petruzzi'"
 			,orderby="photogalleryid"
 		)>
 		<cftransaction action="begin">
