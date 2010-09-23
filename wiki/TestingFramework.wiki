@@ -175,13 +175,11 @@ Example:
 
 ==Running Tests==
 
-Down in the debug area of your Wheels application (that grey area at the bottom of the page), you will notice a *Run Tests* link in the following areas: 
+Down in the debug area of your Wheels application (that grey area at the bottom of the page), you will notice a couple of *Run Tests* links in the following areas: 
 
-*Application Name*, *Framework* and *Plugins*. Each of these links runs the following suite of tests:
+*Application Name* and *Plugins*.These links runs the following suite of tests:
 
 *Application Name*: Runs any tests that you have created for your application. You should run these tests before deploying your application.
-
-*Framework*: Runs any test that the Wheels Team has created for the Wheels framework itself. You should run these tests whenever you update your Wheels installation or are switching platforms.
 
 *Plugins*: A *Run Tests* link will be next to *each* installed plugin you have in your wheels installation. You should run these tests whenever you install or update a plugin.
 
