@@ -34,7 +34,7 @@ If the testing engine sees that a component *DOES NOT* extend *_wheels.Test_*, t
 Any methods that will be used as tests *MUST* begin their name with *_test_*:
 
 {{{
-<cffunction name="test_a_equals_b">
+<cffunction name="test_aEqualsB">
 }}}
 
 If a method *DOES NOT* begin with *_test_* it is ignored and skipped. This let's you create as many helper methods for your testing components as you want.
