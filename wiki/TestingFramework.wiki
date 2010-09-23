@@ -41,7 +41,7 @@ If a method *DOES NOT* begin with *_test_* it is ignored and skipped. This let's
 
 ===Conventions===
 
-*<font color="red">DO NOT VAR ANY VARIABLES</font>* used in your tests. In order for the testing framework to get access to the variables within the tests that you're writing, all variables need to be within the components *variables scope*. The easy way to do this is to just not "var" variables within your tests and ColdFusion will automatically assign these variables into the variables scope of the component for you. The only gotcha is that this could cause some variables to overwrite each other and gets kinda of confusing of what's being thrown into the variables scope.
+*<font color="red">DO NOT VAR ANY VARIABLES</font>* used in your tests. In order for the testing framework to get access to the variables within the tests that you're writing, all variables need to be within the components *variables scope*. The easy way to do this is to just not "var" variables within your tests and Railo/ColdFusion will automatically assign these variables into the variables scope of the component for you. The only gotcha is that this could cause some variables to overwrite each other and gets kinda of confusing of what's being thrown into the variables scope.
 
 ===Evaluation===
 
