@@ -7,7 +7,7 @@ At some point your code is going to break and the scary thing is it might not ev
 
 The problem is that today's fix could be tomorrow's bug. What if there was an automated way of seeing if that change you're making is going to break something? That's where writing tests for your application can be invaluable.
 
-In the past writing test against your application meant downloading, configuring and learning a completely separate framework. Often times this caused more headaches then it was worth and was the reason why most developers didn't bother writing tests. With Wheels we've included a customized version of the [http://rocketunit.riaforge.org RocketUnit Testing Framework] to help address just this issue.
+In the past writing test against your application meant downloading, configuring and learning a completely separate framework. Often times this caused more headaches then it was worth and was the reason why most developers didn't bother writing tests. With Wheels we've included a small and very simple testing framework to help address just this issue.
 
 With Wheels, writing tests for your application is part of the development lifecycle itself and running the test is as simple as clicking a link.
 
