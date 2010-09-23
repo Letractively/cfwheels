@@ -50,7 +50,7 @@ If a method *DOES NOT* begin with *_test_* it is ignored and skipped. This let's
 An example test that checks that two values equal each other:
 
 {{{
-<cffunction name="test_aEqualsB">
+<cffunction name="testAEqualsB">
 	<cfset a = 1>
 	<cfset b = 1>
 	<cfset assert("a eq b")>
@@ -60,7 +60,7 @@ An example test that checks that two values equal each other:
 An example test that checks that the first value is less then the second value:
 
 {{{
-<cffunction name="test_aIsLessThanB">
+<cffunction name="testAIsLessThanB">
 	<cfset a = 1>
 	<cfset b = 5>
 	<cfset assert("a lt b")>
@@ -72,7 +72,7 @@ You get the idea since you've used these kinds of expressions a thousand times. 
 An example test that checks that a key exists in a structure:
 
 {{{
-<cffunction name="test_keyExistsInStructure">
+<cffunction name="testKeyExistsInStructure">
 	<cfset a = {a=1, b=2, c=3}>
 	<cfset b = "d">
 	<cfset assert("StructKeyExists(a, b)")>
@@ -84,7 +84,7 @@ An example test that checks that a key exists in a structure:
 An example of raising the Wheels.TableNotFound error when you specify an invalid model name:
 
 {{{
-<cffunction name="test_tableNotFound">
+<cffunction name="testTableNotFound">
 	<cfset e = raised("model('thisHasNoTable')")>
 	<cfset r = "Wheels.TableNotFound">
 	<cfset assert("e eq r")>
@@ -103,7 +103,7 @@ _NOTE:_ overloaded arguments will be passed to the internal cfdump attributeColl
 An example of displaying the debug output:
 
 {{{
-<cffunction name="test_keyExistsInStructure">
+<cffunction name="testKeyExistsInStructure">
 	<cfset a = {a=1, b=2, c=3}>
 	<cfset b = "d">
 	<cfset debug("a")>
@@ -114,7 +114,7 @@ An example of displaying the debug output:
 An example of calling debug but NOT displaying the output:
 
 {{{
-<cffunction name="test_keyExistsInStructure">
+<cffunction name="testKeyExistsInStructure">
 	<cfset a = {a=1, b=2, c=3}>
 	<cfset b = "d">
 	<cfset debug("a", false)>
@@ -125,7 +125,7 @@ An example of calling debug but NOT displaying the output:
 An example of displaying the output of debug as `text`:
 
 {{{
-<cffunction name="test_keyExistsInStructure">
+<cffunction name="testKeyExistsInStructure">
 	<cfset a = {a=1, b=2, c=3}>
 	<cfset b = "d">
 	<cfset debug(expression="a", format="text")>
@@ -144,7 +144,7 @@ It's common when writing a group of tests that there will be some duplicate code
 Example:
 
 {{{
-<cfcomponent extends="wheelsMapping.test">
+<cfcomponent extends="wheels.Test">
 
 	<cffunction name="setup">
 		<cfset controller = $controller(name="dummy")>
@@ -154,7 +154,7 @@ Example:
 		<cfset args.includeSeconds = true>
 	</cffunction>
 
-	<cffunction name="test_withSecondsBelow5Seconds">
+	<cffunction name="testWithSecondsBelow5Seconds">
 		<cfset c = 5 - 1>
 		<cfset args.toTime = DateAdd('s', c, args.fromTime)>
 		<cfinvoke method="f" argumentCollection="#args#" returnVariable="e">
@@ -162,7 +162,7 @@ Example:
 		<cfset assert("e eq r")>
 	</cffunction>
 
-	<cffunction name="test_withSecondsBelow10Seconds">
+	<cffunction name="testWithSecondsBelow10Seconds">
 		<cfset c = 10 - 1>
 		<cfset args.toTime = DateAdd('s', c, args.fromTime)>
 		<cfinvoke method="f" argumentCollection="#args#" returnVariable="e">
