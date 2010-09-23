@@ -23,18 +23,18 @@ Like everything else in Wheels, the testing framework is very simple yet powerfu
 
 ===Writing Tests===
 
-Any components that will contain tests *MUST* extend the *_wheels.Test_* component:
+Any components that will contain tests *MUST* extend the *_Test_* component:
 
 {{{
-<cfcomponent extends="wheels.Test">
+<cfcomponent extends="Test">
 }}}
 
-If the testing engine sees that a component *DOES NOT* extend *_wheels.Test_*, that component skipped. This let's you create and store any _mock_ components you might want to use in your `tests` directory and keep everything together.
+If the testing engine sees that a component *DOES NOT* extend *_Test_*, that component skipped. This let's you create and store any _mock_ components you might want to use in your `tests` directory and keep everything together.
 
 Any methods that will be used as tests *MUST* begin their name with *_test_*:
 
 {{{
-<cffunction name="test_aEqualsB">
+<cffunction name="testAEqualsB">
 }}}
 
 If a method *DOES NOT* begin with *_test_* it is ignored and skipped. This let's you create as many helper methods for your testing components as you want.
