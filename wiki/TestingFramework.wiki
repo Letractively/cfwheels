@@ -144,7 +144,7 @@ It's common when writing a group of tests that there will be some duplicate code
 Example:
 
 {{{
-<cfcomponent extends="wheels.Test">
+<cfcomponent extends="Test">
 
 	<cffunction name="setup">
 		<cfset controller = $controller(name="dummy")>
