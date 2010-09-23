@@ -51,9 +51,9 @@ An example test that checks that two values equal each other:
 
 {{{
 <cffunction name="test_a_equals_b">
-	<cfset loc.a = 1>
-	<cfset loc.b = 1>
-	<cfset assert("loc.a eq loc.b")>
+	<cfset a = 1>
+	<cfset b = 1>
+	<cfset assert("a eq b")>
 </cffunction>
 }}}
 
@@ -61,9 +61,9 @@ An example test that checks that the first value is less then the second value:
 
 {{{
 <cffunction name="test_a_is_less_than_b">
-	<cfset loc.a = 1>
-	<cfset loc.b = 5>
-	<cfset assert("loc.a lt loc.b")>
+	<cfset a = 1>
+	<cfset b = 5>
+	<cfset assert("a lt b")>
 </cffunction>
 }}}
 
@@ -73,9 +73,9 @@ An example test that checks that a key exists in a structure:
 
 {{{
 <cffunction name="test_key_exists_in_structure">
-	<cfset loc.a = {a=1, b=2, c=3}>
-	<cfset loc.b = "d">
-	<cfset assert("structkeyexists(loc.a, loc.b)")>
+	<cfset a = {a=1, b=2, c=3}>
+	<cfset b = "d">
+	<cfset assert("StructKeyExists(a, b)")>
 </cffunction>
 }}}
 
@@ -85,9 +85,9 @@ An example of raising the Wheels.TableNotFound error when you specify an invalid
 
 {{{
 <cffunction name="test_table_not_found">
-	<cfset loc.e = raised("model('table_not_found')")>
-	<cfset loc.r = "Wheels.TableNotFound">
-	<cfset assert("loc.e eq loc.r")>
+	<cfset e = raised("model('table_not_found')")>
+	<cfset r = "Wheels.TableNotFound">
+	<cfset assert("e eq r")>
 </cffunction>
 }}}
 
@@ -104,10 +104,10 @@ An example of displaying the debug output:
 
 {{{
 <cffunction name="test_key_exists_in_structure">
-	<cfset loc.a = {a=1, b=2, c=3}>
-	<cfset loc.b = "d">
-	<cfset debug("loc.a")>
-	<cfset assert("structkeyexists(loc.a, loc.b)")>
+	<cfset a = {a=1, b=2, c=3}>
+	<cfset b = "d">
+	<cfset debug("a")>
+	<cfset assert("StructKeyExists(a, b)")>
 </cffunction>
 }}}
 
@@ -115,10 +115,10 @@ An example of calling debug but NOT displaying the output:
 
 {{{
 <cffunction name="test_key_exists_in_structure">
-	<cfset loc.a = {a=1, b=2, c=3}>
-	<cfset loc.b = "d">
-	<cfset debug("loc.a", false)>
-	<cfset assert("structkeyexists(loc.a, loc.b)")>
+	<cfset a = {a=1, b=2, c=3}>
+	<cfset b = "d">
+	<cfset debug("a", false)>
+	<cfset assert("StructKeyExists(a, b)")>
 </cffunction>
 }}}
 
@@ -126,10 +126,10 @@ An example of displaying the output of debug as `text`:
 
 {{{
 <cffunction name="test_key_exists_in_structure">
-	<cfset loc.a = {a=1, b=2, c=3}>
-	<cfset loc.b = "d">
-	<cfset debug(expression="loc.a", format="text")>
-	<cfset assert("structkeyexists(loc.a, loc.b)")>
+	<cfset a = {a=1, b=2, c=3}>
+	<cfset b = "d">
+	<cfset debug(expression="a", format="text")>
+	<cfset assert("StructKeyExists(a, b)")>
 </cffunction>
 }}}
 
@@ -147,27 +147,27 @@ Example:
 <cfcomponent extends="wheelsMapping.test">
 
 	<cffunction name="setup">
-		<cfset loc.controller = $controller(name="dummy")>
-		<cfset loc.f = loc.controller.distanceOfTimeInWords>
-		<cfset loc.args = {}>
-		<cfset loc.args.fromTime = now()>
-		<cfset loc.args.includeSeconds = true>
+		<cfset controller = $controller(name="dummy")>
+		<cfset f = controller.distanceOfTimeInWords>
+		<cfset args = {}>
+		<cfset args.fromTime = now()>
+		<cfset args.includeSeconds = true>
 	</cffunction>
 
 	<cffunction name="test_with_seconds_below_5_seconds">
-		<cfset loc.c = 5 - 1>
-		<cfset loc.args.toTime = dateadd('s', loc.c, loc.args.fromTime)>
-		<cfinvoke method="loc.f" argumentcollection="#loc.args#" returnvariable="loc.e">
-		<cfset loc.r = "less than 5 seconds">
-		<cfset assert("loc.e eq loc.r")>
+		<cfset c = 5 - 1>
+		<cfset args.toTime = DateAdd('s', c, args.fromTime)>
+		<cfinvoke method="f" argumentCollection="#args#" returnVariable="e">
+		<cfset r = "less than 5 seconds">
+		<cfset assert("e eq r")>
 	</cffunction>
 
 	<cffunction name="test_with_seconds_below_10_seconds">
-		<cfset loc.c = 10 - 1>
-		<cfset loc.args.toTime = dateadd('s', loc.c, loc.args.fromTime)>
-		<cfinvoke method="loc.f" argumentcollection="#loc.args#" returnvariable="loc.e">
-		<cfset loc.r = "less than 10 seconds">
-		<cfset assert("loc.e eq loc.r")>
+		<cfset c = 10 - 1>
+		<cfset args.toTime = dateadd('s', c, args.fromTime)>
+		<cfinvoke method="f" argumentcollection="#args#" returnvariable="e">
+		<cfset r = "less than 10 seconds">
+		<cfset assert("e eq r")>
 	</cffunction>
 
 </cfcomponent>
