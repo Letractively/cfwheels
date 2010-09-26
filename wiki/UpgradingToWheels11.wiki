@@ -13,6 +13,7 @@ If you are upgrading from Wheels 1.0 or newer, the easiest way to upgrade is to 
 == File System Changes ==
 
  * The `.htaccess` file has been changed. Be sure to copy over the new one from the new version 1.1 download and copy any addition changes that you may have also made to the original version.
+ * A new `tests` folder has been added. Wheels will run fine without this folder but if you want to write unit tests for your application you need to add this folder and its contents to your application.
 
 == Database Structure Changes ==
 
