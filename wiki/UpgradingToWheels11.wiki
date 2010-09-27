@@ -33,7 +33,7 @@ If you are upgrading from Wheels 1.0 or newer, the easiest way to upgrade is to 
 
 === View Code ===
 
- * Object form helpers (e.g. `textField()` and `radioButton()`) now automatically display a `label` based on the property name. If you left the `label` argument blank while using an earlier version of Wheels, some labels may start appearing automatically, leaving you with unintended results.
+ * Object form helpers (e.g. `textField()` and `radioButton()`) now automatically display a `label` based on the property name. If you left the `label` argument blank while using an earlier version of Wheels, some labels may start appearing automatically, leaving you with unintended results. To stop a label from appearing use label=false instead.
  * The `contentForLayout()` helper to be used in your layout files has been deprecated. Use the `includeContent()` helper instead.
  * In `production` mode, query strings will automatically be added to the end of all asset URLs (which includes !JavaScript includes, stylesheet links, and images. To turn off this setting, call `set(assetQueryString=false)` in `config/settings.cfm`.
  * `stylesheetLinkTag()` and `javaScriptIncludeTag()` now accept external URLs for the `source`/`sources` argument. If you manually typed out these tags in previous releases, you can now use these helpers instead.
