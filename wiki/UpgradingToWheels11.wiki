@@ -28,7 +28,7 @@ If you are upgrading from Wheels 1.0 or newer, the easiest way to upgrade is to 
 
  * Validations will be applied to some model properties automatically. This may cause unintended behavior with your validations. To turn this setting off, call `set(automaticValidations=false)` in `config/settings.cfm`.
  * The `class` argument in `hasOne()`, `hasMany()`, and `belongsTo()` has been deprecated. Use the `modelName` argument instead.
- * `afterFind()` callbacks no longer require special logic to handle the setting of properties in objects and queries. To override this setting, add a call to `set(afterFindCallbackLegacySupport=true)` in `config/settings.cfm`.
+ * `afterFind()` callbacks no longer require special logic to handle the setting of properties in objects and queries (the "query way" works for both cases now). Since arguments will always be passed in to the method you can't rely on `StructIsEmpty()`, like the old documentation suggested, to determine if you're dealing with an object or not. In the rare cases that you need to know you can now call `isInstance()` or `isClass()` instead.
  * On create, a model will now set the `updatedAt` auto-timestamp to the same value as the `createdAt` timestamp. To override this behavior, call `set(setUpdatedAtOnCreate=false)` in `config/settings.cfm`.
 
 === View Code ===
