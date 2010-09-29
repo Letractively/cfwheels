@@ -91,48 +91,7 @@ Believe it or not, but callbacks are even triggered on `findAll()`! You do need 
 
 Does that sound complicated? This example should clear it up a little. Let's show some code to display how you can handle setting a `fullName` property on a hypothetical `artist` model:
 
-{{{
-<cfcomponent extends="Model" output="false">
-
-    <cffunction name="init">
-        <cfset afterFind("addFullName")>
-    </cffunction>
-
-    <cffunction name="addFullName">
-        <cfif StructIsEmpty(arguments)>
-            <cfset this.fullName = setFullName(this.firstName, this.lastName)>
-        <cfelse>
-            <cfset arguments.fullName = setFullName(arguments.firstName, arguments.lastName)>
-            <cfreturn arguments>
-        </cfif>
-    </cffunction>
-
-    <cffunction name="setFullName">
-        <cfargument name="fn" type="string">
-        <cfargument name="ln" type="string">
-
-        <cfset var fullName = "">
-        <cfset fullName = arguments.ln>
-        <cfif Len(arguments.fn)>
-            <cfset fullName = arguments.fn & " " & fullName>
-        </cfif>
-        <cfreturn fullName>
-    </cffunction>
-
-</cfcomponent>
-}}}
-
-In our example model, an artist's name can consist of both a first name and a last name like in "John Mayer" or just the band / last name like in "Abba".
-
-The `setFullName` method handles the concatenation of the names, but the interesting stuff is in the `addFullName` method. This is where we check if the `arguments` struct is empty. If it is, then we know we're dealing with an object and can proceed to work with the `this` scope. Otherwise, we do the changes directly on the `arguments` struct and return it back.
-
-(Always remember to return the `arguments` struct, otherwise Wheels won't be able to tell that you actually wanted to make any changes to the query.)
-
-===Turning Off Legacy Support for the `afterFind()` Callback===
-
-As of version 1.1, you no longer need to code implementations to cater to scenarios for setting properties on both queries and objects. All you need to implement is the extra values in the `arguments` scope (the "query" scenario from above).
-
-This simplifies the same code listed above to this:
+*NOTE:* Because all afterFind() callbacks run when fetching records from the database, it's a good idea to check to make sure that the columns used in the method's logic exist before performing any operations. You mostly encounter this issue when using the _select_ argument on a finder to limit the number of column returned. But no worries! You can use StructKeyExists() and perform a simple check to make sure that the columns exists in the passed in arguments scope.
 
 {{{
 <cfcomponent extends="Model" output="false">
@@ -142,23 +101,19 @@ This simplifies the same code listed above to this:
     </cffunction>
 
     <cffunction name="setFullName">
-        <cfset arguments.fullName = arguments.lastName>
-        <cfif Len(arguments.firstName)>
-            <cfset arguments.fullName = arguments.firstName & " " & fullName>
+        <cfset arguments.fullName = "">
+        <cfif StructKeyExists(arguments, "firstname") && StructKeyExists(arguments, "lastname")>
+            <cfset arguments.fullName = trim(arguments.firstName & " " & arguments.lastName)>
         </cfif>
+        <cfreturn arguments>
     </cffunction>
 
 </cfcomponent>
 }}}
 
-To enable this new functionality when upgrading Wheels from version 1.0.x to 1.1.x, you can set the `afterFindCallbackLegacySupport` configuration to `false`, like so:
+In our example model, an artist's name can consist of both a first name and a last name like in "John Mayer" or just the band / last name like in "Abba". The `setFullName` method handles the logic to concatenation the names.
 
-{{{
-<!--- In `config/settings.cfm` --->
-<cfset set(afterFindCallbackLegacySupport=false)>
-}}}
-
-See the chapter about [ConfigurationandDefaults Configuration and Defaults] for more information.
+(Always remember to return the `arguments` struct, otherwise Wheels won't be able to tell that you actually wanted to make any changes to the query.)
 
 ==Special Case #2: Callbacks and the `updateAll()` and `deleteAll()` Methods==
 
