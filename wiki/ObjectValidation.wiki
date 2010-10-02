@@ -94,6 +94,8 @@ To disable automatic validations in your Wheels application, change this setting
 <cfset set(automaticValidations=false)>
 }}}
 
+You can also turn on or off the automatic validations on a per model basis by calling the `automaticValidations()` method from a model's `init()` method.
+
 See the chapter on [ConfigurationandDefaults] for more information on available Wheels ORM settings.
 
 ===Use `when`, `if`, or `unless` to Limit the Scope of Validation===
