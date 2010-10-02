@@ -201,7 +201,7 @@ This will prevent others from being able to reload your application or change en
 ====Full Listing of Miscellaneous Settings====
 
 || *Name* || *Type* || *Default* || *Description* ||
-|| `assetQueryString` || `boolean` || `false` || Set to `true` to append a unique query string to !JavaScript, CSS, and image files included with the media view helpers. This helps force local browser caches to refresh when there is an update to your assets. This query string is updated when reloading your Wheels application. ||
+|| `assetQueryString` || `boolean` || `false` in `design` and `development` environments, `true` in the others || Set to `true` to append a unique query string based on a time stamp to !JavaScript, CSS, and image files included with the media view helpers. This helps force local browser caches to refresh when there is an update to your assets. This query string is updated when reloading your Wheels application. You can also hard code it by passing in a string. ||
 || `assetPaths` || `struct` || `false` || Pass `false` or a struct with up to 2 different keys to autopopulate the domains of your assets: `http` (required) and `https`. For example: `{http="asset0.domain1.com,asset2.domain1.com,asset3.domain1.com", https="secure.domain1.com"}` ||
 || `ipExceptions` || `string` || `[empty string]` || IP addresses that Wheels will ignore when the environment is set to `maintenance`. That way administrators can test the site while in maintenance mode, while the rest of users will see the message loaded in `events/onmaintenance.cfm`. ||
 || `loadDefaultRoutes` || `boolean` || `true` || Set to `false` to disable Wheels's default route patterns for `controller/action/key`, etc. ||
