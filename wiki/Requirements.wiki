@@ -75,7 +75,7 @@ Don't worry though. Wheels will adapt to your setup and run just fine regardless
 
 ===Database Engines===
 
-Finally, to build any kind of meaningful web application, you will likely interact with a database. Currently supported databases are SQL Server 7 or later, Oracle 10g or later, MySQL 5, PostgreSQL, SQLite, and H2.
+Finally, to build any kind of meaningful web application, you will likely interact with a database. Currently supported databases are SQL Server 7 or later, Oracle 10g or later, MySQL 5, PostgreSQL, and H2.
 
 Regarding MySQL, please note that MySQL 4 is not supported. We also recommend using the InnoDB engine if you want for [Transactions] to work.
 
