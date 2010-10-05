@@ -216,7 +216,7 @@ So what about the `contentFor()` function? Well, as you may recall the code in t
 <cfoutput>#includeContent()#</cfoutput>
 }}}
 
-The `includeLayout()` function accepts a `name` argument. The reason we don't have to use it above is because it defaults to `body`. This `body` variable has been set internally in the Wheels framework code with the use of the `contentFor()` function.
+The `includeContent()` function accepts a `name` argument. The reason we don't have to use it above is because it defaults to `body`. This `body` variable has been set internally in the Wheels framework code with the use of the `contentFor()` function.
 
 The point I'm trying to make here is that we can use this same functionality to set *any* type of content for, as an example, sections in our layout files. So, armed with this new knowledge, let's create some nested layout awesomeness.
 
