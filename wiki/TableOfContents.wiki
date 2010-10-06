@@ -69,7 +69,7 @@
  * [SwitchingEnvironments Switching Environments]
  * [UsingandCreatingPlugins Using and Creating Plugins]
  * [CFMLandMVCBestPractices CFML and MVC Best Practices]<font color="red">`*`</font>
- * [TestingFramework Creating and Running Tests]<font color="red">`*`</font>
+ * [TestingFramework Creating and Running Tests]
 
 ===Contributing to Wheels===
 
