@@ -83,7 +83,7 @@ Take a look at this example:
 
     <cffunction name="index">
         <cfset products = model("product").findAll(order="title")>
-        <cfset respondWith(products)>
+        <cfset renderWith(products)>
     </cffunction>
 
 </cfcomponent>
