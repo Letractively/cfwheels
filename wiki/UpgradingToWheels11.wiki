@@ -36,7 +36,7 @@ If you are upgrading from Wheels 1.0 or newer, the easiest way to upgrade is to 
  * The `contentForLayout()` helper to be used in your layout files has been deprecated. Use the `includeContent()` helper instead.
  * In `production` mode, query strings will automatically be added to the end of all asset URLs (which includes !JavaScript includes, stylesheet links, and images. To turn off this setting, call `set(assetQueryString=false)` in `config/settings.cfm`.
  * `stylesheetLinkTag()` and `javaScriptIncludeTag()` now accept external URLs for the `source`/`sources` argument. If you manually typed out these tags in previous releases, you can now use these helpers instead.
- * `flashMessages()`, `errorMessageOn()` and `errorMessagesFor()` now create camelCased class attributes instead (for example `error-messages` is now `errorMessages`).
+ * `flashMessages()`, `errorMessageOn()` and `errorMessagesFor()` now create camelCased class attributes instead (for example `error-messages` is now `errorMessages`). Same for the class on the tag that wraps form elements with errors, it is now `fieldWithErrors`.
 
 === Controller Code ===
 
