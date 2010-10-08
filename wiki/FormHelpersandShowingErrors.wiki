@@ -1,5 +1,5 @@
 #summary Wheels ties your application's forms together with your model layer elegantly. With Wheels form conventions, you'll find yourself spending less time writing repetitive markup to display forms and error messages.
-#labels chapter,1.0,published_prod
+#labels chapter,1.1,draft
 
 The majority of applications are not all about back-end. There is a great deal of work to perform on the front-end as well. It can be argued that most of your users will think of the interface _as_ the application.
 
@@ -175,9 +175,9 @@ Let's take the previous form example and add some visual indication to the user 
 
 How about that? With just that line of code (and the required validations on your object model), Wheels will do the following: 
 
- * Generate an HTML unordered list with a HTML class name of `error-messages`. 
+ * Generate an HTML unordered list with a HTML class name of `errorMessages`. 
  * Display all the error messages on your `profile` object as list items in that unordered list.
- * Wrap each of the erroneous fields in your form with a surrounding `<div class="field-with-errors">` HTML tag for you to enrich with your ninja CSS skills.
+ * Wrap each of the erroneous fields in your form with a surrounding `<div class="fieldWithErrors">` HTML tag for you to enrich with your ninja CSS skills.
 
 There is no longer the need to manually code error logic in your form markup.
 
