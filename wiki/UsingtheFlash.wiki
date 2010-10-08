@@ -82,12 +82,12 @@ Throw the `flashIsEmpty()` function into the mix, and you might find yourself wr
 <cfif NOT flashIsEmpty()>
     <div id="flash-messages">
         <cfif flashKeyExists("error")>
-            <p class="error-message">
+            <p class="errorMessage">
                 #flash("error")#
             </p>
         </cfif>
         <cfif flashKeyExists("success")>
-            <p class="success-message">
+            <p class="successMessage">
                 #flash("success")#
             </p>
         </cfif>
@@ -105,7 +105,7 @@ All of that above code can be replaced with a single call to the `flashMessages(
 </cfoutput>
 }}}
 
-Whenever any value is inserted into the Flash, `flashMessages()` will display it similarly to the complex example above, with `class` attributes set similarly (`error-message` for the `error` key and `success-message` for the `success` key).
+Whenever any value is inserted into the Flash, `flashMessages()` will display it similarly to the complex example above, with `class` attributes set similarly (`errorMessage` for the `error` key and `successMessage` for the `success` key).
 
 You can also use `flashMessage()`'s `key`/`keys` argument to limit its reach to a list of given keys. Let's say that we only want our layout to show messages for the `alert` key but not for the `error` or `success` keys (or any other for that matter). We would write our call like so:
 
