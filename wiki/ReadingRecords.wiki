@@ -1,13 +1,13 @@
 #summary Returning records from your database tables as objects or queries.
 #labels chapter,1.1,published_dev
 
-Reading records from your database typically involves using one of the 3 finder methods available in Wheels: [findByKey findByKey()], [findOne findOne()], and [findAll findAll()].
+Reading records from your database typically involves using one of the 3 finder methods available in Wheels: `findByKey()`, `findOne()`, and `findAll()`.
 
-The first 2 of these, ([findByKey findByKey()] and [findOne findOne()]), return an object to you, while the last one ([findAll findAll()]) returns the result from a `cfquery` tag.
+The first 2 of these, (`findByKey()` and `findOne()`), return an object to you, while the last one (`findAll()`) returns the result from a `cfquery` tag.
 
 ==Fetching a Row by Primary Key Value==
 
-Let's start by looking at the simplest of the finder methods, [findByKey findByKey()]. This method takes one argument: the primary key (or several keys if you're using composite keys) of the record you want to get.
+Let's start by looking at the simplest of the finder methods, `findByKey()`. This method takes one argument: the primary key (or several keys if you're using composite keys) of the record you want to get.
 
 If the record exists, it is returned to you as an object. If not, Wheels will return the boolean value `false`.
 
@@ -33,21 +33,21 @@ In your view:
 
 Often, you'll find yourself wanting to get a record (or many) based on a criteria other than just the primary key value though.
 
-As an example, let's say that you want to get the last order made by a customer. You can achieve this by using the [findOne findOne()] method like so:
+As an example, let's say that you want to get the last order made by a customer. You can achieve this by using the `findOne()` method like so:
 
 {{{
 <cfset anOrder = model("order").findOne(order="datePurchased DESC")>
 }}}
 
-In this case, [findOne findOne()] will force the `maxRows` argument of the `cfquery` tag to `1`. Because you're specifically asking to get one record from the database, Wheels will return this as an object.
+In this case, `findOne()` will force the `maxRows` argument of the `cfquery` tag to `1`. Because you're specifically asking to get one record from the database, Wheels will return this as an object.
 
 ==Fetching Multiple Rows==
 
-You can use [findAll findAll()] when you are asking to get one or more records from the database. Wheels will return this as a `cfquery` result (which could be empty if nothing was found based on your criteria).
+You can use `findAll()` when you are asking to get one or more records from the database. Wheels will return this as a `cfquery` result (which could be empty if nothing was found based on your criteria).
 
 ==Arguments for `findOne()` and `findAll()`==
 
-Besides the difference in the default return type, [findOne findOne()] and [findAll findAll()] accept the same arguments. Let's have a closer look at these arguments.
+Besides the difference in the default return type, `findOne()` and `findAll()` accept the same arguments. Let's have a closer look at these arguments.
 
 ===`select` Argument===
 
@@ -100,7 +100,7 @@ Example:
 The same goes for `NOT BETWEEN`.
 
 {{{
-<cfset items = model("item").findAll(where="price <= 100 OR price >= 500")>
+<cfset items = model("item").findAll(where="price < 100 OR price > 500")>
 }}}
 
 ===`order` Argument===
@@ -121,7 +121,7 @@ If, for example, you have specified that one `author` has many `articles`, then 
 
 ===`maxRows` Argument===
 
-This limits the number of records to return. Please note that if you call [findAll findAll()] with `maxRows=1`, you will still get a `cfquery` result back and not an object. (We recommend using [findOne findOne()] in this case if you want for an object to be returned.)
+This limits the number of records to return. Please note that if you call `findAll()` with `maxRows=1`, you will still get a `cfquery` result back and not an object. (We recommend using `findOne()` in this case if you want for an object to be returned.)
 
 ===`page` and `perPage` Arguments===
 
@@ -141,12 +141,12 @@ This is the number of minutes to cache the query for. This is eventually passed 
 
 In the beginning of this chapter, we said that you either get a query or an object back depending on the method that you call. But you can actually specify the return type so that you get either an object, a query, or an array of objects back.
 
-To do this, you use the `returnAs` argument. If you want an array of objects back from a [findAll findAll()] call, for example, you can do this:
+To do this, you use the `returnAs` argument. If you want an array of objects back from a `findAll()` call, for example, you can do this:
 
 {{{
 <cfset users = model("user").findAll(returnAs="objects")>
 }}}
 
-On [findOne findOne()] and [findByKey findByKey()], you can set this argument to either `object` or `query`. On the [findAll findAll()] method, you can set it to `objects` (note the plural) or `query`.
+On `findOne()` and `findByKey()`, you can set this argument to either `object` or `query`. On the `findAll()` method, you can set it to `objects` (note the plural) or `query`.
 
 We recommend sticking to this convention as much as possible because of the CFML engines' slow `CreateObject()` function. Be careful when setting `returnAs` to `objects`. You won't want to create a lot of objects in your array and slow down your application unless you absolutely need to.
