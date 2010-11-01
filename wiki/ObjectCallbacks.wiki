@@ -111,7 +111,7 @@ Does that sound complicated? This example should clear it up a little. Let's sho
 </cfcomponent>
 }}}
 
-In our example model, an artist's name can consist of both a first name and a last name ("John Mayer") or just the band / last name ("Abba"). The `setFullName` method handles the logic to concatenation the names.
+In our example model, an artist's name can consist of both a first name and a last name ("John Mayer") or just the band / last name ("Abba"). The `setFullName` method handles the logic to concatenate the names.
 
 Always remember to return the `arguments` struct, otherwise Wheels won't be able to tell that you actually wanted to make any changes to the query.
 
