@@ -1,5 +1,5 @@
 #summary Instructions for upgrading your ColdFusion on Wheels 1.0.x application to Wheels 1.1.x.
-#labels published_dev,1.1,chapter
+#labels published_prod,1.1,chapter
 
 If you are upgrading from Wheels 1.0 or newer, the easiest way to upgrade is to replace the `wheels` folder with the new one from the 1.1 download. If you are upgrading from an earlier version, we recommend reviewing the steps outlined in [UpgradingWheels Upgrading to Wheels 1.0].
 
@@ -12,7 +12,6 @@ If you are upgrading from Wheels 1.0 or newer, the easiest way to upgrade is to 
 == File System Changes ==
 
  * The `.htaccess` file has been changed. Be sure to copy over the new one from the new version 1.1 download and copy any addition changes that you may have also made to the original version.
- * A new `tests` folder has been added. Wheels will run fine without this folder but if you want to write unit tests for your application you need to add this folder and its contents to your application.
 
 == Database Structure Changes ==
 
@@ -27,16 +26,16 @@ If you are upgrading from Wheels 1.0 or newer, the easiest way to upgrade is to 
 
  * Validations will be applied to some model properties automatically. This may cause unintended behavior with your validations. To turn this setting off, call `set(automaticValidations=false)` in `config/settings.cfm`.
  * The `class` argument in `hasOne()`, `hasMany()`, and `belongsTo()` has been deprecated. Use the `modelName` argument instead.
- * `afterFind()` callbacks no longer require special logic to handle the setting of properties in objects and queries (the "query way" works for both cases now). Since arguments will always be passed in to the method you can't rely on `StructIsEmpty()`, like the old documentation suggested, to determine if you're dealing with an object or not. In the rare cases that you need to know you can now call `isInstance()` or `isClass()` instead.
+ * `afterFind()` callbacks no longer require special logic to handle the setting of properties in objects and queries. (The "query way" works for both cases now.) Because `arguments` will always be passed in to the method, you can't rely on `StructIsEmpty()` to determine if you're dealing with an object or not. In the rare cases that you need to know, you can now call `isInstance()` or `isClass()` instead.
  * On create, a model will now set the `updatedAt` auto-timestamp to the same value as the `createdAt` timestamp. To override this behavior, call `set(setUpdatedAtOnCreate=false)` in `config/settings.cfm`.
 
 === View Code ===
 
- * Object form helpers (e.g. `textField()` and `radioButton()`) now automatically display a `label` based on the property name. If you left the `label` argument blank while using an earlier version of Wheels, some labels may start appearing automatically, leaving you with unintended results. To stop a label from appearing use label=false instead.
+ * Object form helpers (e.g. `textField()` and `radioButton()`) now automatically display a `label` based on the property name. If you left the `label` argument blank while using an earlier version of Wheels, some labels may start appearing automatically, leaving you with unintended results. To stop a label from appearing, use `label=false` instead.
  * The `contentForLayout()` helper to be used in your layout files has been deprecated. Use the `includeContent()` helper instead.
  * In `production` mode, query strings will automatically be added to the end of all asset URLs (which includes !JavaScript includes, stylesheet links, and images. To turn off this setting, call `set(assetQueryString=false)` in `config/settings.cfm`.
  * `stylesheetLinkTag()` and `javaScriptIncludeTag()` now accept external URLs for the `source`/`sources` argument. If you manually typed out these tags in previous releases, you can now use these helpers instead.
- * `flashMessages()`, `errorMessageOn()` and `errorMessagesFor()` now create camelCased class attributes instead (for example `error-messages` is now `errorMessages`). Same for the class on the tag that wraps form elements with errors, it is now `fieldWithErrors`.
+ * `flashMessages()`, `errorMessageOn()` and `errorMessagesFor()` now create camelCased `class` attributes instead (for example `error-messages` is now `errorMessages`). The same goes for the `class` attribute on the tag that wraps form elements with errors: it is now `fieldWithErrors`.
 
 === Controller Code ===
 
