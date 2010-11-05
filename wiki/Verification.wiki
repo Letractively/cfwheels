@@ -33,9 +33,11 @@ In this example, we register the `incorrectRequestType()` function as the handle
 </cffunction>
 
 <cffunction name="incorrectRequestType">
-    <cfset renderPage(action="accessDenied")>
+    <cfset redirectTo(action="accessDenied")>
 </cffunction>
 }}}
+
+Note that you have to either do a `redirectTo` call or abort the request completely after you've done what you wanted to do inside your handler function. If you don't do anything at all and just let the function exit on its own, Wheels will redirect the user back to the page they came from. In other words you cannot render any content from inside this function but you can let another function handle that part by redirecting to it.
 
 ==Enforcing the Existence and Type of Variables==
 
