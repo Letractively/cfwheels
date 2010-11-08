@@ -1,5 +1,5 @@
 #summary Verify the existence and type of variables before allowing for a given controller action to run.
-#labels chapter,draft,1.1
+#labels chapter,published_prod,1.1
 
 Verification, through the `verifies()` function, is just a special type of filter that runs before actions. With verifications defined in your controller, you can eliminate the need for wrapping your entire actions in `<cfif>` blocks checking for the existence and types of variables. You also can limit your actions' scopes to specific request types like `post`, `get`, and AJAX requests.
 
@@ -37,7 +37,7 @@ In this example, we register the `incorrectRequestType()` function as the handle
 </cffunction>
 }}}
 
-Note that you have to either do a `redirectTo` call or abort the request completely after you've done what you wanted to do inside your handler function. If you don't do anything at all and just let the function exit on its own, Wheels will redirect the user back to the page they came from. In other words you cannot render any content from inside this function but you can let another function handle that part by redirecting to it.
+Note that you have to either do a `redirectTo` call or abort the request completely after you've done what you wanted to do inside your handler function. If you don't do anything at all and just let the function exit on its own, Wheels will redirect the user back to the page they came from. In other words, you cannot render any content from inside this function but you can let another function handle that part by redirecting to it.
 
 ==Enforcing the Existence and Type of Variables==
 
