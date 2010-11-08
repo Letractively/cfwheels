@@ -1,5 +1,5 @@
 #summary Returning records from your database tables as objects or queries.
-#labels chapter,1.1,published_dev
+#labels chapter,1.1,published_prod
 
 Reading records from your database typically involves using one of the 3 finder methods available in Wheels: `findByKey()`, `findOne()`, and `findAll()`.
 
@@ -105,7 +105,7 @@ The same goes for `NOT BETWEEN`.
 
 ===`order` Argument===
 
-This maps to the `ORDER` clause of the SQL statement. If you don't specify an order at all, none will be used (makes sense, eh?). So in those cases, the database engine will decide in what order to return the records. Note that it's a requirement to write SQL keywords (`ASC`, `DESC`) in upper case.
+This maps to the `ORDER` clause of the SQL statement. If you don't specify an order at all, none will be used (makes sense, eh?). So in those cases, the database engine will decide in what order to return the records. Note that it's a requirement to write the SQL keywords `ASC` and `DESC` in upper case.
 
 There is one exception to this. If you paginate the records (by passing in the `page` argument) without specifying the order, Wheels will order the results by the primary key column. This is because pagination relies on having unique records to order by.
 
