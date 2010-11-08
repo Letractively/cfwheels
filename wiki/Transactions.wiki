@@ -30,7 +30,7 @@ In this example, if the post doesn't save (perhaps due to a validation problem),
 If you want to manage transactions yourself using the `<cftransaction>` tag, you can simply add `transaction=false` to any CRUD method.
 
 {{{
-<cfset model("author").create(name="John", transaction=false)>
+<cfset model("author").create(name="John", transaction="none")>
 }}}
 
 Another option is to disable transactions across your entire application using the `transactionMode` configuration:
