@@ -77,12 +77,6 @@
  * [DocumentationGuidelines Documentation Guidelines]
  * [RunningFrameworkUnitTests Testing Wheels Itself]<font color="red">`*`</font>
 
-===Sample Applications===
-
- * [Administration Administration]
- * [Authorization Authorization]
- * [SocialNetworking Social Networking]<font color="red">`*`</font>
-
 ===The Wheels API===
 
  * [ConfigurationFunctions Configuration Functions]
