@@ -33,19 +33,23 @@ That piece of code by itself will work just like you expect it to. When you clic
 But let's make it into an asynchronous request. Add this !JavaScript (either on the page inside `script` tags or in a separate `.js` file included via `javaScriptIncludeTag()`):
 
 {{{
-// Listen to the "click" event of the "alert-button" link and make an AJAX request
-$("#alert-button").click(function() {
-    $.ajax({ 
-        type: "POST", 
-        url: $(this).attr("href") + '?format=json', // References "/say/hello?format=json"
-        dataType: "json", 
-        success: function(response) { 
-	    $("h1").html(response.message);
-	    $("p").html(response.time);
-        } 
-    });
-    return false; // keeps the normal request from firing
-});
+(function($){$(document).ready(function(){
+	
+	// Listen to the "click" event of the "alert-button" link and make an AJAX request
+	$("#alert-button").click(function(e) {
+	    $.ajax({ 
+	        type: "POST", 
+	        url: $(this).attr("href") + '?format=json', // References "/say/hello?format=json"
+	        dataType: "json", 
+	        success: function(response) {
+	            $("h1").html(response.message);
+	            $("p").html(response.time);
+	        } 
+	    });
+	    e.preventDefault(); // keeps the normal request from firing
+	});
+
+});})(jQuery);
 }}}
 
 With that code, we are listening to the `click` event of the hyperlink, which will make an asynchronous request to the `hello` action in the `say` controller. Additionally, the !JavaScript call is passing a URL parameter called `format` set to `json`.
