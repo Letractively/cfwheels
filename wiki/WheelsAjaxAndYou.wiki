@@ -1,5 +1,5 @@
 #summary Using Wheels to develop web applications with AJAX features is a breeze. You have several options and tools at your disposal, which we'll cover in this chapter.
-#labels chapter,1.1,draft
+#labels chapter,1.1,published_prod
 
 Wheels was designed to be as lightweight as possible, so this keeps your options fairly open for developing AJAX features into your application. We will cover two different approaches in this chapter:
 
