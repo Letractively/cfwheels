@@ -65,7 +65,7 @@ If you'd like to use an image as a link to another page, simply pass the output 
 
 Like many of the other Wheels view helpers, any additional arguments that you pass to `linkTo()` will be added to the generated `<a>` tag as attributes.
 
-For example, if you'd like to add a class of `button` to your link, here's what the call to `linkTo()` would look like:
+For example, if you'd like to add a `class` attribute value of `button` to your link, here's what the call to `linkTo()` would look like:
 
 {{{
 #linkTo(text="Add to Cart", controller="cart", action="add", class="button")#
