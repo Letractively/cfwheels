@@ -73,10 +73,18 @@ With that one line of code, Wheels will perform the following checks when a requ
 
 All that functionality in only one line of code!
 
-Note that type checking with `verifies()` is not a substitute for [ObjectValidation Object Validation] in your model. `verifies()` adds convenience to your application flow for stopping basic type errors, especially for values passed in through the URL.
-
 What if you wanted do this for two or more variables? The `params` and `paramsTypes` each accept a list so you can include as many variables to check against as you want.
 
 The only thing you need to make sure of is that the number of variables in the `params` list matches the number types to check against in the `paramsTypes` list. This also goes for the `session`/`sessionTypes` and `cookie`/`cookieTypes` arguments, which check for existence and type in the `session` and `cookie` scopes, respectively. 
 
-You can read more in the API documentation for the `verifies()` function. 
+You can read more in the API documentation for the `verifies()` function.
+
+==Important Informant About Usage==
+
+There seems to be some confusion as to what validation should be done with `verifies()`. `verifies()` exists *solely* to validate _CONTROLLER and ENVIRONMENT LEVEL_ variables and *_IS NOT_* a substitute for [ObjectValidation Object Validation] in your model.
+
+A basic example of this is to validate params passed through to your controller from routes. Suppose we have the following route in our application:
+
+`<cfset addRoute(name="users_addresses_save", pattern="backend/users/[userid]/addresses/save", controller="UserAddresses", action="save")>`
+
+Using `verifies()` you will want to verify that the `userid` and an `address struct` are both present in the params scope and also that `userid` is of a certain type. However verifies _SHOULD NOT_ be used to make sure that values within the `address struct` themselves are valid (such as making sure the address zipcode is correct). The `address struct` should be passed into the appropriate model and validation should be performed there.
