@@ -69,7 +69,7 @@ Just like a regular page, Wheels partials also understand the concept of layouts
 
 This will wrap the partial with the code found in `views/boxes/_blue.cfm`. Just like with other layouts, you use [includeContent includeContent()] to represent the partial's content.
 
-That said, your `_newsitem.cfm` file could end up looking something like this:
+That said, your `_blue.cfm` file could end up looking something like this:
 
 {{{
 <div class="news">
