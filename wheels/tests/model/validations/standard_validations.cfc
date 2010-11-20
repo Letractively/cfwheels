@@ -1,8 +1,7 @@
 <cfcomponent extends="wheelsMapping.Test">
 
 	<cffunction name="setup">
-		<cfset StructDelete(application.wheels.models, "users", false)>
-        <cfset loc.user = model("users").new()>
+		<cfset loc.user = createobject("component", "wheelsMapping.Model").$initModelClass(name="user", path=get("modelPath"))>
 	</cffunction>
 
 	<!--- validatesConfirmationOf --->

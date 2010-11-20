@@ -3,7 +3,6 @@
 	<cffunction name="init">
 		<cfset belongsTo("author")>
 		<cfset hasMany("comments")>
-		<cfset hasMany("classifications")>
 	</cffunction>
 
 	<cffunction name="afterFindCallback">

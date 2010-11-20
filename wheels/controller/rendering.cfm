@@ -52,7 +52,7 @@
 		
 		if (application.wheels.cachePages && (IsNumeric(arguments.$cache) || (IsBoolean(arguments.$cache) && arguments.$cache)))
 		{
-			loc.category = "pages";
+			loc.category = "action";
 			loc.key = $hashedKey(arguments, variables.params);
 			loc.lockName = loc.category & loc.key;
 			loc.conditionArgs = {};
@@ -202,16 +202,9 @@
 	categories="controller-request,rendering" chapters="" functions="setResponse">
 	<cfscript>
 		if ($performedRender())
-		{
-			if (ListFindNoCase("testing,production", get("environment")))
-				return $compactOutput(variables.$instance.response);
-			else
-				return Trim(variables.$instance.response);
-		}
+			return Trim(variables.$instance.response);
 		else
-		{
 			return "";
-		}
 	</cfscript>
 </cffunction>
 
@@ -336,7 +329,7 @@
 		var loc = {};
 		if (application.wheels.cachePartials && (isNumeric(arguments.$cache) || (IsBoolean(arguments.$cache) && arguments.$cache)))
 		{
-			loc.category = "partials";
+			loc.category = "partial";
 			loc.key = $hashedKey(arguments);
 			loc.lockName = loc.category & loc.key;
 			loc.conditionArgs = {};

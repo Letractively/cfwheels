@@ -39,7 +39,7 @@
 			}
 			if (loc.actionIsCachable)
 			{
-				loc.category = "actions";
+				loc.category = "action";
 				loc.key = $hashedKey(request.cgi.http_host, variables.$class.name, variables.params);
 				loc.lockName = loc.category & loc.key;
 				loc.conditionArgs = {};

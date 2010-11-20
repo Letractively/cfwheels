@@ -180,7 +180,7 @@
 			}
 		}
 		if (!Len(loc.returnValue) && arguments.$returnTickCountWhenNew)
-			loc.returnValue = variables.wheels.instance.tickCountId;
+			loc.returnValue = variables.wheels.tickCountId;
 		</cfscript>
 	<cfreturn loc.returnValue>
 </cffunction>
@@ -526,14 +526,12 @@
 
 <cffunction name="$label" returntype="string" access="public" output="false">
 	<cfargument name="property" type="string" required="true">
-	<cfargument name="properties" type="struct" required="false" default="#variables.wheels.class.properties#">
-	<cfargument name="mapping" type="struct" required="false" default="#variables.wheels.class.mapping#">
 	<cfscript>
-		if (StructKeyExists(arguments.properties, arguments.property) && StructKeyExists(arguments.properties[arguments.property], "label"))
-			return arguments.properties[arguments.property].label;
-		else if (StructKeyExists(arguments.mapping, arguments.property) && StructKeyExists(arguments.mapping[arguments.property], "label"))
-			return arguments.mapping[arguments.property].label;
+		if (StructKeyExists(variables.wheels.class.properties, arguments.property) && StructKeyExists(variables.wheels.class.properties[arguments.property], "label"))
+			return variables.wheels.class.properties[arguments.property].label;
+		else if (StructKeyExists(variables.wheels.class.mapping, arguments.property) && StructKeyExists(variables.wheels.class.mapping[arguments.property], "label"))
+			return variables.wheels.class.mapping[arguments.property].label;
 		else
-			return Humanize(arguments.property);
+			$throw(type="Wheels.LabelDoesNotExist", message="Label Does Not Exist", extendedInfo="The property `#arguments.property#` does not have a label defined. Use the label argument of the `property` method to add one.");
 	</cfscript>
 </cffunction>

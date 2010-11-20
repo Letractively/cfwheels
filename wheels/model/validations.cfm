@@ -423,14 +423,16 @@
 				{
 					if (loc.thisValidation.method == "$validatesPresenceOf")
 					{
-						$validatesPresenceOf(argumentCollection=loc.thisValidation.args);
+						// if the property does not exist or if it's blank we add an error on the object (for all other validation types we call corresponding methods below instead)
+						if (!StructKeyExists(this, loc.thisValidation.args.property) or (IsSimpleValue(this[loc.thisValidation.args.property]) and !Len(Trim(this[loc.thisValidation.args.property]))) or (IsStruct(this[loc.thisValidation.args.property]) and !StructCount(this[loc.thisValidation.args.property])))
+							addError(property=loc.thisValidation.args.property, message=$validationErrorMessage(loc.thisValidation.args.property, loc.thisValidation.args.message));
 					}
 					else
 					{
 						// if the validation set does not allow blank values we can set an error right away, otherwise we call a method to run the actual check
-						if (StructKeyExists(loc.thisValidation.args, "property") && StructKeyExists(loc.thisValidation.args, "allowBlank") && !loc.thisValidation.args.allowBlank && (!StructKeyExists(this, loc.thisValidation.args.property) || (!Len(this[loc.thisValidation.args.property]) && loc.thisValidation.method != "$validatesUniquenessOf")))
+						if (StructKeyExists(loc.thisValidation.args, "property") && StructKeyExists(loc.thisValidation.args, "allowBlank") && !loc.thisValidation.args.allowBlank && (!StructKeyExists(this, loc.thisValidation.args.property) || !Len(this[loc.thisValidation.args.property])))
 							addError(property=loc.thisValidation.args.property, message=$validationErrorMessage(loc.thisValidation.args.property, loc.thisValidation.args.message));
-						else if (!StructKeyExists(loc.thisValidation.args, "property") || (StructKeyExists(this, loc.thisValidation.args.property) &&(Len(this[loc.thisValidation.args.property]) || loc.thisValidation.method == "$validatesUniquenessOf")))
+						else if (!StructKeyExists(loc.thisValidation.args, "property") || (StructKeyExists(this, loc.thisValidation.args.property) && Len(this[loc.thisValidation.args.property])))
 							$invoke(method=loc.thisValidation.method, invokeArgs=loc.thisValidation.args);
 					}
 				}
@@ -447,95 +449,63 @@
 		var returnValue = false;
 		// proceed with validation when `condition` has been supplied and it evaluates to `true` or when `unless` has been supplied and it evaluates to `false`
 		// if both `condition` and `unless` have been supplied though, they both need to be evaluated correctly (`true`/`false` that is) for validation to proceed
-		if (
-			(!StructKeyExists(arguments, "condition") || !Len(arguments.condition) || Evaluate(arguments.condition))
-			&& (!StructKeyExists(arguments, "unless") || !Len(arguments.unless) || !Evaluate(arguments.unless))
-		){
+		if ((!StructKeyExists(arguments, "condition") || !Len(arguments.condition) || Evaluate(arguments.condition)) && (!StructKeyExists(arguments, "unless") || !Len(arguments.unless) || !Evaluate(arguments.unless)))
 			returnValue = true;
-		}
 	</cfscript>
 	<cfreturn returnValue>
 </cffunction>
 
 <cffunction name="$validatesConfirmationOf" returntype="void" access="public" output="false" hint="Adds an error if the object property fail to pass the validation setup in the @validatesConfirmationOf method.">
 	<cfscript>
-		var virtualConfirmProperty = arguments.property & "Confirmation";
-		if (StructKeyExists(this, virtualConfirmProperty) && this[arguments.property] != this[virtualConfirmProperty])
-		{
-			addError(property=virtualConfirmProperty, message=$validationErrorMessage(arguments.property, arguments.message));
-		}
+		var loc = {};
+		loc.virtualConfirmProperty = arguments.property & "Confirmation";
+		if (StructKeyExists(this, loc.virtualConfirmProperty) && this[arguments.property] != this[loc.virtualConfirmProperty])
+			addError(property=loc.virtualConfirmProperty, message=$validationErrorMessage(arguments.property, arguments.message));
 	</cfscript>
 </cffunction>
 
 <cffunction name="$validatesExclusionOf" returntype="void" access="public" output="false" hint="Adds an error if the object property fail to pass the validation setup in the @validatesExclusionOf method.">
 	<cfscript>
 		if (ListFindNoCase(arguments.list, this[arguments.property]))
-		{
 			addError(property=arguments.property, message=$validationErrorMessage(arguments.property, arguments.message));
-		}
 	</cfscript>
 </cffunction>
 
 <cffunction name="$validatesFormatOf" returntype="void" access="public" output="false" hint="Adds an error if the object property fail to pass the validation setup in the @validatesFormatOf method.">
 	<cfscript>
-		if (
-			(Len(arguments.regEx) && !REFindNoCase(arguments.regEx, this[arguments.property]))
-			|| (Len(arguments.type) && !IsValid(arguments.type, this[arguments.property]))
-		){
+		if ((Len(arguments.regEx) && !REFindNoCase(arguments.regEx, this[arguments.property])) || (Len(arguments.type) && !IsValid(arguments.type, this[arguments.property])))
 			addError(property=arguments.property, message=$validationErrorMessage(arguments.property, arguments.message));
-		}
 	</cfscript>
 </cffunction>
 
 <cffunction name="$validatesInclusionOf" returntype="void" access="public" output="false" hint="Adds an error if the object property fail to pass the validation setup in the @validatesInclusionOf method.">
 	<cfscript>
 		if (!ListFindNoCase(arguments.list, this[arguments.property]))
-		{
 			addError(property=arguments.property, message=$validationErrorMessage(arguments.property, arguments.message));
-		}
-	</cfscript>
-</cffunction>
-
-<cffunction name="$validatesPresenceOf" returntype="void" access="public" output="false" hint="Adds an error if the object property fail to pass the validation setup in the @validatesPresenceOf method.">
-	<cfargument name="property" type="string" required="true">
-	<cfargument name="message" type="string" required="true">
-	<cfargument name="properties" type="struct" required="false" default="#this.properties()#">
-	<cfscript>
-		// if the property does not exist or if it's blank we add an error on the object
-		if (
-			!StructKeyExists(arguments.properties, arguments.property)
-			|| (IsSimpleValue(arguments.properties[arguments.property]) && !Len(Trim(arguments.properties[arguments.property])))
-			|| (IsStruct(arguments.properties[arguments.property]) && !StructCount(arguments.properties[arguments.property]))
-		){
-			addError(property=arguments.property, message=$validationErrorMessage(arguments.property, arguments.message));
-		}
 	</cfscript>
 </cffunction>
 
 <cffunction name="$validatesLengthOf" returntype="void" access="public" output="false" hint="Adds an error if the object property fail to pass the validation setup in the @validatesLengthOf method.">
-	<cfargument name="property" type="string" required="true">
-	<cfargument name="message" type="string" required="true">
-	<cfargument name="exactly" type="numeric" required="true">
-	<cfargument name="maximum" type="numeric" required="true">
-	<cfargument name="minimum" type="numeric" required="true">
-	<cfargument name="within" type="any" required="true">
-	<cfargument name="properties" type="struct" required="false" default="#this.properties()#">
 	<cfscript>
-		var _lenValue = Len(arguments.properties[arguments.property]);
-
-		// for within, just create minimum/maximum values
-		if (IsArray(arguments.within) && ArrayLen(arguments.within) eq 2)
+		if (arguments.maximum)
 		{
-			arguments.minimum = arguments.within[1];
-			arguments.maximum = arguments.within[2];
+			if (Len(this[arguments.property]) gt arguments.maximum)
+				addError(property=arguments.property, message=$validationErrorMessage(arguments.property, arguments.message));
 		}
-
-		if(
-			(arguments.maximum && _lenValue gt arguments.maximum)
-			|| (arguments.minimum && _lenValue lt arguments.minimum)
-			|| (arguments.exactly && _lenValue != arguments.exactly)
-		){
-			addError(property=arguments.property, message=$validationErrorMessage(arguments.property, arguments.message));
+		else if (arguments.minimum)
+		{
+			if (Len(this[arguments.property]) lt arguments.minimum)
+				addError(property=arguments.property, message=$validationErrorMessage(arguments.property, arguments.message));
+		}
+		else if (arguments.exactly)
+		{
+			if (Len(this[arguments.property]) neq arguments.exactly)
+				addError(property=arguments.property, message=$validationErrorMessage(arguments.property, arguments.message));
+		}
+		else if (IsArray(arguments.within) && ArrayLen(arguments.within))
+		{
+			if (Len(this[arguments.property]) lt arguments.within[1] or Len(this[arguments.property]) gt arguments.within[2])
+				addError(property=arguments.property, message=$validationErrorMessage(arguments.property, arguments.message));
 		}
 	</cfscript>
 </cffunction>
@@ -559,45 +529,46 @@
 </cffunction>
 
 <cffunction name="$validatesUniquenessOf" returntype="void" access="public" output="false" hint="Adds an error if the object property fail to pass the validation setup in the @validatesUniquenessOf method.">
-	<cfargument name="property" type="string" required="true">
-	<cfargument name="message" type="string" required="true">
-	<cfargument name="scope" type="string" required="false" default="">
-	<cfargument name="properties" type="struct" required="false" default="#this.properties()#">
 	<cfscript>
 		var loc = {};
-		loc.where = [];
 
 		// create the WHERE clause to be used in the query that checks if an identical value already exists
 		// wrap value in single quotes unless it's numeric
 		// example: "userName='Joe'"
-		ArrayAppend(loc.where, "#arguments.property#=#variables.wheels.class.adapter.$quoteValue(this[arguments.property])#");
+		loc.where = arguments.property & "=";
+		if (!IsNumeric(this[arguments.property]))
+			loc.where = loc.where & "'";
+		loc.where = loc.where & this[arguments.property];
+		if (!IsNumeric(this[arguments.property]))
+			loc.where = loc.where & "'";
 
 		// add scopes to the WHERE clause if passed in, this means that checks for other properties are done in the WHERE clause as well
 		// example: "userName='Joe'" becomes "userName='Joe' AND account=1" if scope is "account" for example
-		arguments.scope = $listClean(arguments.scope);
 		if (Len(arguments.scope))
 		{
 			loc.iEnd = ListLen(arguments.scope);
 			for (loc.i=1; loc.i <= loc.iEnd; loc.i++)
 			{
-				loc.property = ListGetAt(arguments.scope, loc.i);
-				ArrayAppend(loc.where, "#loc.property#=#variables.wheels.class.adapter.$quoteValue(this[loc.property])#");
+				loc.where = loc.where & " AND ";
+				loc.property = Trim(ListGetAt(arguments.scope, loc.i));
+				loc.where = loc.where & loc.property & "=";
+				if (!IsNumeric(this[loc.property]))
+					loc.where = loc.where & "'";
+				loc.where = loc.where & this[loc.property];
+				if (!IsNumeric(this[loc.property]))
+					loc.where = loc.where & "'";
 			}
 		}
 
 		if (variables.wheels.class.softDeletion)
-		{
-			ArrayAppend(loc.where, "#tableName()#.#$softDeleteColumn()# IS NULL");
-		}
+			loc.where = loc.where & " AND " & variables.wheels.class.tableName & "." & variables.wheels.class.softDeleteColumn & " IS NULL";
 
 		// try to fetch existing object from the database
-		loc.existingObject = findOne(where=ArrayToList(loc.where, " AND "), reload=true);
+		loc.existingObject = findOne(where=loc.where, reload=true);
 
 		// we add an error if an object was found in the database and the current object is either not saved yet or not the same as the one in the database
 		if (IsObject(loc.existingObject) && (isNew() || loc.existingObject.key() != key($persisted=true)))
-		{
 			addError(property=arguments.property, message=$validationErrorMessage(arguments.property, arguments.message));
-		}
 	</cfscript>
 </cffunction>
 
@@ -608,16 +579,15 @@
 		var loc = {};
 		loc.returnValue = false;
 
-		for (loc.when in variables.wheels.class.validations)
-		{
-			if (StructKeyExists(variables.wheels.class.validations, loc.when))
-			{
+		for (loc.when in variables.wheels.class.validations) {
+
+			if (StructKeyExists(variables.wheels.class.validations, loc.when)) {
+
 				loc.eventArray = variables.wheels.class.validations[loc.when];
 				loc.iEnd = ArrayLen(loc.eventArray);
-				for (loc.i = 1; loc.i lte loc.iEnd; loc.i++)
-				{
-					if (StructKeyExists(loc.eventArray[loc.i].args, "property") && loc.eventArray[loc.i].args.property == arguments.property and loc.eventArray[loc.i].method == "$#arguments.validation#")
-					{
+				for (loc.i = 1; loc.i lte loc.iEnd; loc.i++) {
+
+					if (StructKeyExists(loc.eventArray[loc.i].args, "property") && loc.eventArray[loc.i].args.property == arguments.property and loc.eventArray[loc.i].method == "$#arguments.validation#") {
 						loc.returnValue = true;
 						break;
 					}

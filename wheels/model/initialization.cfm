@@ -4,8 +4,8 @@
 	<cfscript>
 		var loc = {};
 		variables.wheels = {};
+		variables.wheels.errors = [];
 		variables.wheels.class = {};
-		variables.wheels.class.alias = arguments.name;
 		variables.wheels.class.modelName = arguments.name;
 		variables.wheels.class.path = arguments.path;
 
@@ -19,8 +19,6 @@
 		variables.wheels.class.RESQLAs = "[[:space:]]AS[[:space:]][A-Za-z1-9]+";
 		variables.wheels.class.RESQLOperators = "((?: (?:NOT )?LIKE)|(?: (?:NOT )?IN)|(?: IS(?: NOT)?)|(?:<>)|(?:<=)|(?:>=)|(?:!=)|(?:!<)|(?:!>)|=|<|>)";
 		variables.wheels.class.RESQLWhere = "(#variables.wheels.class.RESQLOperators# ?)(\('.+?'\)|\((-?[0-9\.],?)+\)|'.+?'()|''|(-?[0-9\.]+)()|NULL)(($|\)| (AND|OR)))";
-		
-		variables.wheels.class.aliases = {};
 		variables.wheels.class.mapping = {};
 		variables.wheels.class.properties = {};
 		variables.wheels.class.accessibleProperties = {};
@@ -194,9 +192,9 @@
 
 		variables.wheels = {};
 		variables.wheels.instance = {};
-		variables.wheels.instance.errors = [];
+		variables.wheels.errors = [];
 		// keep a unique identifier for each model created in case we need it for nested properties
-		variables.wheels.instance.tickCountId = GetTickCount().toString(); // make sure we have it in milliseconds
+		variables.wheels.tickCountId = GetTickCount().toString(); // make sure we have it in milliseconds
 
 		// copy class variables from the object in the application scope
 		if (!StructKeyExists(variables.wheels, "class"))

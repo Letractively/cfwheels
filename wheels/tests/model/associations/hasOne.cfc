@@ -55,15 +55,14 @@
 
 	<cffunction name="test_deleting_child">
 		<cfset loc.author = model("author").findOne(order="id")>
-		<cfset loc.profileCount = model("profile").count() />
 		<cftransaction>
 			<cfset loc.author.deleteProfile(transaction="none")>
-			<cfset assert("model('profile').count() eq (loc.profileCount - 1)")>
+			<cfset assert("model('profile').count() IS 0")>
 			<cftransaction action="rollback" />
 		</cftransaction>		
 		<cftransaction>
 			<cfset model("profile").deleteOne(where="authorId=#loc.author.id#", transaction="none")>
-			<cfset assert("model('profile').count() eq (loc.profileCount - 1)")>
+			<cfset assert("model('profile').count() IS 0")>
 			<cftransaction action="rollback" />
 		</cftransaction>		
 	</cffunction>
@@ -90,11 +89,6 @@
 			<cftransaction action="rollback" />
 		</cftransaction>
 		<cfset assert("loc.dynamicResult IS loc.coreResult")>
-	</cffunction>
-
-	<cffunction name="test_getting_child_with_join_key">
-		<cfset loc.obj = model("user").findOne(order="id", include="author")>
-		<cfset assert('loc.obj.firstName eq loc.obj.author.firstName')>
 	</cffunction>
 
 </cfcomponent>
