@@ -1,5 +1,5 @@
 #summary Wheels utilizes validation setup within the model to enforce appropriate data constraints and persistence. Validation may be performed for saves, creates, and updates.
-#labels chapter,1.1,published_prod
+#labels chapter,1.1.1,draft
 
 ==Basic Setup==
 
@@ -98,7 +98,7 @@ You can also turn on or off the automatic validations on a per model basis by ca
 
 See the chapter on [ConfigurationandDefaults] for more information on available Wheels ORM settings.
 
-===Use `when`, `if`, or `unless` to Limit the Scope of Validation===
+===Use `when`, `condition`, or `unless` to Limit the Scope of Validation===
 
 If you want to limit the scope of the validation, you have 3 arguments at your disposal: `when`, `if`, and `unless`.
 
@@ -116,16 +116,16 @@ To limit our email validation to run only on create, we would change that line t
 <cfset validatesUniquenessOf(property="email", when="onCreate")>
 }}}
 
-====`if` and `unless` Arguments====
+====`condition` and `unless` Arguments====
 
-`if` and `unless` provide even more flexibility when the `when` argument isn't specific enough for your validation's needs.
+`condition` and `unless` provide even more flexibility when the `when` argument isn't specific enough for your validation's needs.
 
-Each argument accepts a string containing an expression to evaluate. `if` specifies when the validation should be run. `unless` specifies when the validation should not be run.
+Each argument accepts a string containing an expression to evaluate. `condition` specifies when the validation should be run. `unless` specifies when the validation should not be run.
 
 As an example, let's say that the model should only verify a CAPTCHA if the user is logged out, but not when they enter their name as "Ben Forta":
 
 {{{
-<cfset validate(method="validateCaptcha", if="not isLoggedIn()", unless="this.name is 'Ben Forta'")>
+<cfset validate(method="validateCaptcha", condition="not isLoggedIn()", unless="this.name is 'Ben Forta'")>
 }}}
 
 ===Custom Validations===
