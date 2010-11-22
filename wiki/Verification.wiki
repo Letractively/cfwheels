@@ -1,5 +1,5 @@
 #summary Verify the existence and type of variables before allowing for a given controller action to run.
-#labels chapter,published_prod,1.1
+#labels chapter,draft,1.1
 
 Verification, through the `verifies()` function, is just a special type of filter that runs before actions. With verifications defined in your controller, you can eliminate the need for wrapping your entire actions in `<cfif>` blocks checking for the existence and types of variables. You also can limit your actions' scopes to specific request types like `post`, `get`, and AJAX requests.
 
@@ -79,12 +79,20 @@ The only thing you need to make sure of is that the number of variables in the `
 
 You can read more in the API documentation for the `verifies()` function.
 
-==Important Informant About Usage==
+==Controller Verification vs. Model Object Validation==
 
-There seems to be some confusion as to what validation should be done with `verifies()`. `verifies()` exists *solely* to validate _CONTROLLER and ENVIRONMENT LEVEL_ variables and *_IS NOT_* a substitute for [ObjectValidation Object Validation] in your model.
+`verifies()` exists solely to validate _controller_ and _environment level_ variables and is not a substitute for [ObjectValidation Object Validation] in your model.
 
 A basic example of this is to validate params passed through to your controller from routes. Suppose we have the following route in our application:
 
-`<cfset addRoute(name="users_addresses_save", pattern="backend/users/[userid]/addresses/save", controller="UserAddresses", action="save")>`
+{{{
+<cfset addRoute(name="usersAddressesSave", pattern="admin/users/[userid]/addresses/save", controller="UserAddresses", action="save")>
+}}}
 
-Using `verifies()` you will want to verify that the `userid` and an `address struct` are both present in the params scope and also that `userid` is of a certain type. However verifies _SHOULD NOT_ be used to make sure that values within the `address struct` themselves are valid (such as making sure the address zipcode is correct). The `address struct` should be passed into the appropriate model and validation should be performed there.
+In this example, we will want to verify that the `userId` and `address` struct are both present in the `params` struct and also that `userId` is of a certain type:
+
+{{{
+<cfset verifies(only="save", post=true, params="userId,address", paramsTypes="integer,struct")>
+}}}
+
+However, verifies should not be used to make sure that values within the `address` struct themselves are valid (such as making sure that `address.zipCode` is correct). Because the `address` struct will be passed in to the model, the validation will be performed there.
