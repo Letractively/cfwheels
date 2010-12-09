@@ -70,7 +70,7 @@ If you need to include more than one style sheet and change the media type to "p
 Lastly, you can also link to stylesheets at a different domain or subdomain by specifying the full URL:
 
 {{{
-#styleSheetLinkTag(source="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/jquery-ui.min.js")#
+#styleSheetLinkTag(source="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.0/themes/cupertino/jquery-ui.css")#
 }}}
 
 ===!JavaScript Files===
