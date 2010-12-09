@@ -1,5 +1,5 @@
 #summary An overview of Wheels configuration and how is it used in your applications. Learn how to override a Wheels convention to make it your own.
-#labels chapter,1.1,published_prod
+#labels chapter,1.1,draft
 
 We all love the "Convention over Configuration" motto of Wheels, but what about those two cases that pop into everyone's head? _What if I want to develop in my own way?_ Or, _What about an existing application that I need to port into Wheels?_ Gladly, that's what configuration and defaults are there for. Let's take a look at exactly how is this performed.
 
@@ -88,6 +88,7 @@ For example, let's say that we want to disable debugging information in our `dev
 ====Full Listing of Environment Settings====
 
 || *Name* || *Type* || *Default* || *Description* ||
+|| `errorEmailServer` || `string` || `[empty string]` || Server to use to send out error emails. When left blank, this defaults to settings in the ColdFusion Administrator (if set). ||
 || `errorEmailAddress` || `string` || `[empty string]` || Comma-delimited list of email address to send error notifications to. Only applies if `sendEmailOnError` is set to `true`. ||
 || `errorEmailSubject` || `string` || `Error` || Subject of email that gets sent to administrators on errors. Only applies if `sendEmailOnError` is set to `true`. ||
 || `excludeFromErrorEmail` || `string` || `[empty string]` || List of variables (or entire scopes) to exclude from the scope dumps included in error emails. Use this to keep sensitive information from being sent in plain text over email. ||
