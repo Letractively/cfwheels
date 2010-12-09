@@ -1,5 +1,5 @@
 #summary Wheels includes a plethora of view helpers to help you transform data into a format more easily consumed by your applications' users.
-#labels chapter,1.0,published_prod
+#labels chapter,1.1,draft
 
 Wheels's included view helper functions can help you out in those tricky little tasks that need to be performed in the front-end of your web applications. Although they are called miscellaneous, they are in fact categorized into 3 categories:
 
@@ -49,7 +49,7 @@ Working with media is also a walk in the park with Wheels. Let's jump into a few
 
 ===Style Sheets===
 
-First, to include CSS files in your layout, you can use the [styleSheetLinkTag styleSheetLinkTag()] function:
+First, to include CSS files in your layout, you can use the `styleSheetLinkTag()` function:
 
 {{{
 <!--- layout.cfm --->
@@ -67,12 +67,25 @@ If you need to include more than one style sheet and change the media type to "p
 #styleSheetLinkTag(source="printer", media="print")#
 }}}
 
+Lastly, you can also link to stylesheets at a different domain or subdomain by specifying the full URL:
+
+{{{
+#styleSheetLinkTag(source="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.6/jquery-ui.min.js")#
+}}}
+
 ===!JavaScript Files===
 
-Including !JavaScript files is just as simple with the [javaScriptIncludeTag javaScriptIncludeTag()] helper.
+Including !JavaScript files is just as simple with the `javaScriptIncludeTag()` helper. This time, files are referenced from the `javascripts` folder.
 
 {{{
 #javaScriptIncludeTag("jquery")#
+}}}
+
+Like with style sheets, you can also specify lists of JavaScript includes as well as full URLs:
+
+{{{
+#javaScriptIncludeTag("jquery,jquery-ui")#
+#javaScriptIncludeTag("https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js")#
 }}}
 
 ===Displaying Images===
