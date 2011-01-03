@@ -3,12 +3,12 @@
 
 Wheels was designed to be as lightweight as possible, so this keeps your options fairly open for developing AJAX features into your application. We will cover two different approaches in this chapter:
 
- # "Do it yourself" method with a fresh out-of-the box install of Wheels
- # "Plugins" method with the help of a couple different plugins built by community members
+ # "Do it yourself" method with a fresh out-of-the box install of Wheels.
+ # "Let Wheels do it for me" method.
 
 While there are several flavors of !JavaScript libraries out there with AJAX support, we will be using the [http://jquery.com/ jQuery framework] in this tutorial. Let's assume that you are fairly familiar with the basics of jQuery and know how to set it up.
 
-For this tutorial, let's create the simplest example of all: a link that will render a message back to the user without refreshing the page.
+For this tutorial, let's create the simplest example of them all: a link that will render a message back to the user without refreshing the page.
 
 ==Approach #1: "Do It Yourself"==
 
@@ -83,13 +83,13 @@ Lastly, notice the lines where we're setting `greeting["message"]` and `greeting
 
 Assuming you already included jQuery in your application and you followed the code examples above, you now have a simple AJAX-powered web application built on Wheels. After clicking that `Alert me!` link, your `say` controller will respond back to you the serialized message via AJAX. jQuery will parse the JSON object and populate the `h1` and `p` with the appropriate data.
 
-==Approach #2: Remote Form Helpers Plugin==
+==Approach #2: Let Wheels do it for me==
 
-One of the many benefits of Wheels is the [http://cfwheels.org/plugins Plugin Directory]. The [http://cfwheels.org/plugins/listing/26 Remote Form Helpers] adds a set of CFMJS functions (CFML + !JavaScript) as well as a set of new form helpers that work exclusively with AJAX.
-
-By itself, the Remote Form Helpers plugin will add another type of response to your application: the `javascript` response. Let's replicate the previous example using Remote Form Helpers. (Refer to the [http://cfwheels.org/plugins/listing/26 plugin's documentation] and our chapter on [UsingandCreatingPlugins Using and Creating Plugins] for more information.)
+This is where things get a lot simpler, Wheels have implemented a set of !Unobtrusive !Javascript methods to facilitate all that work created in the first approach. Let’s take a look at how to developer the same functionality as before, but with a lot less code.
 	
-First, let's replace the `linkTo()` call from the first example with a call to a function included by the plugin, called `remoteLinkTo()`:
+First, to enable !AJAX functionality in your applications you need to include the special !Javascript file located at `wheels/vendor/ajax-adapters/wheels.jquery.js`. Once we have done this, we are ready to start creating our !AJAX powered applications.
+
+Let's add a tiny bit of code to that `linkTo()` call from the first example:
 
 {{{
 <cfoutput>
@@ -98,50 +98,49 @@ First, let's replace the `linkTo()` call from the first example with a call to a
 <h1></h1>
 <p></p>
 
-#remoteLinkTo(text="Alert me!", controller="say", action="hello")#
+#linkTo(text="Alert me!", controller="say", action="hello", remote=”true”)#
 
 </cfoutput>
 }}}
 
-`remoteLinkTo()` is all you need in your view now, so go ahead and remove the whole `script` block from the first example. This new function will take care of creating the !JavaScript for you.
-
-Now let's review that `say` controller:
+Adding the `remote=true` argument is all your need to do right now in this file, let’s skip to the `Say` controller now:
 
 {{{
 <!--- Controller code --->
+<cffunction name="init">
+    <cfset provides("html,json,js")>
+</cffunction>
+
 <cffunction name="hello">
     <!--- Prepare the message for the user --->
     <cfset greeting = {}>
     <cfset greeting["message"] = "Hi there">
-    <cfset greeting["time"] = Now()> 
-
-    <!--- If your request is an AJAX request, respond with the `views/say/hello.js.cfm remote view` --->
-    <cfif isAjax()> 
-        <cfset renderRemotePage()>
-    </cfif>
-    
-    <!--- Otherwise, let Wheels do its normal HTML response (the `views/say/hello.cfm` view file) --->
+    <cfset greeting["time"] = Now()>
+		
+    <!--- Respond to all requests with `renderWith` --->
+    <cfset renderWith(greeting)>
 </cffunction>
+
 }}}
 
-Wait, what? `hello.js.cfm`? Yes, the Remote Form Helpers plugin enables you to use a whole new set of view files. All files that have a `.js.cfm` extension are considered "remote view files" and will be used with your `renderRemotePage()` function to send it back to your initial request.
+As you can see, the `hello` action remained exactly the same, the only addition to this file was a new format in the `init` function called `js` which tells the controller to provide back to the view !Javascript instead of !HTML.
 
-Now let's create the file at `views/say/hello.js.cfm` and add this code:
+Because we added a new format for the controller to provide, we need to make a new view file with the following name `[action].[format].cfm` (in our example `hello.js.cfm`) Let's create the file at `views/say/hello.js.cfm` and add this code:
 
 {{{
 <!--- Remote View code --->
 <cfoutput>
 
-#pageInsertHTML(selector="h1", content=greeting.message)#
-#pageInsertHTML(selector="p", content=greeting.time)#
+$("h1").html("#greeting.message#");
+$("p").html("#greeting.time#");
 
 </cfoutput>
 }}}
 
-That's it. Without a single line of !JavaScript, we were able to setup an AJAX-powered Wheels application.
+That's it. With that minimal knowledge of !Javascript, we were able to setup an AJAX-powered Wheels application.
 
 ==AJAX in Wheels Explained==
 
-That is it! Hopefully now you have a clearer picture on how to create AJAX-based features for your web applications.
+Due note that Wheels is smart enough to fallback to !HTML if !Javascript is disabled on the user’s device, thanks to it’s UJS (!Unobtrusive !Javascript) implementation.
 
-Remember that any of the 3 examples work just fine. You have several ways to accomplish the same goal. Choose the one that fits your style and needs.
+Remember that any of the 2 examples work just fine. You have several ways to accomplish the same goal. Choose the one that fits your style and needs.
