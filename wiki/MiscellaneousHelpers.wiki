@@ -84,7 +84,6 @@ Including !JavaScript files is just as simple with the `javaScriptIncludeTag()` 
 Like with style sheets, you can also specify lists of JavaScript includes as well as full URLs:
 
 {{{
-#javaScriptIncludeTag("jquery,jquery-ui")#
 #javaScriptIncludeTag("https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js")#
 }}}
 
