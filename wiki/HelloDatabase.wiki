@@ -58,7 +58,7 @@ First, let's create a simple form for adding a new user to the `users` table. To
 
 ===Creating the Form===
 
-Now create a new file in `views/users` called `add.cfm`. This will contain the view code for our simple form.
+Now create a new file in `views/users` called `new.cfm`. This will contain the view code for our simple form.
 
 Next, add these lines of code to the new file:
 
