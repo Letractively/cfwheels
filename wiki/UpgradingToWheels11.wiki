@@ -1,5 +1,5 @@
 #summary Instructions for upgrading your ColdFusion on Wheels 1.0.x application to Wheels 1.1.x.
-#labels draft,1.1.1,chapter
+#labels draft,1.1.1,published_prod
 
 If you are upgrading from Wheels 1.0 or newer, the easiest way to upgrade is to replace the `wheels` folder with the new one from the 1.1 download. If you are upgrading from an earlier version, we recommend reviewing the steps outlined in [UpgradingWheels Upgrading to Wheels 1.0].
 
