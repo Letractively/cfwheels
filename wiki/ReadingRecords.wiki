@@ -119,6 +119,16 @@ If, for example, you have specified that one `author` has many `articles`, then 
 <cfset bobsArticles = model("author").findAll(where="firstName='Bob'", include="articles")>
 }}}
 
+===`group` Argument===
+
+This maps to the `GROUP BY` clause of the SQL statement and can be used to group the result into one or more columns.
+
+Let's suppose we want to query an order items table and get the number of times each items was ordered and the average price the item sold for:
+
+{{{
+<cfset orderitems = model("orderitems").findAll(select="itemid, title, COUNT(*) as counter, AVG(price) as priceAverage", group="itemid, title")>
+}}}
+
 ===`maxRows` Argument===
 
 This limits the number of records to return. Please note that if you call `findAll()` with `maxRows=1`, you will still get a `cfquery` result back and not an object. (We recommend using `findOne()` in this case if you want for an object to be returned.)
