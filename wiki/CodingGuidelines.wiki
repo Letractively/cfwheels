@@ -1,28 +1,21 @@
 #summary Here are the rules of the road for contributing code to the project. Let's follow this process so that we don't duplicate effort and so the code base is easy to maintain over the long haul.
-#labels chapter,1.0,published_prod
+#labels chapter,1.1,published_prod
 
 ==Subversion Repository==
 
-The official Subversion repository for Wheels is located at our [http://code.google.com/p/cfwheels/ Google Code site].
+The official Subversion repository for Wheels is located at our [http://www.github.com/cfwheels GitHub repository].
 
-Anyone may check out a read only copy of the code using this command:
-`svn checkout http://cfwheels.googlecode.com/svn/trunk/ cfwheels-read-only`
-
-The repository contains a standard SVN structure.
-  * The *trunk* contains the latest working copy of the project as committed by the project's developers. It may contain bugs and will be in a constant state of flux until it is tagged in a new release.
-  * *tags* contains official release code.
-  * *branches* contain any off-shoot efforts that the group has decided to develop independently from the rest of the code.
+Anyone may fork the `cfwheels` repository, make changes, and submit a pull request.
 
 ===Core Team Has Write Access===
 
-To make sure that we don't have too many chefs in the kitchen, we will be limiting SVN write access to a core team of developers.
+To make sure that we don't have too many chefs in the kitchen, we will be limiting direct commit access to a core team of developers.
 
 At this time, the core team consists of these developers:
 
-  * Per Djurner
+  * Tony Petruzzi
   * Chris Peters
   * Peter Amiri
-  * Tony Petruzzi
   * Raul Riera
   * James Gibson
   * Andy Bellenie
@@ -33,14 +26,14 @@ This does not restrict you from being able to contribute. See "Process for Imple
 
 Here's the process that we'd like for you to follow. This process is in place mainly to encourage everyone to communicate openly. This gives us the opportunity to have a great peer-review process, which will result in quality. Who doesn't like quality?
 
-  # Open an issue in the Wheels Google Code site, outlining the changes or additions that you would like to make.
+  # Open an issue in the [http://code.google.com/p/cfwheels/issues/list Wheels Google Code issue tracker], outlining the changes or additions that you would like to make.
   # A member of the core team will review your submission and leave feedback if necessary.
-  # Once the core team member is satisfied with the scope of the issue, they will schedule it for a release and mark your issue as "Approved." This is your green light to start working. Get to coding, grasshopper!
+  # Once the core team member is satisfied with the scope of the issue, they will schedule it for a release and mark your issue as "Accepted." This is your green light to start working. Get to coding, grasshopper!
   # Need help or running across any issues while coding? Run it by the Google Group. They all have opinions and love to let you know all about them. :)
-  # When you have implemented your enhancement or change, use your Subversion utility to create a patch with your changes. Attach the patch to your Google Code issue.
+  # When you have implemented your enhancement or change, use your Git repository to create a pull request with your changes.
+    * You should annotate your commits with the issue number as `issue 55` if the code issue is `55`.
   # A core team will review it and post any necessary feedback in the Google Code issue.
-  # Once everything is resolved, the issue will be marked as "Fixed." A core team member will then commit your patch to the SVN trunk.
-    * The core team member should annotate the SVN commit with the issue number as `issue 55` if the code issue is `55`. This causes Google code to auto-link the revision to the code site issue.
+  # Once everything is resolved, the issue will be marked as "Fixed." A core team member will then pull your commit into the Git repository.
     * The core team member should also annotate the code issue with a comment indicating the revision number as `r123` if the revision number was `123`. This causes Google to auto-link the issue to the SVN issue.
   # If needed, open an issue in Google Code to have the additions and changes in your revision documented. Be sure to use the format `r123` if your revision number was `123`. You may claim the issue if you'd like to do this, but that's entirely optional.
 
