@@ -1,5 +1,5 @@
 #summary Instructions for installing Wheels on your system.
-#labels chapter,1.1,published_prod
+#labels chapter,1.1,draft
 
 Installing Wheels is so simple that there is barely a need for a chapter devoted to it. But we figured we'd better make one anyway in case anyone is specifically looking for a chapter about installation.
 
@@ -9,7 +9,7 @@ So, here are the simple steps you need to follow to get rolling on Wheels...
 
 You have two choices when downloading Wheels. You can either use the latest official release of Wheels, or you can take a walk on the wild side and go with the latest committed source code in our Subversion (SVN) repository.
 
-The latest official release can be found in the [http://cfwheels.org/download downloads section] of this website, and the SVN trunk is available at our [http://code.google.com/p/cfwheels Google Code site].
+The latest official release can be found in the [http://cfwheels.org/download downloads section] of this website, and the Git repository is available at our [http://www.github.com/cfwheels GitHub repo].
 
 In most cases, we recommend going with the official release because it's well documented and has been through a lot of bug testing. Only if you're in desperate need of a feature that has not been released yet would we advise you to go with the version stored in the SVN trunk.
 
