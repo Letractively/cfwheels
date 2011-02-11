@@ -1,11 +1,19 @@
 #summary Here are the rules of the road for contributing code to the project. Let's follow this process so that we don't duplicate effort and so the code base is easy to maintain over the long haul.
 #labels chapter,1.1,published_prod
 
-==Subversion Repository==
+==Source Repository==
 
-The official Subversion repository for Wheels is located at our [http://www.github.com/cfwheels GitHub repository].
+The official repository for Wheels is located at our [http://www.github.com/cfwheels GitHub repository].
 
 Anyone may fork the `cfwheels` repository, make changes, and submit a pull request.
+
+*_NOTE:_* It is extremely important that the configuration of your fork be set so *AUTOCRLF is turned OFF*. This can be done by issuing the following git config command from the command prompt after cloning your fork to your local machine:
+
+{{{
+git config core.autocrlf false
+}}}
+
+If you are using a gui to interact with git, refer to product's help section.
 
 ===Core Team Has Write Access===
 
