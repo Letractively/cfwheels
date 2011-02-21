@@ -1,5 +1,5 @@
+#summary Helpful information for experienced Fusebox developers who are considering migrating to cfwheels
 #labels draft
-#Some helpful information for experienced Fusebox developers who are considering migrating to cfwheels
 
 = Introduction =
 
