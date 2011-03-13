@@ -153,10 +153,10 @@ A basic way of doing this is using the model object's `create()` method:
 {{{
 <cffunction name="create">
 
-    <cfset model("user").create(params.user)>
+    <cfset user = model("user").create(params.user)>
     <cfset redirectTo(
-        ,action="index",
-        ,success="User #user.name# created successfully."
+        action="index",
+        success="User #user.name# created successfully."
     )>
 
 </cffunction>
@@ -300,9 +300,9 @@ Now we'll create the `update` action. This will be similar to the `create` actio
     <cfset user = model("user").findByKey(params.user.id)>
     <cfset user.update(params.user)>
     <cfset redirectTo(
-        action="edit"
-        ,key=user.id
-        ,success="User #user.name# updated successfully."
+        action="edit",
+        key=user.id,
+        success="User #user.name# updated successfully."
     )>
 
 </cffunction>
@@ -324,8 +324,8 @@ Here's what our `delete` action would look like:
     <cfset user = model("user").findByKey(params.key)>
     <cfset user.delete()>
     <cfset redirectTo(
-        action="index"
-        ,success="#user.name# was successfully deleted."
+        action="index",
+        success="#user.name# was successfully deleted."
     )>
 
 </cffunction>
