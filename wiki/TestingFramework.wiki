@@ -323,7 +323,44 @@ We now have tests to make sure that the validations in model work. Now it's time
 </cffunction>
 }}}
 
-Now we know that when a model is created our password will be secured before it is saved to the database.
+===Controller Testing===
+
+The next part of our application that we need to test is our controllers. Below is what a typically controller for our user model would contain for creating and dsiplaying a list of users:
+
+{{{
+<cfcomponent extends="Controller" output="false">
+	
+	<!--- users/index --->
+	<cffunction name="index">
+		<cfset users = model("User").findAll()>
+	</cffunction>
+	
+	<!--- users/new --->
+	<cffunction name="new">
+		<cfset user = model("User").new()>
+	</cffunction>
+	
+	<!--- users/create --->
+	<cffunction name="create">
+		<cfset user = model("User").new(params.user)>
+		
+		<!--- Verify that the user creates successfully --->
+		<cfif user.save()>
+			<cfset flashInsert(success="The user was created successfully.")>
+			<!--- notice something about the next line? --->
+			<cfreturn redirectTo(action="index", delay="true")>
+		<!--- Otherwise --->
+		<cfelse>
+			<cfset flashInsert(error="There was an error creating the user.")>
+			<cfset renderPage(action="new")>
+		</cfif>
+	</cffunction>
+	
+</cfcomponent>
+}}}
+
+*Woa woa woa*, what in the world is that `cfreturn` doing in the `create` action and why doesn the `redirectTo()` method have a `delay` argument? First, I would like to say that I'm very proud of you for noticing that line :) Secondly the reason for this is quite simple, underneath the hood when you call `redirectTo()`, Wheels is using `cflocation`. As we all know, there is now way to intercept or stop a cflocation from happening. This can cause quite a number of problems when testing out a controller as you will never be able to get back any information about the redirection. To work around this, Wheels allow you to "delay" the execution of a redirect until after the controller has finished processing. This allow Wheels to gather and present some information to you about what redirection will occur. The drawback to this though is that the controller will continue processing as such we need to explicitly exit out of the controller action on our own, thus the reason why we use `cfreturn`.
+
 
 ==Running Tests==
 
