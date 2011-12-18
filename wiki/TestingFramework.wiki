@@ -1,4 +1,4 @@
-#summary An overview and examples of using the testing framework included in Wheels.
+#summary An overview of the testing framework included in Wheels.
 #labels chapter,1.1,draft
 
 ==The Theory Behind Testing==
@@ -10,12 +10,6 @@ The problem is that today's fix could be tomorrow's bug. What if there was an au
 In the past writing test against your application meant downloading, configuring and learning a completely separate framework. Often times this caused more headaches then it was worth and was the reason why most developers didn't bother writing tests. With Wheels we've included a small and very simple testing framework to help address just this issue.
 
 With Wheels, writing tests for your application is part of the development lifecycle itself and running the test is as simple as clicking a link.
-
-==Setting Your Application For Testing==
-
-In order to run tests against your application, you must first create a `tests` directory off the root of your Wheels application. All tests *MUST* reside in the `tests` directory or within a subdirectory thereof.
-
-When you run the tests for your application, Wheels recursively scans your application's `tests` directory and looks for any available valid tests to run, so feel free to organize the subdirectories and place whatever files needed to run your tests under the `tests` directory any way you like.
 
 ==Touring the Testing Framework==
 
@@ -29,7 +23,7 @@ Any components that will contain tests *MUST* extend the *_wheelsMapping.Test_* 
 <cfcomponent extends="wheelsMapping.Test">
 }}}
 
-If the testing engine sees that a component *DOES NOT* extend *_Test_*, that component skipped. This let's you create and store any _mock_ components you might want to use in your `tests` directory and keep everything together.
+If the testing engine sees that a component *DOES NOT* extend *_wheelsMapping.Test_*, that component skipped. This let's you create and store any _mock_ components you might want to use with your tests and keep everything together.
 
 Any methods that will be used as tests *MUST* begin their name with *_test_*:
 
@@ -41,7 +35,9 @@ If a method *DOES NOT* begin with *_test_* it is ignored and skipped. This let's
 
 ===Conventions===
 
-*<font color="red">DO NOT VAR ANY VARIABLES</font>* used in your tests. In order for the testing framework to get access to the variables within the tests that you're writing, all variables need to be within the components *variables scope*. The easy way to do this is to just not "var" variables within your tests and Railo/ColdFusion will automatically assign these variables into the variables scope of the component for you. The only gotcha is that this could cause some variables to overwrite each other and gets kinda of confusing of what's being thrown into the variables scope.
+*<font color="red">DO NOT VAR ANY VARIABLES</font>* used in your tests. In order for the testing framework to get access to the variables within the tests that you're writing, all variables need to be within the components *variables scope*. The easy way to do this is to just not "var" variables within your tests and Railo/ColdFusion will automatically assign these variables into the variables scope of the component for you.
+
+The only gotcha with this approach is that this could cause some variables to overwrite each other and gets kinda of confusing of what's being thrown into the variables scope. In order to prevent this, we recommend that you create your own sudo-scope by prepending the variables used within your test. The suggested scope to use is *_loc_*. You will see this scope used through the examples below.
 
 ===Evaluation===
 
@@ -51,9 +47,9 @@ An example test that checks that two values equal each other:
 
 {{{
 <cffunction name="testAEqualsB">
-	<cfset a = 1>
-	<cfset b = 1>
-	<cfset assert("a eq b")>
+	<cfset loc.a = 1>
+	<cfset loc.b = 1>
+	<cfset assert("loc.a eq loc.b")>
 </cffunction>
 }}}
 
@@ -61,9 +57,9 @@ An example test that checks that the first value is less then the second value:
 
 {{{
 <cffunction name="testAIsLessThanB">
-	<cfset a = 1>
-	<cfset b = 5>
-	<cfset assert("a lt b")>
+	<cfset loc.a = 1>
+	<cfset loc.b = 5>
+	<cfset assert("loc.a lt loc.b")>
 </cffunction>
 }}}
 
@@ -73,9 +69,9 @@ An example test that checks that a key exists in a structure:
 
 {{{
 <cffunction name="testKeyExistsInStructure">
-	<cfset a = {a=1, b=2, c=3}>
-	<cfset b = "d">
-	<cfset assert("StructKeyExists(a, b)")>
+	<cfset loc.a = {a=1, b=2, c=3}>
+	<cfset loc.b = "d">
+	<cfset assert("StructKeyExists(loc.a, loc.b)")>
 </cffunction>
 }}}
 
@@ -85,9 +81,9 @@ An example of raising the Wheels.TableNotFound error when you specify an invalid
 
 {{{
 <cffunction name="testTableNotFound">
-	<cfset e = raised("model('thisHasNoTable')")>
-	<cfset r = "Wheels.TableNotFound">
-	<cfset assert("e eq r")>
+	<cfset loc.e = raised("model('thisHasNoTable')")>
+	<cfset loc.r = "Wheels.TableNotFound">
+	<cfset assert("loc.e eq loc.r")>
 </cffunction>
 }}}
 
@@ -104,10 +100,10 @@ An example of displaying the debug output:
 
 {{{
 <cffunction name="testKeyExistsInStructure">
-	<cfset a = {a=1, b=2, c=3}>
-	<cfset b = "d">
-	<cfset debug("a")>
-	<cfset assert("StructKeyExists(a, b)")>
+	<cfset loc.a = {a=1, b=2, c=3}>
+	<cfset loc.b = "d">
+	<cfset debug("loc.a")>
+	<cfset assert("StructKeyExists(loc.a, loc.b)")>
 </cffunction>
 }}}
 
@@ -115,10 +111,10 @@ An example of calling debug but NOT displaying the output:
 
 {{{
 <cffunction name="testKeyExistsInStructure">
-	<cfset a = {a=1, b=2, c=3}>
-	<cfset b = "d">
-	<cfset debug("a", false)>
-	<cfset assert("StructKeyExists(a, b)")>
+	<cfset loc.a = {a=1, b=2, c=3}>
+	<cfset loc.b = "d">
+	<cfset debug("loc.a", false)>
+	<cfset assert("StructKeyExists(loc.a, loc.b)")>
 </cffunction>
 }}}
 
@@ -126,10 +122,10 @@ An example of displaying the output of debug as `text`:
 
 {{{
 <cffunction name="testKeyExistsInStructure">
-	<cfset a = {a=1, b=2, c=3}>
-	<cfset b = "d">
-	<cfset debug(expression="a", format="text")>
-	<cfset assert("StructKeyExists(a, b)")>
+	<cfset loc.a = {a=1, b=2, c=3}>
+	<cfset loc.b = "d">
+	<cfset debug(expression="loc.a", format="text")>
+	<cfset assert("StructKeyExists(loc.a, loc.b)")>
 </cffunction>
 }}}
 
@@ -147,31 +143,187 @@ Example:
 <cfcomponent extends="wheelsMapping.Test">
 
 	<cffunction name="setup">
-		<cfset controller = $controller(name="dummy")>
-		<cfset f = controller.distanceOfTimeInWords>
-		<cfset args = {}>
-		<cfset args.fromTime = now()>
-		<cfset args.includeSeconds = true>
+		<cfset loc.controller = $controller(name="dummy")>
+		<cfset loc.f = loc.controller.distanceOfTimeInWords>
+		<cfset loc.args = {}>
+		<cfset loc.args.fromTime = now()>
+		<cfset loc.args.includeSeconds = true>
 	</cffunction>
 
 	<cffunction name="testWithSecondsBelow5Seconds">
-		<cfset c = 5 - 1>
-		<cfset args.toTime = DateAdd('s', c, args.fromTime)>
-		<cfinvoke method="f" argumentCollection="#args#" returnVariable="e">
-		<cfset r = "less than 5 seconds">
-		<cfset assert("e eq r")>
+		<cfset loc.c = 5 - 1>
+		<cfset loc.args.toTime = DateAdd('s', c, args.fromTime)>
+		<cfinvoke method="loc.f" argumentCollection="#loc.args#" returnVariable="loc.e">
+		<cfset loc.r = "less than 5 seconds">
+		<cfset assert("loc.e eq loc.r")>
 	</cffunction>
 
 	<cffunction name="testWithSecondsBelow10Seconds">
-		<cfset c = 10 - 1>
-		<cfset args.toTime = DateAdd('s', c, args.fromTime)>
-		<cfinvoke method="f" argumentCollection="#args#" returnVariable="e">
-		<cfset r = "less than 10 seconds">
-		<cfset assert("e eq r")>
+		<cfset loc.c = 10 - 1>
+		<cfset loc.args.toTime = DateAdd('s', loc.c, loc.args.fromTime)>
+		<cfinvoke method="loc.f" argumentCollection="#loc.args#" returnVariable="loc.e">
+		<cfset loc.r = "less than 10 seconds">
+		<cfset assert("loc.e eq loc.r")>
 	</cffunction>
 
 </cfcomponent>
 }}}
+
+==Testing Your Application==
+
+In order to run tests against your application, you must first create a `tests` directory off the root of your Wheels application. All tests *MUST* reside in the `tests` directory or within a subdirectory thereof.
+
+When you run the tests for your application, Wheels recursively scans your application's `tests` directory and looks for any available valid tests to run, so feel free to organize the subdirectories and place whatever files needed to run your tests under the `tests` directory any way you like.
+
+===Model Testing===
+
+The first part of your application that you are going to want to test against are your models since this is where all the business logic of your application lives. Suppose that we have the following model:
+
+{{{
+<cfcomponent extends="Model" output="false">
+
+	<cffunction name="init">
+
+		<!--- validations on the properties of model --->
+		<cfset validatesPresenceOf("username,firstname,lastname")>
+		<cfset validatesPresenceOf(property="password", when="oncreate")>
+		<cfset validatesConfirmationOf(property="password", when="oncreate")>
+		
+		<!--- we never want to retrieve the password --->
+		<cfset afterFind("blankPassword")>
+		
+		<!--- this callback will secure the password when the model is saved --->
+		<cfset beforeSave("securePassword")>
+		
+	</cffunction>
+	
+	<cffunction name="securePassword" access="private">
+		
+		<cfif not len(this.password)>
+			<!--- we remove the password if it is blank. the password could be blank --->
+			<cfset structdelete(this, "password")>
+		<cfelse>
+			<!--- else we secure it --->
+			<cfset this.password = _securePassword(this.password)>
+		</cfif>
+		
+	</cffunction>	
+	
+	<cffunction name="_securePassword">
+		<cfargument name="password" type="string" required="true">
+		
+		<cfreturn hash(arguments.password)>	
+			
+	</cffunction>
+	
+	<cffunction name="_blankPassword" access="private">
+		
+		<cfif StructKeyExists(arguments, "password")>
+			<cfset arguments.password = "">
+		</cfif>
+		<cfreturn arguments>
+		
+	</cffunction>
+
+</cfcomponent>
+}}}
+
+As you can see from the code above, our model has 4 properties (username, firstname, lastname and password). We have some validations against these properties and a callback that runs whenever a new model is created. Let's get started writing some tests against this model to make sure that these validations and callback work properly.
+
+First, create a test component and in the setup create an instance of the model that we can use in each test we write along with some default values for the properties of the model using a structure.
+
+{{{
+<cfcomponent extends="wheelsMapping.Test">
+	
+	<cffunction name="setup">
+		
+		<!--- create an instance of our model --->
+		<cfset loc.user = model("user").new()>
+		
+		<!--- a struct that we wil use to set values of the property of the model --->
+		<cfset loc.properties = {
+			username = "myusername"
+			,firstname = "Bob"
+			,lastname = "Parkins"
+			,password = "something"
+			,passwordConfirmation = "something"
+		}>
+	</cffunction>
+	
+</cfcomponent>
+}}}
+
+As you can see we invoke our model by using the _model()_ method just like you would normally do in your controllers:
+
+The first thing we want to test is that if we assign are default properties to the model that the model will pass validations:
+
+{{{
+<cffunction name="test_user_valid">
+	
+	<!--- set the properties of the model --->
+	<cfset loc.user.setProperties(loc.properties)>
+	
+	<!--- assert that because the properties are set correct and meet validation, the model is valid --->
+	<cfset assert("loc.user.valid() eq true")>
+	
+</cffunction>
+}}}
+
+Next, we add a simple test to make sure that the validatons we add to our model work. Notice that we haven't assigned values to any of the properties of the model:
+
+{{{
+<cffunction name="test_user_not_valid">
+	
+	<!--- assert the model is invalid when no properties are set --->
+	<cfset assert("loc.user.valid() eq false")>
+	
+</cffunction>
+}}}
+
+Now we write a more specific test against the validations. Why don't we want make sure that when a password and passwordConfirmation are passed to the model and they are different, the model becomes invalid:
+
+{{{
+<cffunction name="test_user_not_valid_password_confirmation">
+	
+	<!--- change the passwordConfirmation property so it doesn't match the password property --->
+	<cfset loc.properties.passwordConfirmation = "something1">
+	
+	<!--- set the properties of the model --->
+	<cfset loc.user.setProperties(loc.properties)>
+	
+	<!--- assert that because the password and passwordConfirmation DO NOT match, the model is invalid --->
+	<cfset assert("loc.user.valid() eq false")>
+	
+</cffunction>
+}}}
+
+We now have tests to make sure that the validations in model work. Now it's time to make sure that the callback works propertly when a valid model is created:
+
+{{{
+<cffunction name="test_password_secure_before_save_testing_a_callback">
+	
+	<!--- set the properties of the model --->
+	<cfset loc.user.setProperties(loc.properties)>
+	
+	<!--- call the _securePassword directly so we can test the value after the record is saved --->
+	<cfset loc.hashed = loc.user._securePassword(loc.properties.password)>
+	
+	<!--- 
+		save the model, but use transactions so we don't actually write to the database.
+		thisprevent us from having to have to reload a new copy of the database everytime the test run
+	--->
+	<cfset loc.user.save(transaction="rollback")>
+	
+	<!--- get the password property of the model --->
+	<cfset loc.password = loc.user.password>
+	
+	<!--- make sure that password was hashed --->
+	<cfset assert('loc.password eq loc.hashed')>
+	
+</cffunction>
+}}}
+
+Now we know that when a model is created our password will be secured before it is saved to the database.
 
 ==Running Tests==
 
