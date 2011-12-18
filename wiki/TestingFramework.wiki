@@ -23,10 +23,10 @@ Like everything else in Wheels, the testing framework is very simple yet powerfu
 
 ===Writing Tests===
 
-Any components that will contain tests *MUST* extend the *_Test_* component:
+Any components that will contain tests *MUST* extend the *_wheelsMapping.Test_* component:
 
 {{{
-<cfcomponent extends="Test">
+<cfcomponent extends="wheelsMapping.Test">
 }}}
 
 If the testing engine sees that a component *DOES NOT* extend *_Test_*, that component skipped. This let's you create and store any _mock_ components you might want to use in your `tests` directory and keep everything together.
@@ -144,7 +144,7 @@ It's common when writing a group of tests that there will be some duplicate code
 Example:
 
 {{{
-<cfcomponent extends="Test">
+<cfcomponent extends="wheelsMapping.Test">
 
 	<cffunction name="setup">
 		<cfset controller = $controller(name="dummy")>
