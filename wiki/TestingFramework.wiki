@@ -173,14 +173,6 @@ Example:
 </cfcomponent>
 }}}
 
-==Testing Your Controllers (and views)==
-
-_We need some info here to get people started. Should include some real-world examples._
-
-==Testing Your Models==
-
-_Same as above, need info._
-
 ==Running Tests==
 
 Down in the debug area of your Wheels application (that grey area at the bottom of the page), you will notice a couple of *Run Tests* links in the following areas: 
