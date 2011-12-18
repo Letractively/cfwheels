@@ -361,6 +361,109 @@ The next part of our application that we need to test is our controllers. Below 
 
 *Woa woa woa*, what in the world is that `cfreturn` doing in the `create` action and why doesn the `redirectTo()` method have a `delay` argument? First, I would like to say that I'm very proud of you for noticing that line :) Secondly the reason for this is quite simple, underneath the hood when you call `redirectTo()`, Wheels is using `cflocation`. As we all know, there is now way to intercept or stop a cflocation from happening. This can cause quite a number of problems when testing out a controller as you will never be able to get back any information about the redirection. To work around this, Wheels allow you to "delay" the execution of a redirect until after the controller has finished processing. This allow Wheels to gather and present some information to you about what redirection will occur. The drawback to this though is that the controller will continue processing as such we need to explicitly exit out of the controller action on our own, thus the reason why we use `cfreturn`.
 
+Now we can look at the test we will write to make sure the create action works as expected: 
+
+{{{
+<cfcomponent extends="wheelsMapping.Test">
+	
+	<cffunction name="test_redirects_to_index_after_a_user_is_created">
+		
+		<!--- default params that are required by the controller --->
+		<cfset loc.params = {controller="users", action="create"}>
+		
+		<!--- set the user params for creating a user --->
+		<cfset loc.params.user = {
+			username = "myusername"
+			,firstname = "Bob"
+			,lastname = "Parkins"
+			,password = "something"
+			,passwordConfirmation = "something"
+		}>
+		
+		<!--- create an instance of the controller --->
+		<cfset loc.controller = controller(name="users", params=loc.params)>
+
+		<!--- process the create action of the controller --->
+		<cfset loc.controller.$processAction()>
+		
+		<!--- get the information about the redirect that should have happened --->
+		<cfset loc.redirect = loc.controller.$getRedirect()>
+		
+		<!--- make sure that the redirect happened --->
+		<cfset assert('StructKeyExists(loc.redirect, "$args")')>
+		<cfset assert('loc.redirect.$args.action eq "index"')>
+		
+	</cffunction>
+
+</cfcomponent>
+}}}
+
+Obviously a lot more goes into testing a controller then a model. The first step is setting up the params that will need to be passed to the controller. Next we have to create an instance of the controller. Finally we tell the controller to process the action that we want to test.
+
+After the controller is finished processing the action, we can get the information about the redirection that happened by using the $getRedirect() method. We use this information to make sure that the controller redirected the visitor to the `index` action once the action was completed.
+
+===View Testing===
+
+The last part of your application that we will look at testing is the `view` layer. Below is the view for the code (new.cfm) that are controller's new action would call:
+
+{{{
+<cfoutput>
+<h1>Create a New user</h1>
+
+#flashMessages()#
+
+#errorMessagesFor("user")#
+
+#startFormTag(action="create")#
+
+	
+			#textField(objectName='user', property='username', label='Username')#
+		
+			#passwordField(objectName='user', property='password', label='Password')#
+			#passwordField(objectName='user', property='passwordConfirmation', label='Confirm Password')#
+		
+			#textField(objectName='user', property='firstname', label='Firstname')#
+		
+			#textField(objectName='user', property='lastname', label='Lastname')#
+
+	#submitTag()#
+	
+#endFormTag()#
+
+#linkTo(text="Return to the listing", action="index")#
+</cfoutput>
+}}}
+
+Testing the view layer is very simiailar to testing controllers, you will create an instance of the controller, passing in the params required for the controller's action to run. The main difference is we will be calling the `response()` action of the controller which will return to us the output that the view generated. Once we have this output, we can then search through it to make sure that whenever we wanted the view to display is presented to our visitor. In the test below, we want to make sure that if the visitor recieves an error when creating a new user, a flash message is displaying telling them that errors have occurred.
+
+{{{
+<cfcomponent extends="wheelsMapping.Test">
+	
+	<cffunction name="test_errors_display_when_new_user_is_invalid">
+		
+		<!--- setup some default params for the tests --->
+		<cfset loc.params = {controller="users", action="create"}>
+		
+		<!--- create an empty user param to pass to the controller action --->
+		<cfset loc.params.user = StructNew()>
+		
+		<!--- create an instance of the controller --->
+		<cfset loc.controller = controller("users", loc.params)>
+		
+		<!--- process the create action of the controller --->
+		<cfset loc.controller.$processAction()>
+		
+		<!--- get copy of the code the view generated --->
+		<cfset loc.response = loc.controller.response()>
+		
+		<!--- make sure the flashmessage was displayed  --->
+		<cfset loc.message = '<div class="flashMessages">'>
+		<cfset assert('loc.response contains loc.message')>
+		
+	</cffunction>
+
+</cfcomponent>
+}}}
 
 ==Running Tests==
 
