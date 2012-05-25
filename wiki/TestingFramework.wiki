@@ -310,7 +310,7 @@ We now have tests to make sure that the validations in model work. Now it's time
 	
 	<!--- 
 		save the model, but use transactions so we don't actually write to the database.
-		thisprevent us from having to have to reload a new copy of the database everytime the test run
+		this prevents us from having to have to reload a new copy of the database everytime the test run
 	--->
 	<cfset loc.user.save(transaction="rollback")>
 	
@@ -359,7 +359,7 @@ The next part of our application that we need to test is our controllers. Below 
 </cfcomponent>
 }}}
 
-*Woa woa woa*, what in the world is that `cfreturn` doing in the `create` action and why doesn the `redirectTo()` method have a `delay` argument? First, I would like to say that I'm very proud of you for noticing that line :) Secondly the reason for this is quite simple, underneath the hood when you call `redirectTo()`, Wheels is using `cflocation`. As we all know, there is now way to intercept or stop a cflocation from happening. This can cause quite a number of problems when testing out a controller as you will never be able to get back any information about the redirection. To work around this, Wheels allow you to "delay" the execution of a redirect until after the controller has finished processing. This allow Wheels to gather and present some information to you about what redirection will occur. The drawback to this though is that the controller will continue processing as such we need to explicitly exit out of the controller action on our own, thus the reason why we use `cfreturn`.
+*Woa woa woa*, what in the world is that `cfreturn` doing in the `create` action and why doesn the `redirectTo()` method have a `delay` argument? First, I would like to say that I'm very proud of you for noticing that line :) Secondly the reason for this is quite simple, underneath the hood when you call `redirectTo()`, Wheels is using `cflocation`. As we all know, there is no way to intercept or stop a cflocation from happening. This can cause quite a number of problems when testing out a controller as you will never be able to get back any information about the redirection. To work around this, Wheels allow you to "delay" the execution of a redirect until after the controller has finished processing. This allow Wheels to gather and present some information to you about what redirection will occur. The drawback to this though is that the controller will continue processing and as such we need to explicitly exit out of the controller action on our own, thus the reason why we use `cfreturn`.
 
 Now we can look at the test we will write to make sure the create action works as expected: 
 
@@ -417,14 +417,14 @@ The last part of your application that we will look at testing is the `view` lay
 #startFormTag(action="create")#
 
 	
-			#textField(objectName='user', property='username', label='Username')#
+	#textField(objectName='user', property='username', label='Username')#
 		
-			#passwordField(objectName='user', property='password', label='Password')#
-			#passwordField(objectName='user', property='passwordConfirmation', label='Confirm Password')#
+	#passwordField(objectName='user', property='password', label='Password')#
+	#passwordField(objectName='user', property='passwordConfirmation', label='Confirm Password')#
 		
-			#textField(objectName='user', property='firstname', label='Firstname')#
+	#textField(objectName='user', property='firstname', label='Firstname')#
 		
-			#textField(objectName='user', property='lastname', label='Lastname')#
+	#textField(objectName='user', property='lastname', label='Lastname')#
 
 	#submitTag()#
 	
@@ -473,8 +473,8 @@ Down in the debug area of your Wheels application (that grey area at the bottom 
 
 *Application Name*: Runs any tests that you have created for your application. You should run these tests before deploying your application.
 
-*Plugins*: A *Run Tests* link will be next to *each* installed plugin you have in your wheels installation. You should run these tests whenever you install or update a plugin.
+*Plugins*: A *Run Tests* link will be next to *each* installed plugin you have in your wheels installation. You should run these tests whenever you install or update a plugin. *NOTE:* the `Run Tests` will appear if there are no tests that were packaged with the plugin.
 
 ===Running Selected Test Packages===
 
-Very often you might want to only run a package of tests (a group of tests within a single directory). In order to do this, just append the *package* argument to the url with the name of the package you want ran. For instance, say you had a test package called UserVerifcation. To run only that test package, add *&package=UserVerifcation* to the end of the test url.
+Very often you might want to only run a package of tests (a group of tests within a single directory). In order to do this, just append the *package* argument to the url with the name of the package you want to run. For instance, say you had a test package called UserVerifcation. To run only that test package, add *&package=UserVerifcation* to the end of the test url.
